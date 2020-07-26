@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -818,9 +818,9 @@ Foam::scalar Foam::particle::trackToFace
         // denominator for tracking in this cell.
         const scalar& lambdaDistanceTolerance =
             lambdaDistanceToleranceCoeff*mesh_.cellVolumes()[cellI_];
-            
+
         do
-        {           
+        {
             if (triI != -1)
             {
                 // Change tet ownership because a tri face has been crossed
@@ -1106,7 +1106,7 @@ Foam::scalar Foam::particle::trackToFace
                 }
 
                 const polyPatch& patch = mesh_.boundaryMesh()[patchI];
-                
+
                 if (isA<processorPolyPatch>(patch))
                 {
                     p.hitProcessorPatch
@@ -1236,7 +1236,7 @@ Foam::scalar Foam::particle::trackToFace
 
             cloud.trackingRescue();
         }
-    
+
     return trackFraction;
 }
 

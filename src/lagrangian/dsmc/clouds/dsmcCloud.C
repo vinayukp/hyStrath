@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -73,6 +73,22 @@ void Foam::dsmcCloud::buildCellOccupancy()
     }
 }
 
+void Foam::dsmcCloud::relocateStuckParcels()
+{
+    forAllIter(dsmcCloud, *this, iter)
+    {
+        if (iter().isStuck())
+        {
+            bool success = iter().relocateStuckParcel(mesh_);
+            if (!success)
+            {
+                FatalErrorInFunction
+                    << "Could not relocate stuck parcel!"
+                    << exit(FatalError);
+            }
+        }
+    }
+}
 
 void Foam::dsmcCloud::buildCellOccupancyFromScratch()
 {
@@ -80,6 +96,7 @@ void Foam::dsmcCloud::buildCellOccupancyFromScratch()
     cellOccupancy_.setSize(mesh_.nCells());
 
     buildCellOccupancy();
+    relocateStuckParcels();
 }
 
 void Foam::dsmcCloud::buildCollisionSelectionRemainderFromScratch()
@@ -404,7 +421,64 @@ void Foam::dsmcCloud::addNewParcel
         vibLevel
     );
 
+    // parcels that have been freshly injected on boundary patch faces should
+    // be tracked as having crossed that boundary patch face in the time step
+    // in which they have been inserted. This is justified as the trackFraction
+    // is initialized to a random value in the interval [0, 1] (cf.
+    // dsmcParcel::move newParcel handling).
+    if (newParcel != -1)
+    {
+        tracker().trackFaceTransition(typeId, U, RWF, tetFaceI);
+    }
+
     porousMeas().additionInteraction(*pPtr, newParcel);
+
+    addParticle(pPtr);
+}
+
+
+void Foam::dsmcCloud::addNewStuckParcel
+(
+    const vector& position,
+    const vector& U,
+    const scalar RWF,
+    const scalar ERot,
+    const label ELevel,
+    const label cellI,
+    const label tetFaceI,
+    const label tetPtI,
+    const label typeId,
+    const label newParcel,
+    const label classification,
+    const labelList& vibLevel,
+    const scalarField& wallTemperature,
+    const vectorField& wallVectors
+)
+{
+    dsmcParcel* pPtr = new dsmcParcel
+    (
+        mesh_,
+        position,
+        U,
+        RWF,
+        ERot,
+        ELevel,
+        cellI,
+        tetFaceI,
+        tetPtI,
+        typeId,
+        newParcel,
+        classification,
+        vibLevel
+    );
+
+    // set parcel stuck
+    dsmcParcel& p = *pPtr;
+    p.setStuck();
+    p.stuck().wallTemperature() = wallTemperature;
+    p.stuck().wallVectors() = wallVectors;
+
+    porousMeas().additionInteraction(p, newParcel);
 
     addParticle(pPtr);
 }
@@ -702,11 +776,11 @@ Foam::dsmcCloud::dsmcCloud
 
         initialParcels = 0;
     }
-    
+
     buildConstProps();
 
     coordSystem().checkCoordinateSystemInputs(true);
-    
+
     dsmcAllConfigurations conf(dsmcInitialiseDict, *this);
     conf.setInitialConfig();
 
@@ -758,11 +832,24 @@ void Foam::dsmcCloud::evolve_moveAndCollide()
     if (findIndex(typeIdList_, "e-") != -1)
     {
         // TODO VINCENT: there is a clever way than rebuilding entire cell occ.
-        removeElectrons(); 
+        removeElectrons();
         buildCellOccupancy();
     }
 
     //- Move the particles ballistically with their current velocities
+    // Note: The parcels radial weighting factor (RWF) will stay constant over
+    // the _entire_ move step. It will be updated by coordSystem().evolve (see
+    // below). Any function that operates on the parcel in between has to
+    // consider this. This is especially relevant for boundary measurements
+    // that are performed when a parcel hits a wall during the move step.
+    // Consider the following situation:
+    //  1. parcel starts in cell = x
+    //  2. parcel is moved to cell = y
+    //  3. parcel hits a wall face y1 that belongs to cell = y. This hit now has
+    //     to be counted with the RWF that the parcel had at the beginning of
+    //     its move step, i.e. RWF(cell = x), _neither_ RWF(cell = y) _nor_
+    //     RWF(face = y1)
+
     //scalar timer = mesh_.time().elapsedCpuTime();
     Cloud<dsmcParcel>::move(td, deltaTValue());
     //Info<< "move" << tab << mesh_.time().elapsedCpuTime() - timer << " s" << endl;
@@ -771,7 +858,7 @@ void Foam::dsmcCloud::evolve_moveAndCollide()
     //timer = mesh_.time().elapsedCpuTime();
     buildCellOccupancy();
     //Info<< "buildCellOccupancy" << tab << mesh_.time().elapsedCpuTime() - timer << " s " << endl;
-    
+
     //- Add electrons back after the move function
     if (findIndex(typeIdList_, "e-") != -1)
     {
@@ -780,7 +867,9 @@ void Foam::dsmcCloud::evolve_moveAndCollide()
         buildCellOccupancy();
     }
 
-    //- Radial weighting for non-Cartesian flows (e.g., axisymmetric)
+    //- Radial weighting for non-Cartesian flows (e.g., axisymmetric). This is
+    // where parcels will receive their new RWF and will possibly be cloned or
+    // deleted.
     coordSystem().evolve();
 
     controllers_.controlBeforeCollisions();
@@ -1041,17 +1130,17 @@ void Foam::dsmcCloud::generalisedChapmanEnskog
             );
 
         epsRot = ERot/(kB*translationalTemperature);
-        
+
         if (nVibModes > 0 && vibrationalTemperature > 5.)
         {
-            vibLevel = 
+            vibLevel =
                 equipartitionVibrationalEnergyLevel
                 (
                     vibrationalTemperature,
                     nVibModes,
                     typeID
                 );
-            
+
             scalar epsVib = 0.0;
             forAll(vibLevel, mode)
             {
@@ -1160,21 +1249,21 @@ Foam::label Foam::dsmcCloud::equipartitionElectronicLevel
     //- Maximum possible electronic energy level within list based on k*TElec
     scalar EJ = 0.0;
     //- Maximum possible degeneracy level within list
-    label gJ = 0; 
+    label gJ = 0;
     //- Selected intermediate integer electronic level (0 to jMax)
-    label jSelect = 0; 
+    label jSelect = 0;
     //- Maximum denominator value in Liechty pdf (see below)
     scalar expMax = 0.0;
     //- Summation term based on random electronic level
     scalar expSum = 0.0;
     //- Boltzmann distribution of Eq. 3.1.1 of Liechty thesis
-    scalar boltz = 0.0; 
+    scalar boltz = 0.0;
     //- Distribution function Eq. 3.1.2 of Liechty thesis
     scalar func = 0.0;
 
-    if (jMax > 0 and temperature > SMALL) 
+    if (jMax > 0 and temperature > SMALL)
     {
-        //- Calculate summation term in denominator of Eq. 3.1.1 in Liechty 
+        //- Calculate summation term in denominator of Eq. 3.1.1 in Liechty
         //  thesis
         forAll(electronicDegeneracyList, i)
         {
@@ -1202,12 +1291,12 @@ Foam::label Foam::dsmcCloud::equipartitionElectronicLevel
         }
 
         //- Max. poss energy in list: list goes from 0 to jMax
-        EJ = electronicEnergyList[jSelect]; 
+        EJ = electronicEnergyList[jSelect];
         //- Max. poss degeneracy in list: list goes from 0 to jMax
-        gJ = electronicDegeneracyList[jSelect]; 
-        //- Max. in denominator of Liechty pdf for initialisation/wall 
+        gJ = electronicDegeneracyList[jSelect];
+        //- Max. in denominator of Liechty pdf for initialisation/wall
         //  bcs/freestream EEle etc..
-        expMax = gJ*exp(-EJ/EMax); 
+        expMax = gJ*exp(-EJ/EMax);
 
         //- Acceptance - rejection based on Eq. 3.1.2 of Liechty thesis
         do
@@ -1331,7 +1420,7 @@ Foam::label Foam::dsmcCloud::postCollisionVibrationalEnergyLevel
         {
             //- Temperature used to calculate Zv
             scalar T = 0;
-            
+
             if (invZvFormulation == 0)
             {
                 //- "Quantised collision temperature" (equation 3, Bird 2010)
@@ -1342,7 +1431,7 @@ Foam::label Foam::dsmcCloud::postCollisionVibrationalEnergyLevel
             {
                 //- Macroscopic (overall) temperature
                 const scalar TMacro = fields().overallT(cellI);
-                
+
                 if (TMacro > SMALL)
                 {
                     T = TMacro;
@@ -1353,13 +1442,13 @@ Foam::label Foam::dsmcCloud::postCollisionVibrationalEnergyLevel
                     //  the pre-2008 formulation is recovered
                     T = iMax*thetaV/(3.5 - omega);
                 }
-                
+
             }
             else
             {
                 //- Macroscopic (translational) temperature
                 /*const scalar TMacro = fields().translationalT(cellI);
-                
+
                 if (TMacro > SMALL)
                 {
                     T = TMacro;
@@ -1378,7 +1467,7 @@ Foam::label Foam::dsmcCloud::postCollisionVibrationalEnergyLevel
             const scalar pow1 = pow(thetaD/T, 1./3.) - 1.0;
 
             const scalar pow2 = pow(thetaD/refTempZv, 1./3.) - 1.0;
-            
+
             //- vibrational collision number (equation 2, Bird 2010)
             const scalar ZvP1 = pow(thetaD/T, omega);
 
@@ -1400,7 +1489,7 @@ Foam::label Foam::dsmcCloud::postCollisionVibrationalEnergyLevel
             }
             else
             {
-                inverseVibrationalCollisionNumber = 1.0/Zv;   
+                inverseVibrationalCollisionNumber = 1.0/Zv;
             }
         }
         else
@@ -1418,7 +1507,7 @@ Foam::label Foam::dsmcCloud::postCollisionVibrationalEnergyLevel
             {
                 //iDash = rndGen_.position<label>(0, iMax); OLD
                 iDash = randomLabel(0, iMax);
-                
+
                 EVib = iDash*physicoChemical::k.value()*thetaV;
 
                 // - equation 5.61, Bird
@@ -1440,12 +1529,12 @@ Foam::label Foam::dsmcCloud::postCollisionElectronicEnergyLevel
     const scalarList& EElist,
     const labelList& gList
 )
-{   
+{
     /*label nPossibleStates = 0;
-        
-    //- Post collision electronic level uniformly selected, taking the 
+
+    //- Post collision electronic level uniformly selected, taking the
     //  degeneracies of the different energy levels into account.
-    
+
     //- Summation for all levels with energy below the collision energy
     if (jMax == 1)
     {
@@ -1461,9 +1550,9 @@ Foam::label Foam::dsmcCloud::postCollisionElectronicEnergyLevel
             }
         }
     }
-    
+
     label II = 0;
-    
+
     //- Post-collision electronic energy
     label jDash = -1;
 
@@ -1497,14 +1586,14 @@ Foam::label Foam::dsmcCloud::postCollisionElectronicEnergyLevel
         }
 
     } while (II == 0);
-    
+
     return jDash;*/
-    
+
     //- Maximum allowable electronic level obtainable from Ecoll
     label jSelectA = 0;
     //- Energy level maximazing expression gList[j]*pow(Ec - EElist[j], 1.5 - omega)
     label jSelectB = 0;
-    
+
     scalar g = 0.0;
     scalar gMax = 0.0;
 
@@ -1533,18 +1622,18 @@ Foam::label Foam::dsmcCloud::postCollisionElectronicEnergyLevel
     const label jSelect = min(jSelectA, jSelectB);
 
     //- Max. poss energy in list: list goes from 0 to jSelect
-    const scalar EJ = EElist[jSelect]; 
+    const scalar EJ = EElist[jSelect];
     //- Max. poss degeneracy in list: list goes from 0 to jSelect
     const label gJ = gList[jSelect];
-    //- Max. denominator of Liechty pdf for post-collision pdf 
-    const scalar denomMax = gJ*pow(Ec - EJ, 1.5 - omega); 
-    
+    //- Max. denominator of Liechty pdf for post-collision pdf
+    const scalar denomMax = gJ*pow(Ec - EJ, 1.5 - omega);
+
     //- Acceptance - rejection based on Eq. 3.1.8 of Liechty thesis
     //- Post-collision electronic energy
     label jDash = 0;
     scalar prob = 0.0;
-    
-    do 
+
+    do
     {
      //jDash = rndGen_.position<label>(0,jSelectA); OLD
        jDash = randomLabel(0, jSelectA);
@@ -1553,7 +1642,7 @@ Foam::label Foam::dsmcCloud::postCollisionElectronicEnergyLevel
     } while(prob < rndGen_.sample01<scalar>());
 
     return jDash;
-    
+
 }
 
 
@@ -2306,19 +2395,19 @@ void Foam::dsmcCloud::resetHybridTraRotVib
         }
 
         Info<< "      Zone: " << regionName << endl;
-        
+
         forAll(typeIdList_, i)
         {
             const scalar mass = this->constProps(i).mass();
             massToIntroduce[i] *= mass * nParticle();
             massIntroduced[i] *= mass * nParticle();
-            Info<< "        Specie " << typeIdList_[i] 
+            Info<< "        Specie " << typeIdList_[i]
                 << ", mTI: "
                 << massToIntroduce[i] << "; mI: " << massIntroduced[i]
                 << " (" << 100.0 * (massIntroduced[i]
                 / (massToIntroduce[i] + VSMALL) - 1.0) << "% off)" << endl;
         }
-        
+
         Info<< endl;
     }
 

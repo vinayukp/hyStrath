@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     distribution
@@ -181,7 +180,7 @@ inline scalar brennerPotential::fIJ(const scalar& r)
 
     if ( (r < rIJ2_) && (r >= rIJ1_) )
     {
-        
+
        fij = 0.5*
              (
                 1.0+
@@ -225,7 +224,7 @@ inline scalar brennerPotential::G(const scalar& cosThetaIJK)
                     -(
                         (c0_*c0_)/
                         (
-                            (d0_*d0_) 
+                            (d0_*d0_)
                             + (1.0 +cosThetaIJK)*(1.0+cosThetaIJK)
                         )
                     )
@@ -335,7 +334,7 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 0.0;
     hmm[j][9] = 0.0;
     hmm[j][10] = 0.0;
-   
+
     hmm.source()[j] = 0.0;
 
     j++;
@@ -353,7 +352,7 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 0.0;
     hmm[j][9] = 0.0;
     hmm[j][10] = 0.0;
-   
+
     hmm.source()[j] = y[2] - b[3];
 
 
@@ -372,7 +371,7 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 0.0;
     hmm[j][9] = 0.0;
     hmm[j][10] = 0.0;
-   
+
     hmm.source()[j] = 0.0;
 
 
@@ -391,14 +390,14 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 0.0;
     hmm[j][9] = 0.0;
     hmm[j][10] = 0.0;
-   
+
     hmm.source()[j] = 0.0;
 
 
 
     j++;
 
-    // (C) z = 1, 
+    // (C) z = 1,
 
     hmm[j][0] = 0.0;
     hmm[j][1] = 0.0;
@@ -411,7 +410,7 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 0.0;
     hmm[j][9] = 0.0;
     hmm[j][10] = 0.0;
-   
+
     hmm.source()[j] = y[3]-c[3];
 
 
@@ -430,7 +429,7 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 0.0;
     hmm[j][9] = 0.0;
     hmm[j][10] = -1.0;
-   
+
     hmm.source()[j] = 0.0;
 
     j++;
@@ -448,14 +447,14 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 0.0;
     hmm[j][9] = -2.0;
     hmm[j][10] = 0.0;
-   
+
     hmm.source()[j] = 0.0;
 
 
 
     j++;
 
-    // (D) z = 1, 
+    // (D) z = 1,
 
     hmm[j][0] = 0.0;
     hmm[j][1] = 0.0;
@@ -468,12 +467,12 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 1.0;
     hmm[j][9] = 1.0;
     hmm[j][10] = 1.0;
-   
+
     hmm.source()[j] = y[4]-d[3];
 
     j++;
 
-    // (D) z = 1, 
+    // (D) z = 1,
 
     hmm[j][0] = 0.0;
     hmm[j][1] = 0.0;
@@ -486,7 +485,7 @@ inline scalar brennerPotential::splineInterpolation
     hmm[j][8] = 3.0;
     hmm[j][9] = 2.0;
     hmm[j][10] = 1.0;
-   
+
     hmm.source()[j] = 0.0;
 
     scalarField m(11,0.0);
@@ -606,7 +605,7 @@ inline scalar brennerPotential::splineInterpolationII
     hmm[j][5] = 0.0;
     hmm[j][6] = 0.0;
     hmm[j][7] = 0.0;
-   
+
     hmm.source()[j] = 0.0;
 
     j++;
@@ -621,7 +620,7 @@ inline scalar brennerPotential::splineInterpolationII
     hmm[j][5] = 0.0;
     hmm[j][6] = 0.0;
     hmm[j][7] = 0.0;
-   
+
     hmm.source()[j] = y[2] - b[3];
 
 
@@ -637,7 +636,7 @@ inline scalar brennerPotential::splineInterpolationII
     hmm[j][5] = 0.0;
     hmm[j][6] = 0.0;
     hmm[j][7] = -1.0;
-   
+
     hmm.source()[j] = 0.0;
 
 
@@ -654,7 +653,7 @@ inline scalar brennerPotential::splineInterpolationII
     hmm[j][6] = -2.0;
     hmm[j][7] = 0.0;
 
-   
+
     hmm.source()[j] = 0.0;
 
     j++;
@@ -669,7 +668,7 @@ inline scalar brennerPotential::splineInterpolationII
     hmm[j][6] = 1.0;
     hmm[j][7] = 1.0;
 
-   
+
     hmm.source()[j] = y[3]-c[3];
 
     j++;
@@ -682,7 +681,7 @@ inline scalar brennerPotential::splineInterpolationII
     hmm[j][5] = 3.0;
     hmm[j][6] = 2.0;
     hmm[j][7] = 1.0;
-   
+
     hmm.source()[j] = 0.0;
 
 

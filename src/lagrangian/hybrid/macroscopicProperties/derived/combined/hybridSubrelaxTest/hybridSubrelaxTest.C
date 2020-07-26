@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,12 +19,11 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
-Measures overall temperature, including vibrational temperature, for a single species gas 
+Measures overall temperature, including vibrational temperature, for a single species gas
 or a gas mixture and writes the results to a volume scalar field that can be viewed in Paraview.
 
 Translational, rotatational and vibrational temperature field will also be written automatically.
@@ -243,7 +242,7 @@ hybridSubrelaxTest::hybridSubrelaxTest
             << exit(FatalError);
     }
 
-    // standard to reading typeIds ------------ 
+    // standard to reading typeIds ------------
     const List<word> molecules (propsDict_.lookup("typeIds"));
 
     DynamicList<word> moleculesReduced(0);
@@ -277,13 +276,13 @@ hybridSubrelaxTest::hybridSubrelaxTest
     }
 
     boundaryCells_.setSize(mesh_.boundaryMesh().size());
-    
+
     forAll(boundaryCells_, p)
     {
         const polyPatch& patch = mesh_.boundaryMesh()[p];
-        
+
         boundaryCells_[p].setSize(patch.size());
-        
+
         forAll(boundaryCells_[p], c)
         {
             boundaryCells_[p][c] = patch.faceCells()[c];
@@ -441,7 +440,7 @@ void hybridSubrelaxTest::calculateField()
             linearKEMean_[cell] += mass * (p.U() & p.U());
             momentumMean_[cell] += mass * p.U();
             rotationalEMean_[cell] += p.ERot();
-            rotationalDofMean_[cell] += rotationalDof; 
+            rotationalDofMean_[cell] += rotationalDof;
             vibrationalETotal_[iD][cell] += p.EVib();
             nParcels_[iD][cell] += 1.0;
 
@@ -510,9 +509,9 @@ void hybridSubrelaxTest::calculateField()
         label iD = findIndex(typeIds_, i);
 
         if(iD != -1)
-        {            
+        {
             forAll(cloud_.boundaryFluxMeasurements().rhoNBF()[i], j)
-            {                
+            {
                 forAll(cloud_.boundaryFluxMeasurements().rhoNBF()[i][j], k)
                 {
                     rhoNBF_[j][k]
@@ -541,9 +540,9 @@ void hybridSubrelaxTest::calculateField()
         label iD = findIndex(typeIds_, i);
 
         if(iD != -1)
-        { 
+        {
             forAll(speciesRhoNBF_[i], j)
-            {                
+            {
                 forAll(speciesRhoNBF_[i][j], k)
                 {
                     speciesRhoNBF_[i][j][k]
@@ -614,7 +613,7 @@ void hybridSubrelaxTest::calculateField()
     forAll(boundaryCells_, j)
     {
         const polyPatch& patch = mesh_.boundaryMesh()[j];
-        
+
         if(isA<polyPatch>(patch))
         {
             if(!isA<emptyPolyPatch>(patch))
@@ -624,7 +623,7 @@ void hybridSubrelaxTest::calculateField()
                     if(!isA<wallPolyPatch>(patch))
                     {
                         forAll(boundaryCells_[j], k)
-                        {       
+                        {
                             translationalT_.boundaryFieldRef()[j][k] = translationalT_[boundaryCells_[j][k]];
                             rotationalT_.boundaryFieldRef()[j][k] = rotationalT_[boundaryCells_[j][k]];
                             forAll(typeIds_, iD)

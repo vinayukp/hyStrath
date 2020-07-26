@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     FENE
@@ -66,7 +65,7 @@ private:
         scalar k_;
         scalar r0_;
         scalar r0in_;
-        
+
     // Private Member Functions
 
 
@@ -82,9 +81,9 @@ public:
         FENE
         (
             const polyMesh& mesh,
-            polyMoleculeCloud& molCloud,         
+            polyMoleculeCloud& molCloud,
             const reducedUnits& redUnits,
-            const word& name,         
+            const word& name,
             const dictionary& dict
         );
 
@@ -97,16 +96,16 @@ public:
         scalar unscaledEnergy(const scalar r) const;
 
         scalar force(const scalar r) const;
-        
-        scalar energy(const scalar r) const;    
-        
-        
+
+        scalar energy(const scalar r) const;
+
+
         //- Read dictionary
 //         bool read
 //         (
 //             const dictionary& pairPotentialProperties,
 //         );
-        
+
         void write(const fileName& pathName);
 
         const dictionary& dict() const;

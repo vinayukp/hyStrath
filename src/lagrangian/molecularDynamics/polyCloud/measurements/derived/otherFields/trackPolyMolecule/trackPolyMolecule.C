@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -73,7 +72,7 @@ trackPolyMolecule::trackPolyMolecule
 	theta_(2, 0.0),
 	cells_(2, -1),
     outputParaFoamFile_(false),
-    outputVMDFile_(false)  
+    outputVMDFile_(false)
 {
     const List<word>& idList(molCloud_.pot().idList());
     const word molId = propsDict_.lookup("molId");
@@ -91,7 +90,7 @@ trackPolyMolecule::trackPolyMolecule
     {
         outputParaFoamFile_ = Switch(propsDict_.lookup("outputParaFoamFile"));
     }
-    
+
     if (propsDict_.found("outputVMDFile"))
     {
         outputVMDFile_ = Switch(propsDict_.lookup("outputVMDFile"));
@@ -160,7 +159,7 @@ void trackPolyMolecule::createField()
                 }
             }
         }
-    
+
         //- receiving
         for (int p = 0; p < Pstream::nProcs(); p++)
         {
@@ -199,7 +198,7 @@ void trackPolyMolecule::createField()
 
     trackingNumber_ = trackingNumber;
 
-    Info << "trackingMolecule: " << fieldName_ << ", starting position: " 
+    Info << "trackingMolecule: " << fieldName_ << ", starting position: "
          << startingMolPosition << endl;
 }
 
@@ -212,7 +211,7 @@ void trackPolyMolecule::calculateField()
 
 	    tensor trackingQ = tensor::zero;
         vector trackingPi = vector::zero;
-        vector trackingLinMom = vector::zero;		
+        vector trackingLinMom = vector::zero;
         label cell = -1;
         vector trackingPosition = vector::zero;
 
@@ -231,8 +230,8 @@ void trackPolyMolecule::calculateField()
             {
 		        trackingQ = mol().Q();
 		        trackingPi = mol().Q() & mol().pi();
-		        const polyMolecule::constantProperties& constProp = molCloud_.constProps(mol().id());		
-		        trackingLinMom = constProp.mass()*mol().v();		
+		        const polyMolecule::constantProperties& constProp = molCloud_.constProps(mol().id());
+		        trackingLinMom = constProp.mass()*mol().v();
                 trackingPosition = mol().position();
                 cell = mol().cell();
 
@@ -254,7 +253,7 @@ void trackPolyMolecule::calculateField()
         trackingLinMom_[1] = trackingLinMom;
         trackingPositions_[1] = trackingPosition;
         cells_[1] = cell;
-       
+
         if(Pstream::parRun())
         {
             //- sending
@@ -265,13 +264,13 @@ void trackPolyMolecule::calculateField()
                     const int proc = p;
                     {
                         OPstream toNeighbour(Pstream::commsTypes::blocking, proc);
-                        toNeighbour << trackingPosition << cell 
-                                    << trackingMolSitePositions << trackingQ 
+                        toNeighbour << trackingPosition << cell
+                                    << trackingMolSitePositions << trackingQ
                                     << trackingPi << trackingLinMom;
                     }
                 }
             }
-        
+
             //- receiving
             for (int p = 0; p < Pstream::nProcs(); p++)
             {
@@ -287,8 +286,8 @@ void trackPolyMolecule::calculateField()
                     const int proc = p;
                     {
                         IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
-                        fromNeighbour >> trackingPositionProc >> cellProc 
-                                      >> trackingMolSitePositionsProc >> trackingQProc 
+                        fromNeighbour >> trackingPositionProc >> cellProc
+                                      >> trackingMolSitePositionsProc >> trackingQProc
                                       >> trackingPiProc >> trackingLinMomProc;
                     }
 
@@ -344,14 +343,14 @@ void trackPolyMolecule::writeField()
 				trackingLinMom_,
 				false
 			);
-	    
+
 	        forAll(trackingQ_, p)
 	        {
-	            const tensor& q = trackingQ_[p];	
-	        
+	            const tensor& q = trackingQ_[p];
+
 	            trackingOrientation1_[p] = q & vector(1,0,0);
-	            trackingOrientation2_[p] = q & vector(0,1,0);	    
-	            trackingOrientation3_[p] = q & vector(0,0,1);    
+	            trackingOrientation2_[p] = q & vector(0,1,0);
+	            trackingOrientation3_[p] = q & vector(0,0,1);
 	        }
 
 	        writeTimeData
@@ -361,29 +360,29 @@ void trackPolyMolecule::writeField()
 				trackingOrientation2_,
 				false
 			);
-	    
+
 	        //- a small script for visualising the trajectory (and other properties)
-            //  of the polyMolecule in paraFOAM	
-    
+            //  of the polyMolecule in paraFOAM
+
             if(outputParaFoamFile_)
             {
                 OFstream positionsFile(timePath/fieldName_+"_positions.xyz");
                 OFstream sitePositionsFile(timePath/fieldName_+"_sitePositions.xyz");
                 OFstream siteIdsFile(timePath/fieldName_+"_siteIds.xy");
                 OFstream bondsFile(timePath/fieldName_+"_bonds.xyz");
-    
-                OFstream QFile(timePath/fieldName_+"_Q.xyz");	
-                OFstream piFile(timePath/fieldName_+"_pi.xyz");	
-                OFstream linMomFile(timePath/fieldName_+"_linMom.xyz");	    
+
+                OFstream QFile(timePath/fieldName_+"_Q.xyz");
+                OFstream piFile(timePath/fieldName_+"_pi.xyz");
+                OFstream linMomFile(timePath/fieldName_+"_linMom.xyz");
                 OFstream timeFile(timePath/fieldName_+"_timeField.xy");
-	            OFstream orientation1File(timePath/fieldName_+"_orientation1.xyz"); 
-	            OFstream orientation2File(timePath/fieldName_+"_orientation2.xyz"); 
-	            OFstream orientation3File(timePath/fieldName_+"_orientation3.xyz"); 	
-                OFstream phiFile(timePath/fieldName_+"_phi.xy"); 
-                OFstream thetaFile(timePath/fieldName_+"_theta.xy"); 
-    
+	            OFstream orientation1File(timePath/fieldName_+"_orientation1.xyz");
+	            OFstream orientation2File(timePath/fieldName_+"_orientation2.xyz");
+	            OFstream orientation3File(timePath/fieldName_+"_orientation3.xyz");
+                OFstream phiFile(timePath/fieldName_+"_phi.xy");
+                OFstream thetaFile(timePath/fieldName_+"_theta.xy");
+
                 label nPositions = 0;
-    
+
                 forAll(cells_, p)
                 {
                     if(cells_[p] != -1)
@@ -391,54 +390,54 @@ void trackPolyMolecule::writeField()
                         nPositions++;
                     }
                 }
-    
-                if (positionsFile.good() && QFile.good() && piFile.good() && linMomFile.good() 
+
+                if (positionsFile.good() && QFile.good() && piFile.good() && linMomFile.good()
 	                && timeFile.good() /*&& orientation1File.good() */
 	                && orientation2File.good() && phiFile.good() /*&& orientation3File.good()*/)
                 {
                     positionsFile << nPositions << endl;
                     positionsFile << "(" << endl;
-                    
+
                     const polyMolecule::constantProperties& constProp = molCloud_.constProps(molId_);
-    
+
                     label nPositionsSites = label(nPositions*constProp.sites().size());
-    
+
                     sitePositionsFile << nPositionsSites << endl;
                     sitePositionsFile << "(" << endl;
-    
+
                     siteIdsFile << nPositionsSites << endl;
                     siteIdsFile << "(" << endl;
-                    
+
                     bondsFile << nPositionsSites << endl;
                     bondsFile << "(" << endl;
-    
+
                     QFile << nPositions << endl;
-                    QFile << "(" << endl;		
-    
+                    QFile << "(" << endl;
+
                     piFile << nPositions << endl;
-                    piFile << "(" << endl;			
-		    
+                    piFile << "(" << endl;
+
                     linMomFile << nPositions << endl;
-                    linMomFile << "(" << endl;			
-		    
+                    linMomFile << "(" << endl;
+
                     orientation1File << nPositions << endl;
-                    orientation1File << "(" << endl;		
-		    
+                    orientation1File << "(" << endl;
+
                     orientation2File << nPositions << endl;
-                    orientation2File << "(" << endl;			
-    
+                    orientation2File << "(" << endl;
+
 		            phiFile << nPositions << endl;
-                    phiFile << "(" << endl;    
-    
+                    phiFile << "(" << endl;
+
                     thetaFile << nPositions << endl;
-                    thetaFile << "(" << endl;    
-    
+                    thetaFile << "(" << endl;
+
                     orientation3File << nPositions << endl;
-                    orientation3File << "(" << endl;		
-		    
+                    orientation3File << "(" << endl;
+
                     timeFile << nPositions << endl;
                     timeFile << "(" << endl;
-    
+
                     forAll(trackingPositions_, p)
                     {
                         const vector& r = trackingPositions_[p];
@@ -449,95 +448,95 @@ void trackPolyMolecule::writeField()
                         const vector& tr1 = trackingOrientation1_[p];
                         const vector& tr = trackingOrientation2_[p];
                         const vector& tr3 = trackingOrientation3_[p];
-    
+
                         if(cells_[p] != -1)
                         {
-                            positionsFile 
+                            positionsFile
                                 << "(" << r.x() << " " << r.y() << " "
                                 << r.z() << ") " << cells_[p]
                                 << endl;
-    
+
                             forAll(sitePos, s)
                             {
                                 sitePositionsFile
                                     << "(" << sitePos[s].x() << " " << sitePos[s].y() << " "
                                     << sitePos[s].z() << ") " << cells_[p]
-                                    << endl; 
-    
+                                    << endl;
+
                                 siteIdsFile << constProp.sites()[s].siteId() << endl;
                             }
-    
-                            // bonds                                                         
-                            bondsFile << "(" << (sitePos[2] - sitePos[0]).x() << " " 
+
+                            // bonds
+                            bondsFile << "(" << (sitePos[2] - sitePos[0]).x() << " "
                                     <<  (sitePos[2] - sitePos[0]).y() << " "
                                     << (sitePos[2] - sitePos[0]).z()
                                     << ") " << endl;
-    
-                            bondsFile << "(" << (sitePos[2] - sitePos[1]).x() << " " 
+
+                            bondsFile << "(" << (sitePos[2] - sitePos[1]).x() << " "
                                     <<  (sitePos[2] - sitePos[1]).y() << " "
                                     << (sitePos[2] - sitePos[1]).z()
                                     << ") " << endl;
-    
+
                             bondsFile << "(0 0 0)" << endl;
                             bondsFile << "(0 0 0)" << endl;
-    
-                            QFile 
+
+                            QFile
                                 << "(" << q.xx() << " " << q.xy() << " " << q.xz() << " "
                                 << q.yx() << " " << q.yy() << " " << q.yz() << " "
                                 << q.zx() << " " << q.zy() << " " << q.zz() << " "
-                                << ") " 
+                                << ") "
                                 << endl;
-    
-                            piFile 
+
+                            piFile
                                 << "(" << pi.x() << " " << pi.y() << " "
-                                << pi.z() << ") " 
+                                << pi.z() << ") "
                                 << endl;
-    
-                            linMomFile 
+
+                            linMomFile
                                 << "(" << lM.x() << " " << lM.y() << " "
-                                << lM.z() << ") " 
+                                << lM.z() << ") "
                                 << endl;
-    
-                            orientation1File    
+
+                            orientation1File
                                 << "(" << tr1.x() << " " << tr1.y() << " "
-                                << tr1.z() << ") " 
+                                << tr1.z() << ") "
                                 << endl;
-                    
-                            orientation2File    
+
+                            orientation2File
                                 << "(" << tr.x() << " " << tr.y() << " "
-                                << tr.z() << ") " 
-                                << endl;    
-                    
-                            orientation3File    
+                                << tr.z() << ") "
+                                << endl;
+
+                            orientation3File
                                 << "(" << tr3.x() << " " << tr3.y() << " "
                                 << tr3.z() << ") "
-                                << endl;          
-    
+                                << endl;
+
                             scalar phi = acos(tr.z())*180.0/constant::mathematical::pi;
                             scalar theta = acos(tr.x()/sin(phi))*180.0/constant::mathematical::pi;
-    
-                            phiFile 
+
+                            phiFile
                                 << phi << endl;
-    
-                            thetaFile 
+
+                            thetaFile
                                 << theta << endl;
                         }
                     }
-    
+
                     positionsFile << ")" << endl;
                     sitePositionsFile << ")" << endl;
                     siteIdsFile << ")" << endl;
                     bondsFile << ")" << endl;
-    
-                    orientation1File << ")" << endl;    
-                    orientation2File << ")" << endl;   		
-                    orientation3File << ")" << endl;   	
+
+                    orientation1File << ")" << endl;
+                    orientation2File << ")" << endl;
+                    orientation3File << ")" << endl;
 		            QFile << ")" << endl;
-		            piFile << ")" << endl;		
-		            linMomFile << ")" << endl;			
+		            piFile << ")" << endl;
+		            linMomFile << ")" << endl;
 		            phiFile << ")" << endl;
                     thetaFile << ")" << endl;
-    
+
                 }
                 else
                 {
@@ -548,10 +547,10 @@ void trackPolyMolecule::writeField()
                         << abort(FatalError);
                 }
             }
-            
+
 	        if(outputVMDFile_)
             {
-	        
+
 	        }
         }
     }

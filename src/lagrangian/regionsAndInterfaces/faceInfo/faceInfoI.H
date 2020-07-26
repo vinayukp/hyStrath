@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -78,7 +77,7 @@ inline faceInfo::faceInfo
 // //     List<label>& points,
 //     const label& face,
 //     const labelList& points
-// 
+//
 // )
 // :
 // //     List<label>(points),
@@ -131,7 +130,7 @@ inline void faceInfo::setFaceInfo
 // )
 // {
 //     face_ = face;
-// 
+//
 //     connectedPoints_ = mesh.faces()[face];
 // }
 
@@ -166,18 +165,18 @@ inline void faceInfo::setFaceInfo
 // )
 // {
 //     DynamicList<label> connectedCells(0);
-// 
+//
 //     const label& cellA = mesh.faceOwner()[face_];
-// 
+//
 //     const label& cellB = mesh.faceNeighbour()[face_];
-// 
+//
 //     connectedCells.append(cellA);
-// 
+//
 //     if(cellB != -1)
 //     {
 //         connectedCells.append(cellB);
 //     }
-// 
+//
 //     connectedCells_ = connectedCells.shrink();
 // }
 
@@ -263,7 +262,7 @@ inline void faceInfo::updateFaceBoundaryInfo
 //     if(!isAcceptedFace())
 //     {
 //         label noOfAcceptedPoints = 0;
-// 
+//
 //         forAll(connectedPoints_, cP)
 //         {
 //             if(pointData[connectedPoints_[cP]].isAcceptedPoint())
@@ -271,7 +270,7 @@ inline void faceInfo::updateFaceBoundaryInfo
 //                 noOfAcceptedPoints++;
 //             }
 //         }
-// 
+//
 //         if( noOfAcceptedPoints ==  connectedPoints_.size())
 //         {
 //             acceptFace();
@@ -279,8 +278,8 @@ inline void faceInfo::updateFaceBoundaryInfo
 //             faceOutOfZone();
 //         }
 //     }
-// 
-// 
+//
+//
 // }
 
 inline void faceInfo::faceOnInterface()
@@ -340,7 +339,7 @@ inline const label& faceInfo::faceLabel() const
 // inline const labelList& faceInfo::connectedCells(const polyMesh& mesh)
 // {
 //     setConnectedCells(mesh);
-// 
+//
 //     return connectedCells_;
 // }
 

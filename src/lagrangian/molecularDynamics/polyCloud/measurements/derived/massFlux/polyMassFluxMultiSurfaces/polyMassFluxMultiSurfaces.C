@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -65,7 +64,7 @@ polyMassFluxMultiSurfaces::polyMassFluxMultiSurfaces
     nAvTimeSteps_(0.0),
     resetAtOutput_(true)
 {
-    resetAtOutput_ = Switch(propsDict_.lookup("resetAtOutput")); 
+    resetAtOutput_ = Switch(propsDict_.lookup("resetAtOutput"));
 
    // choose molecule ids to sample
 
@@ -81,7 +80,7 @@ polyMassFluxMultiSurfaces::polyMassFluxMultiSurfaces
 
     fluxDirection_ /= mag(fluxDirection_);
 
-    // read in list of zone names - test for one or more defined zones and 
+    // read in list of zone names - test for one or more defined zones and
     //                              for multiple definitions
 
     const List<word> zoneNames (propsDict_.lookup("faceZoneNames"));
@@ -163,7 +162,7 @@ void polyMassFluxMultiSurfaces::createField()
 void polyMassFluxMultiSurfaces::calculateField()
 {
     nAvTimeSteps_ += 1.0;
-    
+
     const List<scalarField>& molIdFlux = molCloud_.tracker().molIdFlux();
     const List<scalarField>& massIdFlux = molCloud_.tracker().massIdFlux();
 
@@ -196,7 +195,7 @@ void polyMassFluxMultiSurfaces::calculateField()
     }
 
     // -average measurement and calculate properties
-    if(time_.outputTime()) 
+    if(time_.outputTime())
     {
         scalarField molsZone = molsZone_;
         scalarField massZone = massZone_;
@@ -247,7 +246,7 @@ void polyMassFluxMultiSurfaces::writeField()
                     molFluxZone_[r],
                     true
                 );
-    
+
                 writeTimeData
                 (
                     casePath_,
@@ -272,9 +271,9 @@ void polyMassFluxMultiSurfaces::writeField()
 					massFluxZone_[r],
 					true
 				);
-    
+
                 const reducedUnits& rU = molCloud_.redUnits();
-        
+
                 if(rU.outputSIUnits())
                 {
 
@@ -286,7 +285,7 @@ void polyMassFluxMultiSurfaces::writeField()
                         molFluxZone_[r]*rU.refMolFlux(),
                         true
                     );
-        
+
                     writeTimeData
                     (
                         casePath_,

@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -119,9 +119,9 @@ public:
         (
             const label seed,
             const label cacheSizeMult,
-            const label numMols 
+            const label numMols
         );
-        
+
     // Destructor
     ~cachedRandomMD();
 
@@ -143,8 +143,8 @@ public:
             inline label sampleI() const;
 
             //- Return the cacheSizeMult_
-            inline label cacheSizeMult() const;            
-            
+            inline label cacheSizeMult() const;
+
         // Manipulation
 
             //- Return non-const access to the sample marker

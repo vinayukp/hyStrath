@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     radial2DBins
@@ -62,7 +61,7 @@ label radial2DBins::findBinR(const scalar& r)
 
         scalar rLimit1 = magRadii_[n] - 0.5*binWidthsR_[n];
         scalar rLimit2 = magRadii_[n] + 0.5*binWidthsR_[n];
-    
+
         if((r >= rLimit1) && (r < rLimit2))
         {}
         else
@@ -77,12 +76,12 @@ label radial2DBins::findBinR(const scalar& r)
 // label radial2DBins::findBinL(const scalar& r)
 // {
 //     label n = label(r/binWidthL_);
-// 
-//     if(n == nBinsL_) 
+//
+//     if(n == nBinsL_)
 //     {
 //         n--;
 //     }
-// 
+//
 //     return n;
 // }
 
@@ -235,7 +234,7 @@ radial2DBins::radial2DBins
 //     if (propsDict_.found("normalVector"))
 //     {
 //         normalVector_ = propsDict_.lookup("normalVector");
-// 
+//
 //         normalVector_ /= mag(normalVector_);
 //     }
 
@@ -299,11 +298,11 @@ binNumbers.append(-1);
                 nR != -1
             )
             {
-//                 Pout<< "mol position: " << rI 
-//                     << ", rD: " << rD 
-//                     << ", bin number " << nL 
-//                     << ", radius: " << rN 
-//                     << ", bin number: " << nR 
+//                 Pout<< "mol position: " << rI
+//                     << ", rD: " << rD
+//                     << ", bin number " << nL
+//                     << ", radius: " << rN
+//                     << ", bin number: " << nR
 //                     << ", theta (rad): " << theta
 //                     << ", theta (deg): " << theta*180.0/mathematicalConstant::pi
 //                     << ", bin Number: " << nA
@@ -346,42 +345,42 @@ void radial2DBins::write
 //     vectorField positionsL(nBinsL_, vector::zero);
 //     const scalarField& positionsR = magRadii_;
 //     scalarField positionsA(nBinsA_, 0.0);
-// 
+//
 //     forAll(positionsL, i)
 //     {
 //         positionsL[i] = startPoint_ + (0.5 + scalar(i))*binWidthL_*unitVector_;
 //     }
-// 
+//
 // //     forAll(positionsR, i)
 // //     {
 // //         positionsR[i] = (0.5 + scalar(i))*binWidthsR_[i];
 // //     }
-// 
+//
 //     forAll(positionsA, i)
 //     {
 //         positionsA[i] = (0.5 + scalar(i))*binWidthA_;
 //     }
-// 
+//
 //     Info << "path: " << path << endl;
-// 
+//
 //     // output field of positions:
-// 
+//
 //     OFstream positionsFile(path/name+"_positions.xyz");
-// 
+//
 //     label nPositions = nBinsL_ * nBinsR_ * nBinsA_;
-// 
+//
 //     vector h = vector::zero;
 //     scalar r = 0.0;
 //     scalar theta = 0.0;
 //     vector p = vector::zero;
-// 
+//
 //     Info << "radial2DBins::writing out position..." << endl;
-// 
+//
 //     if (positionsFile.good())
 //     {
 //         positionsFile << nPositions << endl;
 //         positionsFile << "(" << endl;
-// 
+//
 //         forAll(positionsL, nL)
 //         {
 //             forAll(positionsR, nR)
@@ -391,27 +390,27 @@ void radial2DBins::write
 //                     h = positionsL[nL];
 //                     r = positionsR[nR];
 //                     theta = positionsA[nA];
-//     
-//                     p = h + r*cos(theta)*angleUnitVectorY_ 
+//
+//                     p = h + r*cos(theta)*angleUnitVectorY_
 //                         + r*sin(theta)*angleUnitVectorX_;
-// 
-//                     positionsFile 
+//
+//                     positionsFile
 //                         << "(" << p.x() << " " << p.y() << " "
 //                         << p.z() << ") " << -1
 //                         << endl;
 //                 }
 //             }
 //         }
-// 
+//
 //         positionsFile << ")" << endl;
 //     }
-// 
+//
 //     Info << "...done." << endl;
 }
 
 vector radial2DBins::position(/*const vector& h,*/ const scalar& r, const scalar& theta)
 {
-    vector p = r*cos(theta)*angleUnitVectorY_ 
+    vector p = r*cos(theta)*angleUnitVectorY_
                                     + r*sin(theta)*angleUnitVectorX_;
     return p;
 }

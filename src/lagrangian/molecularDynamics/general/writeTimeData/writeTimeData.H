@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     writeTimeData
@@ -28,7 +27,7 @@ Class
 Description
 
     A class that outputs data to hard disc
-    
+
     Constructors overloaded
 
 
@@ -84,22 +83,22 @@ public:
             const List< Pair<scalar> >& data,
             const label& dummy
         );
-        
+
         //- scalar field
         writeTimeData
         (
             const fileName& pathName,
             const word& nameFile,
             const scalarField& xData
-        );    
-        
+        );
+
         //- vector field
         writeTimeData
         (
             const fileName& pathName,
             const word& nameFile,
             const vectorField& xData
-        );        
+        );
 
         //- scalar field, scalar field
         writeTimeData
@@ -110,7 +109,7 @@ public:
             const scalarField& yData
         );
 
-        //- vector field, scalar field, 
+        //- vector field, scalar field,
         writeTimeData
         (
             const fileName& pathName,
@@ -127,7 +126,7 @@ public:
             const scalarField& xData,
             const vectorField& yData
         );
-        
+
         //- scalar field, complex field
         writeTimeData
         (
@@ -163,10 +162,10 @@ public:
             const vectorField& xData,
             const tensorField& yData
         );
-        
-        
-        
-        
+
+
+
+
         // WITH APPEND POSSIBLE
 
         // two scalar fields (with append possible)
@@ -194,15 +193,15 @@ public:
         // sidewaysAppend
         // append
         // once
-        
+
         writeTimeData
         (
             const fileName& pathName,
             const word& nameFile,
             const scalarField& xData,
             const word& option,
-            const bool& dummy             
-        );        
+            const bool& dummy
+        );
 
 
         // one vector field - NEW (with append possible)
@@ -212,8 +211,8 @@ public:
             const word& nameFile,
             const vectorField& xData,
             const word& option
-        );  
-        
+        );
+
         // one scalar field one VECTOR field (with append possible)
         writeTimeData
         (
@@ -232,7 +231,7 @@ public:
             const vectorField& yData,
             const bool& dummy
         );
-        
+
         // one scalar field one TENSOR field (with append possible)
         writeTimeData
         (
@@ -252,7 +251,7 @@ public:
             const List<scalarField>& yData,
             const bool& dummy
         );
-        
+
         // one scalar field and one complex field (with append possible)
         writeTimeData
         (
@@ -271,9 +270,9 @@ public:
             const tensorField& xData,
             const bool& dummy
         );
-        
-        
-        
+
+
+
         // write out List<scalarField>
         writeTimeData
         (
@@ -281,15 +280,15 @@ public:
             const word& nameFile,
             const List<scalarField>& data
         );
-        
+
         // write out List<vectorField>  component only
         writeTimeData
         (
             const fileName& pathName,
             const word& nameFile,
             const List<vectorField>& data,
-            const word& option 
-        );        
+            const word& option
+        );
 
         // write out List<vectorField>  component only (with append possible)
         writeTimeData
@@ -299,21 +298,21 @@ public:
             const List<vectorField>& data,
             const word& option,
             const bool& dummy
-        );        
-        
-        
-        // write out List<tensorField>  component only      
+        );
+
+
+        // write out List<tensorField>  component only
         writeTimeData
         (
             const fileName& pathName,
             const word& nameFile,
             const List<tensorField>& data,
-            const word& option 
-        );        
-        
+            const word& option
+        );
 
-        
-        
+
+
+
         ~writeTimeData();
 
 

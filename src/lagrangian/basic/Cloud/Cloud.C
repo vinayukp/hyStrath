@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -393,7 +393,7 @@ void Foam::Cloud<ParticleType>::move(TrackData& td, const scalar trackTime)
                 }
             }
         }*/ // DELETED VINCENT
-        
+
         // NEW VINCENT
         // Start sending. Sets number of bytes transferred
         labelList allNTrans(Pstream::nProcs());
@@ -494,7 +494,7 @@ void Foam::Cloud<ParticleType>::autoMap
 
     scalar lostParticles = 0; // NEW VINCENT
     scalar totParticles = 0; // NEW VINCENT
-    
+
     forAllIter(typename Cloud<ParticleType>, *this, pIter)
     {
         ParticleType& p = pIter();
@@ -552,14 +552,14 @@ void Foam::Cloud<ParticleType>::autoMap
                 deleteParticle(p);
                 break;
             }
-            
+
             p.track(pos, td);
         }
     }
-    
+
     if (lostParticles > 0) // NEW VINCENT
     {
-        Info<< "Lost particles deleted due to change in topology:" << tab 
+        Info<< "Lost particles deleted due to change in topology:" << tab
             << lostParticles << "/" << totParticles << endl;
     }
 }

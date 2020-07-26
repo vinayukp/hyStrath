@@ -2,25 +2,24 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-    for more deciliumMotions.
+    for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     ciliumMotion
@@ -64,42 +63,42 @@ private:
 
         //- subDictionary containing the properties
         dictionary propsDict_;
-        
-        word fieldName_;
-        
-        List<label> molIds_;
-        
-        List <label> trackingNumbers_;
-        
 
-        
+        word fieldName_;
+
+        List<label> molIds_;
+
+        List <label> trackingNumbers_;
+
+
+
         scalar deltaTMD_;
 
         label nC_;
-        
+
         label nT_;
-        
-        
-        // outer list = time 
+
+
+        // outer list = time
         // inner list = cilium positions
         List< List <scalar> > x_;
-        
+
         List< List <scalar> > y_;
 
         vector startPoint_;
-        
+
         label tI_;
-        
-        
+
+
         vectorField velocities_;
         vectorField forces_;
         scalar nAvTimeSteps_;
         label nWrite_;
-        
+
     // Private Member Functions
-        
+
 //          void getPosition();
-        
+
 public:
 
     //- Runtime type information
@@ -121,7 +120,7 @@ public:
 
 
     // Member Functions
-        
+
         //- create an initial configuration
         void initialConfiguration();
 
@@ -133,20 +132,20 @@ public:
         (
             polyMolecule* molI,
             polyMolecule* molJ
-        );        
+        );
         void controlAfterForces();
         void controlAfterVelocityII();
-        
+
         //- calculate any required properties (end of time-step)
-        void calculateProperties(); 
-        
+        void calculateProperties();
+
         //- output data (optional)
         void output
         (
-            const fileName& fixedPathName, 
+            const fileName& fixedPathName,
             const fileName& timePath
         );
-        
+
         //- update properties from a modified dictionary (optional)
         void updateProperties(const dictionary&);
 };

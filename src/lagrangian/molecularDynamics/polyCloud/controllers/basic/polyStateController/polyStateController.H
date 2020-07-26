@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     polyStateController
@@ -71,7 +70,7 @@ protected:
         //- subDictionary containing the properties
 //         dictionary controllerDict_;
 
-        Time& time_; 
+        Time& time_;
 
         //- name of control zone
         word regionName_;
@@ -108,7 +107,7 @@ public:
             ),
             (t, molCloud, dict)
         );
-   
+
     // Constructors
 
         //- Construct from components
@@ -143,24 +142,24 @@ public:
 
         //- control molecules at various stages of time-step
         virtual void controlBeforeVelocityI() = 0;
-        
+
         virtual void controlBeforeMove() = 0;
-        
+
         virtual void controlBeforeForces() = 0;
-        
+
         virtual void controlDuringForces
         (
             polyMolecule* molI,
             polyMolecule* molJ
         ) = 0;
-        
+
         virtual void controlAfterForces() = 0;
-        
+
         virtual void controlAfterVelocityII() = 0;
 
         //- calculate any required properties
         virtual void calculateProperties() = 0;
-        
+
         //- output data
         virtual void output
         (

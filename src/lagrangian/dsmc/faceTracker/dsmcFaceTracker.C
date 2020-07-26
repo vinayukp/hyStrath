@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     dsmcFaceTracker
@@ -45,7 +44,7 @@ namespace Foam
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 
-// Construct from mesh and cloud 
+// Construct from mesh and cloud
 dsmcFaceTracker::dsmcFaceTracker
 (
     const polyMesh& mesh,
@@ -103,62 +102,91 @@ void dsmcFaceTracker::reset()
     {
         parcelIdFlux_[i].setSize(mesh_.nFaces(), 0.0);
         massIdFlux_[i].setSize(mesh_.nFaces(), 0.0);
-    }   
+    }
 }
 
 
-void dsmcFaceTracker::updateFields
+void dsmcFaceTracker::trackParcelFaceTransition
 (
-    dsmcParcel& p
+    const dsmcParcel& p
 )
 {
-    const label& crossedFace = p.face();
+    // parcel properties:
     const label& typeId = p.typeId();
+    const vector& U = p.U();
+    const scalar& RWF = p.RWF();
+    const label& crossedFaceI = p.face();
+
+    trackFaceTransition(typeId, U, RWF, crossedFaceI);
+}
+
+
+void dsmcFaceTracker::trackFaceTransition
+(
+    const label& typeId,
+    const vector& U,
+    const scalar& RWF,
+    const label& crossedFaceI
+)
+{
+    // Note: We have to use the parcels RWF in the following accumulations, the
+    // reason for this being that the step in which parcels might be cloned or
+    // deleted (e.g. in axisymmetric simulations) is carried out _after_ the
+    // parcel movement step is completed. Therefore we have to use the current
+    // parcel RWF here. Obviously this also has to be considered in all further
+    // calculations that are based on parcelIdFlux and massIdFlux.
     const dsmcParcel::constantProperties& constProp = cloud_.constProps(typeId);
     const scalar& mass = constProp.mass();
-    const vector& U = p.U();
-//     const vector mom = p.U()*mass;
+    // TODO: This is the place to add momentum (m*U), kinetic energy, etc. if
+    // these shall also be counted.
 
     //- check which patch was hit
-    const label& patchId = mesh_.boundaryMesh().whichPatch(crossedFace);
+    const label& patchId = mesh_.boundaryMesh().whichPatch(crossedFaceI);
 
     //- direction of dsmcParcel trajectory with respect to the face normal
-    scalar sgn = sign( U & mesh_.faceAreas()[crossedFace] ) * 1.0;
+    scalar sgn = sign( U & mesh_.faceAreas()[crossedFaceI] ) * 1.0;
 
-    //- geometric fields
-
-    if(patchId != -1) //- boundary face
+    // check patch type and count accordingly
+    if(patchId != -1) // face belongs to boundary patch
     {
         const polyPatch& patch = mesh_.boundaryMesh()[patchId];
+        const label faceIndex = crossedFaceI - patch.start();
 
-        const label faceIndex = crossedFace - patch.start();
+        // check for the most likely case first. In general that should mean
+        // processor patches.
 
-        //- correct cyclic patches
-        if (isA<cyclicPolyPatch>(patch))
+        // processor patches:
+        //   Molecular properties are appended to the face of the leaving
+        //   processor only. Normal vector points out from the domain.
+        if (isA<processorPolyPatch>(patch))
+        {
+            parcelIdFlux_[typeId][crossedFaceI] += sgn*RWF;
+            massIdFlux_[typeId][crossedFaceI] += sgn*RWF*mass;
+        }
+
+        // cyclic patches:
+        else if (isA<cyclicPolyPatch>(patch))
         {
             label coupledFace = refCast<const cyclicPolyPatch>
             (
                 patch
             ).neighbPatch().start() + faceIndex;
 
-            parcelIdFlux_[typeId][coupledFace] += 1.0;
-            massIdFlux_[typeId][coupledFace] += mass;
+            parcelIdFlux_[typeId][coupledFace] += RWF;
+            massIdFlux_[typeId][coupledFace] += RWF*mass;
         }
 
-
-        // molecular properties are appended to the face of the leaving processor only.
-        // normal vector points out from the domain.
-        if (isA<processorPolyPatch>(patch))
+        // all other boundary patches:
+        else
         {
-            parcelIdFlux_[typeId][crossedFace] += sgn*1.0;
-            massIdFlux_[typeId][crossedFace] += sgn*mass;
+            parcelIdFlux_[typeId][crossedFaceI] += sgn*RWF;
+            massIdFlux_[typeId][crossedFaceI] += sgn*RWF*mass;
         }
     }
-    else //- internal face
+    else // internal face
     {
-        //- properties
-        parcelIdFlux_[typeId][crossedFace] += sgn*1.0;
-        massIdFlux_[typeId][crossedFace] += sgn*mass;
+        parcelIdFlux_[typeId][crossedFaceI] += sgn*RWF;
+        massIdFlux_[typeId][crossedFaceI] += sgn*RWF*mass;
     }
 }
 

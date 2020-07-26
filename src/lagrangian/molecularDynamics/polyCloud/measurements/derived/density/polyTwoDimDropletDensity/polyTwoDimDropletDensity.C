@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -94,7 +93,7 @@ polyTwoDimDropletDensity::polyTwoDimDropletDensity
 
         dropletMolIds_ = ids.molIds();
     }
-    
+
     {
         molIds_.clear();
 
@@ -106,9 +105,9 @@ polyTwoDimDropletDensity::polyTwoDimDropletDensity
 
         molIds_ = ids.molIds();
     }
-    
-    // bins 
-    
+
+    // bins
+
     avVolume_ = radius_*radius_*constant::mathematical::pi*binWidthX_/nBinsY_;
 
     DynamicList<scalar> radii(0);
@@ -132,19 +131,19 @@ polyTwoDimDropletDensity::polyTwoDimDropletDensity
         {
             break;
         }
-        
+
     }
-    
+
     binWidths.shrink();
-    radii.shrink(); 
-    
+    radii.shrink();
+
     nBinsY_ = binWidths.size();
 
     mols_.setSize(nBinsX_);
-    mass_.setSize(nBinsX_);    
+    mass_.setSize(nBinsX_);
     rhoN_.setSize(nBinsX_);
     rhoM_.setSize(nBinsX_);
-    
+
     magRadii_.setSize(nBinsY_, 0.0);
     volume_.setSize(nBinsY_, 0.0);
     binWidths_.setSize(nBinsY_, 0.0);
@@ -161,7 +160,7 @@ polyTwoDimDropletDensity::polyTwoDimDropletDensity
     {
         magRadii_[n] = radii[n];
         binWidths_[n] = binWidths[n];
-        
+
         if(n == 0)
         {
             volume_[n] = constant::mathematical::pi*binWidths_[n]*binWidths_[n]*binWidthX_;
@@ -191,18 +190,18 @@ polyTwoDimDropletDensity::polyTwoDimDropletDensity
             }
         }
     }
-    
+
     const boundBox& globalBb = mesh_.bounds();
-    
+
     box_.resetBoundedBox(globalBb.max(), globalBb.min());
-    
+
     x_ = box_.span().x();
     y_ = box_.span().y();
     z_ = box_.span().z();
-    
+
     nAvTimeSteps_ = 0.0;
-    
-    resetAtOutput_ = Switch(propsDict_.lookup("resetAtOutput"));     
+
+    resetAtOutput_ = Switch(propsDict_.lookup("resetAtOutput"));
 }
 
 
@@ -238,7 +237,7 @@ label polyTwoDimDropletDensity::findBin(const scalar& r)
             n++;
         }
     }
-    
+
     return n;
 }
 
@@ -251,57 +250,57 @@ void polyTwoDimDropletDensity::createField()
 
 void polyTwoDimDropletDensity::calculateField()
 {
-    nAvTimeSteps_ += 1.0; 
+    nAvTimeSteps_ += 1.0;
 
     scalar mass = 0.0;
     vector centreOfMass = vector::zero;
-    
+
     {
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
-    
+
         for (mol = molCloud_.begin(); mol != molCloud_.end(); ++mol)
         {
-            if(findIndex(dropletMolIds_, mol().id()) != -1)            
+            if(findIndex(dropletMolIds_, mol().id()) != -1)
             {
                 const scalar& massI = molCloud_.cP().mass(mol().id());
 
-                vector rI = mol().position(); 
+                vector rI = mol().position();
                 vector roC = rI - oldCenterOfMass_;
-                
+
                 if(fabs(roC.x())>x_/2.0)
                 {
                     if(rI.x() > oldCenterOfMass_.x())
-                    {    
+                    {
                         rI.x() -= x_;
                     }
                     else
-                    {    
+                    {
                         rI.x() += x_;
                     }
                 }
-                
+
                 if(fabs(roC.y())>y_/2.0)
-                {                        
+                {
                     if(rI.y() > oldCenterOfMass_.y())
-                    {    
+                    {
                         rI.y() -= y_;
                     }
                     else
-                    {    
+                    {
                         rI.y() += y_;
-                    }   
+                    }
                 }
-                
+
                 if(fabs(roC.z())>z_/2.0)
-                {                        
+                {
                     if(rI.z() > oldCenterOfMass_.z())
-                    {    
+                    {
                         rI.z() -= z_;
                     }
                     else
-                    {    
+                    {
                         rI.z() += z_;
-                    }   
+                    }
                 }
 
                 mass += massI;
@@ -320,7 +319,7 @@ void polyTwoDimDropletDensity::calculateField()
 
     centreOfMass =  ((centreOfMass ^ unitVectorX_)^ unitVectorX_)*(-1.0)
                     + (startPoint_ & unitVectorX_) * unitVectorX_;
-        
+
     if(centreOfMass.x() > box_.max().x())
     {
         centreOfMass.x() -= x_;
@@ -345,66 +344,66 @@ void polyTwoDimDropletDensity::calculateField()
     {
         centreOfMass.z() += z_;
     }
-    
+
     oldCenterOfMass_ = centreOfMass;
-        
+
     {
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
-    
+
         for (mol = molCloud_.begin(); mol != molCloud_.end(); ++mol)
         {
-            if(findIndex(dropletMolIds_, mol().id()) != -1)            
+            if(findIndex(dropletMolIds_, mol().id()) != -1)
             {
-                vector rI = mol().position(); 
+                vector rI = mol().position();
 
                 vector rSI = rI - centreOfMass;
-                
+
                 if(fabs(rSI.x())>x_/2.0)
-                {   
+                {
                     if(rI.x() > centreOfMass.x())
-                    {    
+                    {
                         rI.x() -= x_;
                     }
                     else
-                    {    
+                    {
                         rI.x() += x_;
                     }
                 }
-                
+
                 if(fabs(rSI.y())>y_/2.0)
                 {
                     if(rI.y() > centreOfMass.y())
-                    {    
+                    {
                         rI.y() -= y_;
                     }
                     else
-                    {    
+                    {
                         rI.y() += y_;
                     }
                 }
-                
+
                 if(fabs(rSI.z())>z_/2.0)
-                { 
+                {
                     if(rI.z() > centreOfMass.z())
-                    {    
+                    {
                         rI.z() -= z_;
                     }
                     else
-                    {    
+                    {
                         rI.z() += z_;
                     }
                 }
-                
+
                 scalar rD = rSI & unitVectorX_;
 
                 if((rD <= h_) && (rD >= 0.0))
-                {   
+                {
                     scalar rN = mag((rD*unitVectorX_ + centreOfMass) - rI);
-                    
+
                     if(rN <= radius_)
                     {
                         label nY = findBin(rN);
-                        
+
                         // nY defines the No. in the radial direction.
                         if
                         (
@@ -422,7 +421,7 @@ void polyTwoDimDropletDensity::calculateField()
                             if(findIndex(molIds_, mol().id()) != -1)
                             {
                                 const scalar& massI = molCloud_.cP().mass(mol().id());
-                                
+
                                 mols_[nX][nY] += 1.0;
                                 mass_[nX][nY] += massI;
                             }
@@ -432,13 +431,13 @@ void polyTwoDimDropletDensity::calculateField()
             }
         }
     }
-    
+
 
     if(time_.outputTime())
     {
         Field<scalarField> mols = mols_;
         Field<scalarField> mass = mass_;
-        
+
         //- parallel communication
         if(Pstream::parRun())
         {
@@ -462,7 +461,7 @@ void polyTwoDimDropletDensity::calculateField()
                 {
                     Field<scalarField> molsProc;
                     Field<scalarField> massProc;
-    
+
                     const int proc = p;
                     {
                         IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
@@ -477,8 +476,8 @@ void polyTwoDimDropletDensity::calculateField()
                 }
             }
         }
-        
-        
+
+
 
         forAll(mols, x)
         {
@@ -488,7 +487,7 @@ void polyTwoDimDropletDensity::calculateField()
                 rhoM_[x][y] = mass[x][y]/(nAvTimeSteps_*volume_[y]);
             }
         }
-        
+
         //- reset fields
         if(resetAtOutput_)
         {
@@ -537,7 +536,7 @@ void polyTwoDimDropletDensity::writeField()
                         << abort(FatalError);
                 }
             }
-            
+
             {
                 OFstream file(timePath_/"twoDim_"+fieldName_+"_rhoN.xyz");
 
@@ -567,7 +566,7 @@ void polyTwoDimDropletDensity::writeField()
                         << "Cannot open file " << file.name()
                         << abort(FatalError);
                 }
-            }    
+            }
         }
     }
 }
@@ -597,7 +596,7 @@ const propertyField& polyTwoDimDropletDensity::fields() const
 // {
 //     //- the main properties should be updated first
 //     updateBasicFieldProperties(newDict);
-// 
+//
 // }
 
 } // End namespace Foam

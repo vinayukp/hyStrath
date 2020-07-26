@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ void Foam::heRho2Thermo<BasicPsi2Thermo, MixtureType>::init2()
     // the chemical fractions.
     const scalarField& pCells = this->p_.internalField();
     const scalarField& TtCells = this->Tt_.internalField();
-    
+
     scalarField& psiCells = this->psi_.primitiveFieldRef();
     scalarField& rhoCells = this->rho_.primitiveFieldRef();
 
@@ -75,7 +75,7 @@ void Foam::heRho2Thermo<BasicPsi2Thermo, MixtureType>::init2()
                 const typename MixtureType::thermoType& mixture_ =
                     this->patchFaceMixture(patchi, facei);
 
-                pTt[facei] = mixture_.TtHEt(pht[facei], pp[facei], pTt[facei]);   
+                pTt[facei] = mixture_.TtHEt(pht[facei], pp[facei], pTt[facei]);
 
                 ppsi[facei] = mixture_.psi(pp[facei], pTt[facei]);
                 prho[facei] = mixture_.rho(pp[facei], pTt[facei]);

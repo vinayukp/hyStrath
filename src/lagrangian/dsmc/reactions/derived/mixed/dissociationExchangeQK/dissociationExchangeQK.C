@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -112,38 +111,38 @@ void dissociationExchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
 {
     //- Reset the relax switch
     relax_ = true;
-    
+
     const label typeIdP = p.typeId();
     const label typeIdQ = q.typeId();
-    
-    if (typeIdP == reactantIds_[0]) 
-    { 
+
+    if (typeIdP == reactantIds_[0])
+    {
         const scalar mP = cloud_.constProps(typeIdP).mass();
         const scalar mQ = cloud_.constProps(typeIdQ).mass();
         const scalar mR = mP*mQ/(mP + mQ);
-        
+
         const scalar omegaPQ =
             0.5
             *(
                   cloud_.constProps(typeIdP).omega()
                 + cloud_.constProps(typeIdQ).omega()
             );
-        
+
         const scalar cRsqr = magSqr(p.U() - q.U());
         const scalar translationalEnergy = 0.5*mR*cRsqr;
-        
+
         //- Possible reactions:
         // 1. Dissociation of P
         // 2. Dissociation of Q
         // 3. Exchange
-        
+
         scalar totalReactionProbability = 0.0;
         scalarList reactionProbabilities(3, 0.0);
         scalarList collisionEnergies(3, 0.0);
-        
+
         label vibModeDissoP = -1;
         label vibModeDissoQ = -1;
-        
+
         dissociationQK::testDissociation
         (
             p,
@@ -153,7 +152,7 @@ void dissociationExchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
             totalReactionProbability,
             reactionProbabilities[0]
         );
-        
+
         dissociationQK::testDissociation
         (
             q,
@@ -163,7 +162,7 @@ void dissociationExchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
             totalReactionProbability,
             reactionProbabilities[1]
         );
-        
+
         if (exchangeQK::posMolReactant_ == 0)
         {
             exchangeQK::testExchange
@@ -188,29 +187,29 @@ void dissociationExchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
                 reactionProbabilities[2]
             );
         }
-        
+
         //- Decide if a reaction is to occur
         if (totalReactionProbability > cloud_.rndGen().sample01<scalar>())
         {
             //- A chemical reaction is to occur, normalise probabilities
             const scalarList normalisedProbabilities =
                 reactionProbabilities/totalReactionProbability;
-            
+
             //- Sort normalised probability indices in decreasing order
             //  for identical probabilities, random shuffle
             const labelList sortedNormalisedProbabilityIndices =
                 decreasing_sort_indices(normalisedProbabilities);
             scalar cumulativeProbability = 0.0;
-            
+
             forAll(sortedNormalisedProbabilityIndices, idx)
-            {                
+            {
                 const label i = sortedNormalisedProbabilityIndices[idx];
-                
+
                 //- If current reaction can't occur, end the search
                 if (normalisedProbabilities[i] > SMALL)
                 {
                     cumulativeProbability += normalisedProbabilities[i];
-                    
+
                     if (cumulativeProbability > cloud_.rndGen().sample01<scalar>())
                     {
                         //- Current reaction is to occur
@@ -224,7 +223,7 @@ void dissociationExchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
                             //- There can't be another reaction: break
                             break;
                         }
-                        
+
                         if (i == 1)
                         {
                             //- Dissociation of Q is to occur
@@ -235,7 +234,7 @@ void dissociationExchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
                             //- There can't be another reaction: break
                             break;
                         }
-                        
+
                         if (i == 2)
                         {
                             //- Exchange reaction
@@ -278,7 +277,7 @@ void dissociationExchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
 
 inline label dissociationExchangeQK::nReactionsPerTimeStep() const
 {
-    return dissociationQK::nReactionsPerTimeStep() 
+    return dissociationQK::nReactionsPerTimeStep()
         + exchangeQK::nReactionsPerTimeStep();
 }
 

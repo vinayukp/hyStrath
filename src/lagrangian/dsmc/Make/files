@@ -134,7 +134,7 @@ boundaries/derived/patchBoundaries/mixed/dsmcStickingDiffuseWallFieldPatch/dsmcS
 
 /* GENERAL BOUNDARY MODELS */
 boundaries/derived/generalBoundaries/dsmcFreeStreamInflowPatch/dsmcFreeStreamInflowPatch.C
-boundaries/derived/generalBoundaries/dsmcPlumeInflowPatch/dsmcPlumeInflowPatch.C
+/*boundaries/derived/generalBoundaries/dsmcPlumeInflowPatch/dsmcPlumeInflowPatch.C*/
 boundaries/derived/generalBoundaries/dsmcChapmanEnskogFreeStreamInflowPatch/dsmcChapmanEnskogFreeStreamInflowPatch.C
 boundaries/derived/generalBoundaries/dsmcFreeStreamInflowFieldPatch/dsmcFreeStreamInflowFieldPatch.C
 boundaries/derived/generalBoundaries/dsmcLiouFangPressureInlet/dsmcLiouFangPressureInlet.C
@@ -179,9 +179,12 @@ macroscopicProperties/derived/otherFields/dsmcElectronicEnergyLevelDistribution/
 
 /* PRESSURE */
 
+/* FLUX */
+macroscopicProperties/derived/flux/dsmcFluxSurface/dsmcFluxSurface.C
 
 /*    MASS FLUX */
-/*macroscopicProperties/derived/massFlux/dsmcMassFluxSurface/dsmcMassFluxSurface.C*/
+/*macroscopicProperties/derived/massFlux/dsmcMassFluxSurface/dsmcMassFluxSurface.C
+macroscopicProperties/derived/massFlux/atomisticMassFluxMultiSurfaces/atomisticMassFluxMultiSurfaces.C*/
 
 
 /* CONTROLLERS*/

@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ SourceFiles
 
 #include "Reaction2.H"
 
-#include "DynamicList.H" 
+#include "DynamicList.H"
 #include "fundamentalConstants.H"
 #include "physicoChemicalConstants.H"
 
@@ -64,16 +64,16 @@ class Reversible2Reaction
     // Private data
 
         ReactionRate k_;
-        
+
         // NEW VINCENT 09/02/2016 *********************************************
         //- Mixture number density table entries
-        DynamicList<scalar> ni_; 
-        
+        DynamicList<scalar> ni_;
+
         //- Coefficients to determine Keq(nDMix): bounded interpolation
-        DynamicList<scalar> A0_; 
-        DynamicList<scalar> A1_; 
-        DynamicList<scalar> A2_; 
-        DynamicList<scalar> A3_; 
+        DynamicList<scalar> A0_;
+        DynamicList<scalar> A1_;
+        DynamicList<scalar> A2_;
+        DynamicList<scalar> A3_;
         DynamicList<scalar> A4_;
         // END NEW VINCENT 09/02/2016 *****************************************
 
@@ -208,36 +208,36 @@ public:
                 const scalar T,
                 const scalarField& c
             ) const;
-            
+
             // NEW VINCENT 09/02/2016 *****************************************
-            //- Equilibrium constant calculation to evaluate the backward rate 
+            //- Equilibrium constant calculation to evaluate the backward rate
             //  constant
             virtual scalar Keq
             (
                 const scalar p,
                 const scalar T
             ) const;
-            
+
             label findBounds
             (
                 const scalar& xpt
             ) const
             {
                 label bMax = ni_.size();
-                label bCurrent = 0; 
+                label bCurrent = 0;
                 while (xpt > ni_[bCurrent+1] and bCurrent < bMax-2)
                 {
-                    bCurrent += 1;   
+                    bCurrent += 1;
                 }
                 return bCurrent;
             }
-            
+
             scalar boundedLinearInterpolation
             (
                 const scalar& xpt,
-                const scalar& x1, 
+                const scalar& x1,
                 const scalar& x2,
-                const scalar& y1, 
+                const scalar& y1,
                 const scalar& y2
             ) const
             {
@@ -254,7 +254,7 @@ public:
                     return y1 + (xpt-x1)*(y2-y1)/(x2-x1);
                 }
             }
-            // END NEW VINCENT 09/02/2016 *************************************            
+            // END NEW VINCENT 09/02/2016 *************************************
 
 
         //- Write

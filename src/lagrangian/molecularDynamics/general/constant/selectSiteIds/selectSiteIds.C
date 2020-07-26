@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     selectSiteIds
@@ -63,13 +62,13 @@ selectSiteIds::selectSiteIds
     if(sites.size() > 0)
     {
         if
-        ( 
+        (
             (sites.size() == 1) &&
             (sites[0] == "ALL")
         )
         {
             siteIds_.setSize(cP.nSiteTypes(), -1);
-            
+
             forAll(cP.siteIds(), i)
             {
                 siteIds_[i] = i;
@@ -78,26 +77,26 @@ selectSiteIds::selectSiteIds
         else
         {
             DynamicList<word> sitesReduced(0);
-        
+
             forAll(sites, i)
             {
                 const word& siteName(sites[i]);
-        
+
                 if(findIndex(sitesReduced, siteName) == -1)
                 {
                     sitesReduced.append(siteName);
                 }
             }
-        
+
             siteIds_.setSize(sitesReduced.size(), -1);
             siteIdNames_.setSize(sitesReduced.size());
-            
+
             forAll(sitesReduced, i)
             {
                 const word& siteName(sitesReduced[i]);
-        
+
                 label siteId(findIndex(cP.siteIds(), siteName));
-        
+
                 if(siteId == -1)
                 {
                     FatalErrorIn
@@ -108,7 +107,7 @@ selectSiteIds::selectSiteIds
                         << " in siteIds dictionary = " << sites
                         << nl << exit(FatalError);
                 }
-        
+
                 siteIds_[i] = siteId;
                 siteIdNames_[i] = siteName;
             }
@@ -139,13 +138,13 @@ selectSiteIds::selectSiteIds
     if(sites.size() > 0)
     {
         if
-        ( 
+        (
             (sites.size() == 1) &&
             (sites[0] == "ALL")
         )
         {
             siteIds_.setSize(cP.nSiteTypes(), -1);
-            
+
             forAll(cP.siteIds(), i)
             {
                 siteIds_[i] = i;
@@ -154,26 +153,26 @@ selectSiteIds::selectSiteIds
         else
         {
             DynamicList<word> sitesReduced(0);
-        
+
             forAll(sites, i)
             {
                 const word& siteName(sites[i]);
-        
+
                 if(findIndex(sitesReduced, siteName) == -1)
                 {
                     sitesReduced.append(siteName);
                 }
             }
-        
+
             siteIds_.setSize(sitesReduced.size(), -1);
             siteIdNames_.setSize(sitesReduced.size());
-            
+
             forAll(sitesReduced, i)
             {
                 const word& siteName(sitesReduced[i]);
-        
+
                 label siteId(findIndex(cP.siteIds(), siteName));
-        
+
                 if(siteId == -1)
                 {
                     FatalErrorIn
@@ -184,9 +183,9 @@ selectSiteIds::selectSiteIds
                         << " in siteIds dictionary = " << sites
                         << nl << exit(FatalError);
                 }
-        
+
                 siteIds_[i] = siteId;
-                siteIdNames_[i] = siteName;                
+                siteIdNames_[i] = siteName;
             }
         }
     }
@@ -229,9 +228,9 @@ selectSiteIds::~selectSiteIds()
 //             << "Attempted assignment to self"
 //             << abort(FatalError);
 //     }
-// 
+//
 //     Map<label>::operator=(rhs);
-// 
+//
 //     binWidth_ = rhs.binWidth();
 // }
 
@@ -245,14 +244,14 @@ selectSiteIds::~selectSiteIds()
 // {
 //     os  << d.binWidth_
 //         << static_cast<const Map<label>&>(d);
-// 
+//
 //     // Check state of Ostream
 //     os.check
 //     (
 //         "Ostream& operator<<(Ostream&, "
 //         "const selectSiteIds&)"
 //     );
-// 
+//
 //     return os;
 // }
 

@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -80,9 +80,9 @@ namespace Foam
     void forcingFunctionController::controlParcelsBeforeMove()
     {
         nTimeSteps_++;
-        
+
         currentTime_ = mesh_.time().deltaTValue()*nTimeSteps_;
-        
+
         forAll(controlZone(), c)
         {
             const List<DynamicList<dsmcParcel*> >& cellOccupancy = cloud_.cellOccupancy();
@@ -90,20 +90,20 @@ namespace Foam
             const List<dsmcParcel*>& molsInCell = cellOccupancy[cellI];
 
             forAll(molsInCell, mIC)
-            {    
+            {
                 dsmcParcel* p = molsInCell[mIC];
-                
+
                 label origID = p->origId();
-                
+
                 initialXPositions_[origID] = p->position().x();
-                
+
                 scalar accelerationMagnitude = amplitude_
                         *cos((waveNumber_*initialXPositions_[origID]) - (frequency_*currentTime_));
-                        
+
                 vector acceleration = accelerationDirection_*accelerationMagnitude;
-                
+
                 writeAcceleration_[c] = acceleration;
-                
+
                 p->U() += 0.5*acceleration*mesh_.time().deltaTValue();
             }
         }
@@ -132,14 +132,14 @@ namespace Foam
             forAll(molsInCell, mIC)
             {
                 dsmcParcel* p = molsInCell[mIC];
-                
+
                 label origID = p->origId();
-                
+
                 scalar accelerationMagnitude = amplitude_
                         *cos((waveNumber_*initialXPositions_[origID]) - (frequency_*currentTime_));
-                        
+
                 vector acceleration = accelerationDirection_*accelerationMagnitude;
-                
+
                 p->U() -= 0.5*acceleration*mesh_.time().deltaTValue();
             }
         }
@@ -155,14 +155,14 @@ namespace Foam
             forAll(molsInCell, mIC)
             {
                 dsmcParcel* p = molsInCell[mIC];
-                
+
                 label origID = p->origId();
-                
+
                 scalar accelerationMagnitude = amplitude_
                         *cos((waveNumber_*initialXPositions_[origID]) - (frequency_*currentTime_));
-                        
+
                 vector acceleration = accelerationDirection_*accelerationMagnitude;
-                
+
                 p->U() += acceleration*mesh_.time().deltaTValue();
             }
         }
@@ -176,7 +176,7 @@ namespace Foam
     }
 
     void forcingFunctionController::setProperties()
-    {      
+    {
         accelerationDirection_ = propsDict_.lookup("accelerationDirection");
         amplitude_ = readScalar(propsDict_.lookup("amplitude"));
         waveNumber_ = readScalar(propsDict_.lookup("waveNumber"));

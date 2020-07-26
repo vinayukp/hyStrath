@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     noTimeCounterPorousMaterial
@@ -101,7 +100,7 @@ void noTimeCounterPorousMaterial::collide()
     forAll(cellOccupancy, cellI)
     {
         const scalar deltaT = cloud_.deltaTValue(cellI);
-        
+
         const DynamicList<dsmcParcel*>& cellParcels(cellOccupancy[cellI]);
 
         label nC(cellParcels.size());
@@ -143,7 +142,7 @@ void noTimeCounterPorousMaterial::collide()
 
             scalar selectedPairs =
                 cloud_.collisionSelectionRemainder()[cellI]
-              + 0.5*nC*(nC - 1)*cloud_.nParticles(cellI, true)*sigmaTcRMax*deltaT
+              + 0.5*nC*(nC - 1)*cloud_.nParticles(cellI)*sigmaTcRMax*deltaT
                /mesh.cellVolumes()[cellI];
 
             label nCandidates(selectedPairs);
@@ -151,38 +150,38 @@ void noTimeCounterPorousMaterial::collide()
             cloud_.collisionSelectionRemainder()[cellI] = selectedPairs - nCandidates;
 
             collisionCandidates += nCandidates;
-            
+
             label porousCollisions = 0;
-            
+
             for (label c = 0; c < nCandidates; c++)
             {
                 if(cloud_.rndGen().sample01<scalar>() > porosity_)
                 {
                     //label candidateP = rndGen_.position<label>(0, nC - 1); OLD
                     label candidateP = cloud_.randomLabel(0, nC-1);
-                    
+
                     dsmcParcel& p = *cellParcels[candidateP];
-                    
+
                     scalar mass = cloud_.constProps(p.typeId()).mass();
-                    
+
 //                     scalar rand1 = cloud_.rndGen().sample01<scalar>();
 //                     scalar rand2 = cloud_.rndGen().sample01<scalar>();
 //                     scalar rand3 = cloud_.rndGen().sample01<scalar>();
-//                     
+//
 //                     if(cloud_.rndGen().sample01<scalar>() > 0.5)
 //                     {
-//                        rand1 *= -1.0; 
+//                        rand1 *= -1.0;
 //                     }
 //                     if(cloud_.rndGen().sample01<scalar>() > 0.5)
 //                     {
-//                        rand2 *= -1.0; 
+//                        rand2 *= -1.0;
 //                     }
 //                     if(cloud_.rndGen().sample01<scalar>() > 0.5)
 //                     {
-//                        rand3 *= -1.0; 
+//                        rand3 *= -1.0;
 //                     }
-                    
-                    
+
+
                     p.U() = sqrt(physicoChemical::k.value()*temperature_/mass)
                             *vector
                             (
@@ -190,15 +189,15 @@ void noTimeCounterPorousMaterial::collide()
                                 rndGen_.GaussNormal<scalar>(),
                                 rndGen_.GaussNormal<scalar>()
                             );
-                            
+
 //                     Info << "Velocity after control = " << p->U() << endl;
-                    
+
                     porousCollisions++;
                 }
             }
 
             nCandidates -= porousCollisions;
-            
+
             for (label c = 0; c < nCandidates; c++)
             {
                 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -285,7 +284,7 @@ void noTimeCounterPorousMaterial::collide()
                     // find which reaction model parcel p and q should use
                     label rMId = cloud_.reactions().returnModelId(parcelP, parcelQ);
 
-//                             Info << " parcelP id: " <<  parcelP.typeId() 
+//                             Info << " parcelP id: " <<  parcelP.typeId()
 //                                 << " parcelQ id: " << parcelQ.typeId()
 //                                 << " reaction model: " << rMId
 //                                 << endl;
@@ -312,7 +311,7 @@ void noTimeCounterPorousMaterial::collide()
                             (
                                 parcelP,
                                 parcelQ
-                            );                                    
+                            );
                         }
                         // if reaction unsuccessful use conventional collision model
                         if(cloud_.reactions().reactions()[rMId]->relax())

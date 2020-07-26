@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -197,7 +196,7 @@ void dsmcMeshFillFromCFDHybrid2_diff_qv::setInitialConfiguration()
     forAll(molecules, moleculeI)
     {
         const scalarList& thetaV = cloud_.constProps(moleculeI).thetaV();
-        
+
         const dimensionedScalar mass("mass", dimMass,
             cloud_.constProps(moleculeI).mass());
 
@@ -497,7 +496,7 @@ void dsmcMeshFillFromCFDHybrid2_diff_qv::setInitialConfiguration()
                             * (exp(thetaV[0] / TvInitial[moleculeI][cellI]) - 1.0)
                             * (exp(thetaV[0] / TvInitial[moleculeI][cellI]) - 1.0)
                             / exp(thetaV[0] / TvInitial[moleculeI][cellI]);
-                            
+
                         // TODO write the extension to polyatomics
                     }
                 }
@@ -598,13 +597,13 @@ void dsmcMeshFillFromCFDHybrid2_diff_qv::setInitialConfiguration()
                     vector U;
 
                     scalar ERot = 0.0;
-                    
+
                     labelList vibLevel
                     (
                         cloud_.constProps(i).thetaV().size(),
                         0.0
                     );
-                    
+
                     label ELevel = 0; // TODO by generalisedChapmanEnskog
 
                     cloud_.generalisedChapmanEnskog
@@ -625,12 +624,12 @@ void dsmcMeshFillFromCFDHybrid2_diff_qv::setInitialConfiguration()
                     );
 
                     U += velocity;
-                    
+
                     label newParcel = -1;
-                    
+
                     label classification = 0;
-                    
-                    const scalar& RWF = cloud_.coordSystem().recalculateRWF(cellI);
+
+                    const scalar& RWF = cloud_.coordSystem().RWF(cellI);
 
                     cloud_.addNewParcel
                     (

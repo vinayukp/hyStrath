@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -48,12 +47,12 @@ Foam::Ostream& Foam::operator<<(Ostream& os, const reducedUnits& rU)
         << tab << "refHeatFlux = " << rU.refHeatFlux() << " kg/s^-3" << nl
         << tab << "refAmpere = " << rU.refAmpere() << " C/s" << nl
         << nl << "Constants: " << nl
-        << tab << "Boltzmann constant, kb = " << reducedUnits::kb 
+        << tab << "Boltzmann constant, kb = " << reducedUnits::kb
                << " J/K, reduced: " << rU.kB() << nl
-        << tab << "Elementary charge = " << reducedUnits::elementaryCharge 
+        << tab << "Elementary charge = " << reducedUnits::elementaryCharge
                << " C, reduced: " << rU.epsilonCharge() << nl
-        << tab << "Vacuum permittivity = " << reducedUnits::vacuumPermittivity 
-               << " m^-3 kg^-1 C^2 s^2, reduced: " << rU.epsilonPermittivity() 
+        << tab << "Vacuum permittivity = " << reducedUnits::vacuumPermittivity
+               << " m^-3 kg^-1 C^2 s^2, reduced: " << rU.epsilonPermittivity()
         << endl;
 
     // Check state of Ostream

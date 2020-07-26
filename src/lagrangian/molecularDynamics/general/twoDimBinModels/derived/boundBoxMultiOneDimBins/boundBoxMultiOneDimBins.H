@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
 
@@ -28,10 +27,10 @@ Class
 Description
 
     Create a set of bins within a cuboid domain from start point to end point.
-    Each bin is further divided in a perpendicular direction d1 into another 
+    Each bin is further divided in a perpendicular direction d1 into another
     set of bins,where a one dimensional profile is measured. The result are N
     number of one dimensional profiles.
-    
+
 
 SourceFiles
     boundBoxMultiOneDimBinsI.H
@@ -66,15 +65,15 @@ private:
 
         dictionary propsDict_;
 
-        
-        
+
+
         // outer bound box
-        
+
         dictionary outerDict_;
-        
+
         vector startPoint_;
         vector endPoint_;
-        
+
         vector unitVector_;
 
         label nBins_;
@@ -86,33 +85,33 @@ private:
         vector n2_;
 
         scalar area_;
-       
-        
-//         scalar rSEMag_;
-        
-        boundBox outerBB_;
-        
-        List<vector> rBins_;        
 
-        
+
+//         scalar rSEMag_;
+
+        boundBox outerBB_;
+
+        List<vector> rBins_;
+
+
         // inner bound boxes
-        
+
         dictionary innerDict_;
-        
-       
+
+
         label nBinsY_;
         vector unitVectorY_;
 
         vector startPointY_;
-        vector endPointY_;        
-        
-        scalar binWidthY_;
-        
-        List<boundBox> innerBBs_;
-        
+        vector endPointY_;
 
-        
-        
+        scalar binWidthY_;
+
+        List<boundBox> innerBBs_;
+
+
+
+
     // Private Member Functions
 
         void checkBoundBox

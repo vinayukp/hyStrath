@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -70,10 +70,10 @@ Foam::chemistry2Model<CompType, ThermoType>::nReaction() const
 
 // NEW VINCENT 25/07/2016 *****************************************************
 template<class CompType, class ThermoType>
-inline Foam::scalar 
+inline Foam::scalar
 Foam::chemistry2Model<CompType, ThermoType>::energyLevelSimpleHarmonicOscillator
 (
-    const label speciei, 
+    const label speciei,
     const label alpha
 ) const
 {
@@ -85,7 +85,7 @@ Foam::chemistry2Model<CompType, ThermoType>::energyLevelSimpleHarmonicOscillator
 template<class CompType, class ThermoType>
 inline Foam::scalar Foam::chemistry2Model<CompType, ThermoType>::termQ
 (
-    const label speciei, 
+    const label speciei,
     const scalar T
 ) const
 {
@@ -94,13 +94,13 @@ inline Foam::scalar Foam::chemistry2Model<CompType, ThermoType>::termQ
     //const scalar charVibT = specieThermo_[speciei].vibrationalList()[1];
     for(label lvl=0 ; lvl<simpleHarmonicOscillatorVibCutOff_[speciei]; lvl++)
     {
-        sumEnergyLevels += 
+        sumEnergyLevels +=
             exp
             (
                 -energyLevelSimpleHarmonicOscillator(speciei, lvl)/T
             );
     }
-    
+
     return sumEnergyLevels;
 }
 // END NEW VINCENT 25/07/2016 *************************************************
@@ -158,7 +158,7 @@ Foam::scalar Foam::chemistry2Model<CompType, ThermoType>::modTemperature
 {
     return 0.5*
         (
-            (T+this->modTCoeffs_[0]) 
+            (T+this->modTCoeffs_[0])
           + sqrt(sqr(T-this->modTCoeffs_[0])+sqr(this->modTCoeffs_[1]))
         );
 }

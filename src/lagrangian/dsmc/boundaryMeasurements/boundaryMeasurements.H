@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     boundaryMeasurements
@@ -69,7 +68,7 @@ private:
         dsmcCloud& cloud_;
 
         labelList typeIds_;
-        
+
         //- Outer list is typeId, middle is the patch, inner is the local patch
         //  face
         List<List<scalarField>> rhoNIntBF_;
@@ -86,34 +85,34 @@ private:
         List<List<scalarField>> electronicEBF_;
         List<List<scalarField>> qBF_;
         List<List<vectorField>> fDBF_;
-        
+
         //- species ID, vibrational energy mode, patch, face
         List<List<List<scalarField>>> evmsBF_;
-        
+
         //- Number of stuck parcels on every boundary patch
-        volScalarField::Boundary nParcelsOnStickingBoundaries_;
-        
+        volScalarField::Boundary nParticlesOnStickingBoundaries_;
+
         //- Number of absorbed parcels on every boundary patch
-        volScalarField::Boundary nAbsorbedParcels_;
-        
+        volScalarField::Boundary nAbsorbedParticles_;
+
         //- Boundary temperature field when dsmcFieldPatchBoundary is used
         volScalarField::Boundary boundaryT_;
-        
+
         //- Boundary velocity field when dsmcFieldPatchBoundary is used
         volVectorField::Boundary boundaryU_;
 
 
     // Private Member Functions
-    
+
         //- write the number of stuck parcels for sticking patches
-        void writenStuckParcels();
-        
+        void writenStuckParticles();
+
         //- write the number of absorbed parcels for absorbing patches
-        void writenAbsorbedParcels();
-        
+        void writenAbsorbedParticles();
+
         //- writePatchFields()
         void writePatchFields();
-    
+
 
 
 public:
@@ -144,58 +143,59 @@ public:
     // Member Functions
 
         void updateFields(dsmcParcel& p);
-        
+
         //- update the number of stuck parcels on patchi
-        void updatenStuckParcelOnPatch
+        void updatenStuckParticlesOnPatch
         (
             const label patchi,
-            const scalarList& pnStuckParcels
+            const scalarList& pnStuckParticles
         );
-        
-        //- update the number of absorbed parcels on patchi
-        void updatenAbsorbedParcelOnPatch
+
+        //- update the number of absorbed parcels on patchi/facei
+        void updatenAbsorbedParticlesOnPatch
         (
             const label patchi,
-            const label facei
+            const label facei,
+            const scalar nAbsorbedParticles
         );
-        
+
         //- set the boundaryT field on patchi
         void setBoundaryT
         (
             const label patchi,
             const scalarList& pboundaryT
         );
-        
+
         //- set the boundaryU field on patchi
         void setBoundaryU
         (
             const label patchi,
             const vectorList& pboundaryU
         );
-        
+
         //- set the number of stuck parcels on patchi
-        void setBoundarynStuckParcels
+        void setBoundarynStuckParticles
         (
             const label patchi,
-            const scalarList& pnStuckParcels
+            const scalarList& pnStuckParticles
         );
-        
+
         //- set the number of absorbed parcels on patchi
-        void setBoundarynAbsorbedParcels
+        void setBoundarynAbsorbedParticles
         (
             const label patchi,
-            const scalarList& pnAbsorbedParcels
+            const scalarList& pnAbsorbedParticles
         );
-        
+
         void setInitialConfig();
-        
+
         void clean();
 
         void reset();
 
 
     // Access
-    
+
       const List<List<scalarField>>& rhoNIntBF() const;
       const List<List<scalarField>>& rhoNElecBF() const;
       const List<List<scalarField>>& rhoNBF() const;
@@ -211,24 +211,24 @@ public:
       const List<List<scalarField>>& electronicEBF() const;
       const List<List<scalarField>>& qBF() const;
       const List<List<vectorField>>& fDBF() const;
-      
+
       //- Return const access to the number of stuck parcels on patchi
-      const fvPatchScalarField& pnStuckParcels(const label& patchi) const;
-      
+      const fvPatchScalarField& pnStuckParticles(const label& patchi) const;
+
       //- Return const access to the number of absorbed parcels on patchi
-      const fvPatchScalarField& pnAbsorbedParcels(const label& patchi) const;
-      
+      const fvPatchScalarField& pnAbsorbedParticles(const label& patchi) const;
+
       //- Return access to the temperature boundary values on patchi
       const fvPatchScalarField& boundaryT(const label& patchi) const;
-      
+
       //- Return access to the velocity boundary values on patchi
       const fvPatchVectorField& boundaryU(const label& patchi) const;
 
 
     // Check
-    
+
     // Edit
-    
+
       List<List<scalarField>>& rhoNIntBF();
       List<List<scalarField>>& rhoNElecBF();
       List<List<scalarField>>& rhoNBF();
@@ -244,22 +244,22 @@ public:
       List<List<scalarField>>& electronicEBF();
       List<List<scalarField>>& qBF();
       List<List<vectorField>>& fDBF();
-      
+
       //- Return access to the number of stuck parcels on patchi
-      fvPatchScalarField& pnStuckParcels(const label& patchi);
-      
+      fvPatchScalarField& pnStuckParticles(const label& patchi);
+
       //- Return access to the number of absorbed parcels on patchi
-      fvPatchScalarField& pnAbsorbedParcels(const label& patchi);
-      
+      fvPatchScalarField& pnAbsorbedParticles(const label& patchi);
+
       //- Return access to the temperature boundary values on patchi
       fvPatchScalarField& boundaryT(const label& patchi);
-      
+
       //- Return access to the velocity boundary values on patchi
       fvPatchVectorField& boundaryU(const label& patchi);
-      
+
 
     // Write
-    
+
       //- write boundary measurements fields at writeTime
       void outputResults();
 

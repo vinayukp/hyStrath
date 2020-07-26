@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 
 \*---------------------------------------------------------------------------*/
@@ -92,7 +91,7 @@ bool Foam::polyMolecule::move
             dt *= trackToFace(position() + dt*v_, td, false);
 
             //- face tracking info
-            if( this->face() != -1 )   
+            if( this->face() != -1 )
             {
                 //--  monitoring flux properties
                 td.cloud().tracker().updateFields
@@ -117,7 +116,7 @@ void Foam::polyMolecule::setAsReferred()
 void Foam::polyMolecule::updateHalfVelocity
 (
 //     const constantProperties& constProps,
-    const constantMoleculeProperties& cP,       
+    const constantMoleculeProperties& cP,
     const scalar& trackTime
 )
 {
@@ -143,7 +142,7 @@ void Foam::polyMolecule::updateHalfVelocity
 void Foam::polyMolecule::updateAcceleration
 (
 //     const constantProperties& constProps
-    const constantMoleculeProperties& cP    
+    const constantMoleculeProperties& cP
 )
 {
 //     scalar m = constProps.mass();
@@ -162,10 +161,10 @@ void Foam::polyMolecule::updateAcceleration
 void Foam::polyMolecule::updateAfterMove
 (
 //     const constantProperties& constProps,
-    const constantMoleculeProperties& cP,    
+    const constantMoleculeProperties& cP,
     const scalar& trackTime
 )
-{   
+{
     if (!cP.pointMolecule(id_))
     {
         const diagTensor& momentOfInertia(cP.momentOfInertia(id_));
@@ -206,7 +205,7 @@ void Foam::polyMolecule::updateAfterMove
 void Foam::polyMolecule::transformProperties(const tensor& T)
 {
     particle::transformProperties(T);
-    
+
     Q_ = T & Q_;
 
     v_ = transform(T, v_);
@@ -221,7 +220,7 @@ void Foam::polyMolecule::transformProperties(const tensor& T)
 
     sitePositions_ = position_ + (T & (sitePositions_ - position_));
 
-    siteForces_ = T & siteForces_;    
+    siteForces_ = T & siteForces_;
 }
 
 

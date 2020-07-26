@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     noTimeCounterAdaptiveSubcelling
@@ -72,7 +71,7 @@ void noTimeCounterAdaptiveSubcelling::measureLocalDensity()
 {
     const List< DynamicList<dsmcParcel*> >& cellOccupancy
         = cloud_.cellOccupancy();
-    
+
     forAll(cellOccupancy, cell)
     {
         const List<dsmcParcel*>& parcelsInCell = cellOccupancy[cell];
@@ -158,15 +157,15 @@ void noTimeCounterAdaptiveSubcelling::initialConfiguration()
         {
             scalar deltaLCubic = Foam::pow(bbVol, (1.0/3.0) );
             scalar spacingCubic = deltaLCubic/Foam::pow(nTot, (1.0/3.0) );
-    
+
             scalar nX = bb.span().x()/spacingCubic;
             scalar nY = bb.span().y()/spacingCubic;
             scalar nZ = bb.span().z()/spacingCubic;
-    
+
             nSlices_[c][0] = label(nX+0.5);
             nSlices_[c][1] = label(nY+0.5);
             nSlices_[c][2] = label(nZ+0.5);
-    
+
             // test for zero slices (1 is the bare minimum) and modfiy
             if(nSlices_[c][0] == 0)
             {
@@ -223,7 +222,7 @@ void noTimeCounterAdaptiveSubcelling::collide()
     forAll(cellOccupancy, cellI)
     {
         const scalar deltaT = cloud_.deltaTValue(cellI);
-        
+
         const DynamicList<dsmcParcel*>& cellParcels(cellOccupancy[cellI]);
 
         label nC(cellParcels.size());
@@ -235,7 +234,7 @@ void noTimeCounterAdaptiveSubcelling::collide()
             List<DynamicList<label> > subCells(nSubCells_[cellI]);
 
             List<label> whichSubCell(cellParcels.size());
-        
+
             forAll(cellParcels, i)
             {
                 const dsmcParcel& p = *cellParcels[i];
@@ -243,11 +242,11 @@ void noTimeCounterAdaptiveSubcelling::collide()
                 nX = label((pS & vector(1, 0, 0))/binWidths_[cellI].x());
                 nY = label((pS & vector(0, 1, 0))/binWidths_[cellI].y());
                 nZ = label((pS & vector(0, 0, 1))/binWidths_[cellI].z());
-        
+
                 subCell = nX + nY*nSlices_[cellI][0] + nZ*nSlices_[cellI][0]*nSlices_[cellI][1];
-        
+
                 subCells[subCell].append(i);
-        
+
                 whichSubCell[i] = subCell;
             }
 
@@ -257,9 +256,9 @@ void noTimeCounterAdaptiveSubcelling::collide()
 
             scalar selectedPairs =
                 cloud_.collisionSelectionRemainder()[cellI]
-                + 0.5*nC*(nC - 1)*cloud_.nParticles(cellI, true)*sigmaTcRMax*deltaT
+                + 0.5*nC*(nC - 1)*cloud_.nParticles(cellI)*sigmaTcRMax*deltaT
                 /mesh.cellVolumes()[cellI];
-               
+
             label nCandidates(selectedPairs);
 
             cloud_.collisionSelectionRemainder()[cellI] = selectedPairs - nCandidates;
@@ -373,7 +372,7 @@ void noTimeCounterAdaptiveSubcelling::collide()
                             (
                                 parcelP,
                                 parcelQ
-                            );                                    
+                            );
                         }
                         // if reaction unsuccessful use conventional collision model
                         if(cloud_.reactions().reactions()[rMId]->relax())
@@ -396,7 +395,7 @@ void noTimeCounterAdaptiveSubcelling::collide()
                             cellI
                         );
                     }
-                    
+
                     collisions++;
                 }
             }

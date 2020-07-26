@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -103,9 +103,9 @@ void Foam::fixed2EnergyFvPatchScalarField::updateCoeffs()
     }
 
     //Info << "fixed2Energy is used for patch called " << patch().name() << endl;
-    
+
     const multi2Thermo& multiThermo = multi2Thermo::lookup2Thermo(*this);
-    
+
     const label patchi = patch().index();
 
     const scalarField& pw = multiThermo.p().boundaryField()[patchi];
@@ -113,24 +113,24 @@ void Foam::fixed2EnergyFvPatchScalarField::updateCoeffs()
     fvPatchScalarField& Ttw =
         const_cast<fvPatchScalarField&>(multiThermo.Tt().boundaryField()[patchi]);
     Ttw.evaluate();
-    
+
     tmp<Field<scalar> > thevel(new Field<scalar>(multiThermo.p().boundaryField()[patchi].size()));
     Field<scalar>& hevel = thevel.ref();
-    
+
     hevel = 0.0;
     for(label speciei=0 ; speciei<thermo_.composition().Tv().size() ; speciei++)
     {
         fvPatchScalarField& spYw =
             const_cast<fvPatchScalarField&>(thermo_.composition().Y(speciei).boundaryField()[patchi]);
         spYw.evaluate();
-        
+
         fvPatchScalarField& spTvw =
             const_cast<fvPatchScalarField&>(thermo_.composition().Tv(speciei).boundaryField()[patchi]);
         spTvw.evaluate();
-        
+
         hevel += spYw*thermo_.composition().hevel(speciei, pw, spTvw, patchi);
-    }    
-        
+    }
+
     operator==(multiThermo.het(pw, Ttw, patchi) + thevel);
 
     fixedValueFvPatchScalarField::updateCoeffs();

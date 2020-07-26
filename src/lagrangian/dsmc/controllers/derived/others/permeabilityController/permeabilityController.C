@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -99,17 +99,17 @@ namespace Foam
             const List<dsmcParcel*>& molsInCell = cellOccupancy[cellI];
             Random& rndGen(cloud_.rndGen());
 //             const scalar timeStepRatio = mesh_.time().deltaTValue()/1.0e-12;
-            
+
             forAll(molsInCell, mIC)
             {
                 dsmcParcel* p = molsInCell[mIC];
-                
+
                 if(rndGen.sample01<scalar>() > porosity_)
                 {
                     scalar mass = cloud_.constProps(p->typeId()).mass();
-                    
+
 //                     Info << "Velocity before control = " << p->U() << endl;
-                    
+
                     p->U() = sqrt(physicoChemical::k.value()*temperature_/mass)
                             *vector
                             (
@@ -117,7 +117,7 @@ namespace Foam
                                 rndGen_.GaussNormal<scalar>(),
                                 rndGen_.GaussNormal<scalar>()
                             );
-                            
+
 //                     Info << "Velocity after control = " << p->U() << endl;
                 }
             }

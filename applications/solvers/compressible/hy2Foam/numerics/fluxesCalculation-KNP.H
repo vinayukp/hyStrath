@@ -3,21 +3,27 @@
 phi = aphiv_pos*rho_pos + aphiv_neg*rho_neg;
 
 //- Eq.7 applied for Phi = rhoU and extra term for pressure
-surfaceVectorField phiUp 
+surfaceVectorField phiUp
 (
     (aphiv_pos*rhoU_pos + aphiv_neg*rhoU_neg)
   + (a_pos*p_pos + a_neg*p_neg)*mesh.Sf()
 );
 
-//- Eq.7 applied for Phi = rhoE and decomposed extra term for pressure 
+//- Eq.7 applied for Phi = rhoE and decomposed extra term for pressure
 //  (no omega_f for pressure terms, see def of aphiv_pos)
-surfaceScalarField phiEp 
+surfaceScalarField phiEp
 (
     "phiEp",
     aphiv_pos*(rho_pos*(e_pos + 0.5*magSqr(U_pos)) + p_pos)
   + aphiv_neg*(rho_neg*(e_neg + 0.5*magSqr(U_neg)) + p_neg)
   + aSf*p_pos - aSf*p_neg
 );
+
+// Make flux for pressure-work absolute
+if (mesh.moving())
+{
+    phiEp += mesh.phi()*(a_pos*p_pos + a_neg*p_neg);
+}
 
 PtrList<surfaceScalarField> phiEvk(noSolvedVibEq);
 
@@ -28,7 +34,7 @@ if(downgradeSingleT) // NEW VINCENT 05-16/08/2016
 else if(downgradeSingleTv)
 {
     phiEvk.resize(1);
-    
+
     phiEvk.set
     (
         0,
@@ -43,7 +49,7 @@ else if(downgradeSingleTv)
 else
 {
     forAll(phiEvk, speciei)
-    { 
+    {
         phiEvk.set
         (
             speciei,

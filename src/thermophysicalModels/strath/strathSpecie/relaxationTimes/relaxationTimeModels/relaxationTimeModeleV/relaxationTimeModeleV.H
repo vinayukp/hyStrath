@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     Foam::relaxationTimeModeleV
@@ -49,7 +48,7 @@ SourceFiles
 
 namespace Foam
 {
-  
+
 /*---------------------------------------------------------------------------*\
                     Class relaxationTimeModeleV Declaration
 \*---------------------------------------------------------------------------*/
@@ -58,9 +57,9 @@ class relaxationTimeModeleV
 :
     public IOdictionary
 {
-    
-protected:  
-  
+
+protected:
+
     // Protected data
 
         //- Mesh
@@ -77,15 +76,15 @@ protected:
 
         //- e-V relaxation time [s]
         PtrList<volScalarField> taueV_;
-        
+
         //- e-V source term in the vib. energy equations [kg/m^3/s]
         PtrList<volScalarField> QeV_;
 
 
 private:
-  
+
     // Private member functions
-      
+
         //- Disallow copy construct
         relaxationTimeModeleV(const relaxationTimeModeleV&);
 
@@ -94,13 +93,13 @@ private:
 
 
 public:
- 
+
     //- Runtime type information
     TypeName("relaxationTimeModeleV");
 
-      
+
     // Declare run-time constructor selection table
-       
+
 #ifndef SWIG
     declareRunTimeSelectionTable
     (
@@ -114,9 +113,9 @@ public:
         (thermo, turbulence)
     );
 #endif
-  
 
-    // Constructors	  
+
+    // Constructors
 
         //- Construct from components
         relaxationTimeModeleV
@@ -126,8 +125,8 @@ public:
         );
 
 
-    // Selectors	  
-  
+    // Selectors
+
         //- Return a reference to the selected multispecies transport model
 
         static autoPtr<relaxationTimeModeleV> New
@@ -145,18 +144,18 @@ public:
 
     // Member Functions
 
-        // Access   
-           
+        // Access
+
             //- Return the const e-V relaxation time field
-            inline const volScalarField& taueVi(label i) const;  
-            
-            //- Return the const source term in vib. energy equations 
+            inline const volScalarField& taueVi(label i) const;
+
+            //- Return the const source term in vib. energy equations
             //  due to e-V energy transfer
             inline const volScalarField& QeV(label speciei) const;
-            
+
             //- Return the table of species
             inline const speciesTable& species() const;
-            
+
             //- Return the table of species having a vib. eq. being solved
             inline const speciesTable& solvedVibEqSpecies() const;
 
@@ -166,7 +165,7 @@ public:
 
         //- Source term in vib. energy equations due to e-V energy transfer
         //tmp<volScalarField> eVRelaxationSource();
-        
+
         //- Correct the e-V relaxation times and e-V energy transfer
         virtual void correct() = 0;
 

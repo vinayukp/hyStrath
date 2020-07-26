@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ void referredCell::initialise
 )
 {
     boundedBox bb (boundingCellPoints(mesh, cell), false);
-    
+
     this->min() = bb.min();
     this->max() = bb.max();
 
@@ -183,7 +183,7 @@ void referredCell::setRotate
 (
     const bool& rotate,
     const vector& rotationPt,
-//     const vector& rotationAxis,   
+//     const vector& rotationAxis,
 //     const scalar& angle
     const tensor& R
 )
@@ -227,10 +227,10 @@ bool referredCell::operator!=(const referredCell& rhs) const
 
 Istream& operator>>(Istream& is, referredCell& rWF)
 {
-    is  >> static_cast<boundedBox&>(rWF) 
-        >> rWF.sourceCell_ 
+    is  >> static_cast<boundedBox&>(rWF)
+        >> rWF.sourceCell_
         >> rWF.origProcNo_
-        >> rWF.offset_ 
+        >> rWF.offset_
         >> rWF.translation_
         >> rWF.rotate_
         >> rWF.rotationPt_

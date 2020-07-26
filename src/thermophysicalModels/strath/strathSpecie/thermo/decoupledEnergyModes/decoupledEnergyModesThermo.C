@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -55,12 +55,12 @@ Foam::decoupledEnergyModesThermo<EquationOfState>::decoupledEnergyModesThermo(Is
     {
         is >> decoupledCvCoeffs_[i];
     }
-    
+
     forAll(vibrationalList_, i)
     {
         is >> vibrationalList_[i];
     }
-    
+
     forAll(electronicList_, i)
     {
         is >> electronicList_[i];
@@ -121,14 +121,14 @@ Foam::Ostream& Foam::operator<<
     {
         os << dem.decoupledCvCoeffs_[i] << ' ';
     }
-    
+
     os << nl << "    ";
 
     forAll(dem.vibrationalList_, i)
     {
         os << dem.vibrationalList_[i] << ' ';
     }
-    
+
     os << nl << "    ";
 
     forAll(dem.electronicList_, i)

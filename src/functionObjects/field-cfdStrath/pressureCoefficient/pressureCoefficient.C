@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013-2016 OpenFOAM Foundation
-     \\/     M anipulation  | Copyright (C) 2016 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
+     \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ namespace functionObjects
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void 
+void
 Foam::functionObjects::pressureCoefficient::writeFileHeader(Ostream& os) const
 {
     writeHeader(os, "Cp ()");
@@ -114,7 +114,7 @@ bool Foam::functionObjects::pressureCoefficient::read(const dictionary& dict)
 {
     fvMeshFunctionObject::read(dict);
     writeFile::read(dict);
-    
+
     inflowPatchName_ = dict.lookupOrDefault<word>("inflowPatchName", "inlet");
 
     return true;
@@ -132,7 +132,7 @@ bool Foam::functionObjects::pressureCoefficient::execute()
     if (foundObject<turbulenceModel>(turbulenceModel::propertiesName))
     {
         if (foundObject<multi2Thermo>(multi2Thermo::dictName))
-        {    
+        {
             volScalarField::Boundary& pressureCoefficientBf =
                 pressureCoefficient.boundaryFieldRef();
 
@@ -141,25 +141,25 @@ bool Foam::functionObjects::pressureCoefficient::execute()
                 (
                     turbulenceModel::propertiesName
                 );
-                
+
             const multi2Thermo& thermo =
                 lookupObject<multi2Thermo>(multi2Thermo::dictName);
-                
+
             const volScalarField::Boundary& pBf = thermo.p().boundaryField();
 
-            const label inflowPatchId = 
+            const label inflowPatchId =
                 mesh_.boundaryMesh().findPatchID(inflowPatchName_);
-                
+
             tmp<volScalarField> trho = thermo.rho();
             const volScalarField::Boundary& rhoBf = trho().boundaryField();
 
             const volVectorField::Boundary& UBf = model.U().boundaryField();
-            
+
             const scalar rhoinf = rhoBf[inflowPatchId][0];
             const scalar magUinf = mag(UBf[inflowPatchId][0]);
 
             const fvPatchList& patches = mesh_.boundary();
-            
+
             forAll(patches, patchi)
             {
                 const fvPatch& patch = patches[patchi];
@@ -201,7 +201,7 @@ bool Foam::functionObjects::pressureCoefficient::write()
 
     pressureCoefficient.write();
 
-    const volScalarField::Boundary& pressureCoefficientBf = 
+    const volScalarField::Boundary& pressureCoefficientBf =
         pressureCoefficient.boundaryField();
     const fvPatchList& patches = mesh_.boundary();
 
@@ -211,7 +211,7 @@ bool Foam::functionObjects::pressureCoefficient::write()
 
         if (isA<wallFvPatch>(patch))
         {
-            const scalarField& pressureCoefficientp = 
+            const scalarField& pressureCoefficientp =
                 pressureCoefficientBf[patchi];
 
             const scalar minCp = gMin(pressureCoefficientp);

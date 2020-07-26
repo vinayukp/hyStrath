@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     multiZoneBins
@@ -84,7 +83,7 @@ multiZoneBins::multiZoneBins
         forAll(zoneNames, i)
         {
             const word& zoneName(zoneNames[i]);
-    
+
             if(findIndex(regionNames, zoneName) == -1)
             {
                 regionNames.append(zoneName);
@@ -112,11 +111,11 @@ multiZoneBins::multiZoneBins
     forAll(regionIds_, r)
     {
         regionIds_[r] = cellZones.findZoneID(zoneNames[r]);
-    
+
         if(regionIds_[r] == -1)
         {
             FatalErrorIn("multiZoneBins::multiZoneBins()")
-                << "Cannot find region: " << zoneNames[r] 
+                << "Cannot find region: " << zoneNames[r]
                 << " in mesh's cell zones."
                 << nl << "in: "
                 << mesh_.time().system()/"fieldPropertiesDict"
@@ -165,7 +164,7 @@ multiZoneBins::multiZoneBins
             else
             {
                 FatalErrorIn("multiZoneBins::multiZoneBins()")
-                    << "There is an overlap present in cell-zone: " << zoneNames[r] 
+                    << "There is an overlap present in cell-zone: " << zoneNames[r]
                     << " with zone: " << zoneNames[cellRegionAddressing_[cellI]]
                     << nl << "in: "
                     << mesh_.time().system()/"fieldPropertiesDict"
@@ -228,7 +227,7 @@ multiZoneBins::multiZoneBins
                     }
                 }
             }
-        
+
             //- receiving
             for (int p = 0; p < Pstream::nProcs(); p++)
             {
@@ -242,7 +241,7 @@ multiZoneBins::multiZoneBins
                         IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
                         fromNeighbour >> rMaxProc >> rMinProc;
                     }
-        
+
                     if(rMaxProc > rMax)
                     {
                         rMax = rMaxProc;
@@ -297,7 +296,7 @@ scalarField multiZoneBins::binPositions()
     if(nBins_ > 0)
     {
         positions[0] = 0.5*binWidths_[0];
-    
+
         for (label i = 1; i < nBins_; i++)
         {
             positions[i] = positions[i-1] + 0.5*binWidths_[i-1] + 0.5*binWidths_[i];
@@ -319,7 +318,7 @@ vectorField multiZoneBins::bins()
 
         for (label i = 1; i < nBins_; i++)
         {
-            positions[i] = positions[i-1] + 0.5*binWidths_[i-1]*unitVector_ 
+            positions[i] = positions[i-1] + 0.5*binWidths_[i-1]*unitVector_
                                           + 0.5*binWidths_[i]*unitVector_;
         }
     }

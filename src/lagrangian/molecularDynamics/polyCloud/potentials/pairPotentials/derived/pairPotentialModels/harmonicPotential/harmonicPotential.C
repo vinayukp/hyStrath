@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -45,9 +44,9 @@ addToRunTimeSelectionTable(pairPotentialModel, harmonicPotential, dictionary);
 harmonicPotential::harmonicPotential
 (
     const polyMesh& mesh,
-    polyMoleculeCloud& molCloud, 
+    polyMoleculeCloud& molCloud,
     const reducedUnits& redUnits,
-    const word& name, 
+    const word& name,
     const dictionary& dict
 )
 :
@@ -60,12 +59,12 @@ harmonicPotential::harmonicPotential
     {
         k_ /= (redUnits.refMass()/ (redUnits.refTime()*redUnits.refTime()));
         r0_ /= redUnits.refLength();
-       
+
         Info << "k = " << k_ << endl;
     }
-    
+
 //     useTables_ = false;
-    setLookupTables();    
+    setLookupTables();
 }
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -82,7 +81,7 @@ scalar harmonicPotential::unscaledEnergy(const scalar r) const
 
 scalar harmonicPotential::energy(const scalar r) const
 {
-    return energyLookUpFromTable(r);  
+    return energyLookUpFromTable(r);
 }
 
 scalar harmonicPotential::force(const scalar r) const
@@ -99,27 +98,27 @@ void harmonicPotential::write(const fileName& pathName)
 {
 //     Info<< "Writing energy and force to file for potential "
 //             << name_ << endl;
-//             
+//
 //     label nBins = 10000;
 //     scalar dr = r0_/nBins;
 //     scalarField U(nBins, 0.0);
 //     scalarField f(nBins, 0.0);
-//     
+//
 //     for (label i=0; i<nBins; ++i)
 //     {
 //         scalar r = dr*i;
-//         
+//
 //         U[i] = energy(r);
 //         f[i] = force(r);
 //     }
 //     {
 //         OFstream file(pathName/name_+"-harmonicPotential-RU.xy");
-// 
+//
 //         if(file.good())
 //         {
 //             forAll(U, i)
 //             {
-//                 file 
+//                 file
 //                     << dr*i << "\t"
 //                     << U[i] << "\t"
 //                     << f[i]
@@ -133,15 +132,15 @@ void harmonicPotential::write(const fileName& pathName)
 //                 << abort(FatalError);
 //         }
 //     }
-//     
+//
 //     {
 //         OFstream file(pathName/name_+"-harmonicPotential-SI.xy");
-// 
+//
 //         if(file.good())
 //         {
 //             forAll(U, i)
 //             {
-//                 file 
+//                 file
 //                     << dr*i*rU_.refLength() << "\t"
 //                     << U[i]*rU_.refEnergy() << "\t"
 //                     << f[i]*rU_.refForce()
@@ -153,7 +152,7 @@ void harmonicPotential::write(const fileName& pathName)
 //             FatalErrorIn("void harmonicPotential::write()")
 //                 << "Cannot open file " << file.name()
 //                 << abort(FatalError);
-//         }  
+//         }
 //     }
 }
 

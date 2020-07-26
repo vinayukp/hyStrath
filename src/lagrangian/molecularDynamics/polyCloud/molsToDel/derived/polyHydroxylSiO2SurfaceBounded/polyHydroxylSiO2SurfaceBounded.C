@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -51,14 +50,14 @@ void polyHydroxylSiO2SurfaceBounded::readInCylinder()
     startPoint_ = propsDict.lookup("startPoint");
     endPoint_ = propsDict.lookup("endPoint");
     unitVector_ = (endPoint_ - startPoint_)/mag(endPoint_ - startPoint_);
-    deltaR_ = readScalar(propsDict.lookup("deltaR")); 
-    
+    deltaR_ = readScalar(propsDict.lookup("deltaR"));
+
 }
 
 void polyHydroxylSiO2SurfaceBounded::readInBoundBox()
 {
     dictionary propsDict(propsDict_.subDict("boundBoxTopSurface"));
-    
+
     vector startPoint = propsDict.lookup("startPoint");
     vector endPoint = propsDict.lookup("endPoint");
     hDirection_ = propsDict.lookup("hDirection");
@@ -76,91 +75,91 @@ polyHydroxylSiO2SurfaceBounded::polyHydroxylSiO2SurfaceBounded
     polyMolsToDeleteModel(molCloud, dict),
     propsDict_(dict.subDict(typeName + "Properties")),
     b_(readScalar(propsDict_.lookup("bondRadius"))),
-   
+
     temperature_(readScalar(propsDict_.lookup("temperature"))),
     bulkVelocity_(propsDict_.lookup("bulkVelocity"))
 {
     readInCylinder();
     readInBoundBox();
-    
-  
-    
+
+
+
     // bond radius
     b_ /= molCloud_.redUnits().refLength();
-        
-    Info << " max bond radius = " << b_ << endl;    
+
+    Info << " max bond radius = " << b_ << endl;
 
     // set molecule ids
 
     const word siName = propsDict_.lookup("siliconIdName");
     const word oName = propsDict_.lookup("oxygenIdName");
-    const word hName = propsDict_.lookup("hydrogenIdName");    
+    const word hName = propsDict_.lookup("hydrogenIdName");
 
     const List<word>& idList(molCloud_.pot().idList());
-    
-   
+
+
     forAll(idList, i)
     {
         if(siName == idList[i])
         {
             SiId_ = i;
         }
-        
+
         if(oName == idList[i])
         {
             OId_ = i;
-        }       
-        
+        }
+
         if(hName == idList[i])
         {
             HId_ = i;
-        } 
+        }
     }
-    
-    Info<< " silicon id = " << SiId_ 
+
+    Info<< " silicon id = " << SiId_
         << ", oxygen id = " << OId_
         << ", hydrogen id = " << HId_
         << endl;
 
-    
+
     punchOutMolecules();
-    
+
     check();
-    
+
     checkForMoleculesInBox();
-    
+
     deleteMoleculesInBox();
-    
+
     check();
-    
+
     checkForMoleculesInCylinder();
-    
+
     deleteMoleculesInCylinder();
-    
+
     check();
-    
-    checkForMoleculesInBox();  
-    
-//     addMoleculesInBox();
-    
-    addMoleculesInBoxAndCylinder();
-    
-    check();
-    
+
     checkForMoleculesInBox();
-    
-    checkForMoleculesInCylinder();    
+
+//     addMoleculesInBox();
+
+    addMoleculesInBoxAndCylinder();
+
+    check();
+
+    checkForMoleculesInBox();
+
+    checkForMoleculesInCylinder();
 }
 
 
 void polyHydroxylSiO2SurfaceBounded::punchOutMolecules()
 {
-    Info << nl << "Punching out cylinder " << endl; 
-    
+    Info << nl << "Punching out cylinder " << endl;
+
     DynamicList<polyMolecule*> molsToDel;
-    
-    label initialSize = molCloud_.size();    
-    
+
+    label initialSize = molCloud_.size();
+
     {
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
 
@@ -186,7 +185,7 @@ void polyHydroxylSiO2SurfaceBounded::punchOutMolecules()
                 if(mag(pointOnCentreLine-rI) <= radius_)
                 {
                     label molId = mol().id();
-                    
+
                     if( (molId == SiId_) || (molId == OId_) || (molId == HId_) )
                     {
                         polyMolecule* molI = &mol();
@@ -196,7 +195,7 @@ void polyHydroxylSiO2SurfaceBounded::punchOutMolecules()
             }
         }
     }
-    
+
    // molsToDel.shrink();
 
     forAll(molsToDel, m)
@@ -206,9 +205,9 @@ void polyHydroxylSiO2SurfaceBounded::punchOutMolecules()
 
     label molsKept = initialSize - molsToDel.size();
 
-    Info<< tab << " initial polyMolecules: " <<  initialSize 
+    Info<< tab << " initial polyMolecules: " <<  initialSize
         << ", polyMolecules kept: " <<  molsKept
-        << ", polyMolecules removed: " << molsToDel.size() 
+        << ", polyMolecules removed: " << molsToDel.size()
         << endl;
 
 
@@ -219,11 +218,11 @@ void polyHydroxylSiO2SurfaceBounded::punchOutMolecules()
 
 void polyHydroxylSiO2SurfaceBounded::check()
 {
-    Info << nl << "Separating and counting atoms " << endl; 
+    Info << nl << "Separating and counting atoms " << endl;
 
     siliconAtoms_.clear();
     oxygenAtoms_.clear();
- 
+
     {
         IDLList<polyMolecule>::iterator molI(molCloud_.begin());
 
@@ -241,26 +240,26 @@ void polyHydroxylSiO2SurfaceBounded::check()
             else if(molI().id() == OId_)
             {
                 oxygenAtoms_.append(molI().trackingNumber());
-            }            
+            }
         }
     }
-    
+
     //siliconAtoms_.shrink();
     //oxygenAtoms_.shrink();
-    
+
     Info << " number of silicon atoms = " << siliconAtoms_.size() << endl;
     Info << " number of oxygen atoms = " << oxygenAtoms_.size() << endl;
 
-    
+
     siliconToOxygenBonds_.clear();
     oxygenToSiliconBonds_.clear();
     siliconToOxygenBonds_.setSize(siliconAtoms_.size(), 0);
-    oxygenToSiliconBonds_.setSize(oxygenAtoms_.size(), 0);   
-    
-    Info << nl << " checking for bonds" << endl; 
-    
-    
-    {    
+    oxygenToSiliconBonds_.setSize(oxygenAtoms_.size(), 0);
+
+    Info << nl << " checking for bonds" << endl;
+
+
+    {
         label nMolsInt = 0;
         label nMolsExt = 0;
         label nMolsRef = 0;
@@ -286,24 +285,24 @@ void polyHydroxylSiO2SurfaceBounded::check()
                         if(j > i)
                         {
                             molJ = molCloud_.cellOccupancy()[c][j];
-                            
+
                             label siTN = molI->trackingNumber();
                             label oTN = molJ->trackingNumber();
-                            
+
                             if( testForPair(molI->id(), molJ->id(), siTN, oTN) )
                             {
                                 scalar rIJmag = mag(molI->position() - molJ->position());
-                                
+
                                 if(rIJmag <= b_)
                                 {
                                     label ids = findIndex(siliconAtoms_, siTN);
-                                    
+
                                     if(ids != -1)
                                     {
                                         siliconToOxygenBonds_[ids]++;
                                     }
                                     label ido = findIndex(oxygenAtoms_, oTN);
-                                    
+
                                     if(ido != -1)
                                     {
                                         oxygenToSiliconBonds_[ido]++;
@@ -316,24 +315,24 @@ void polyHydroxylSiO2SurfaceBounded::check()
                     for (int j = 0; j < nMolsExt; j++)
                     {
                         molJ = molCloud_.il()[c][j];
-                        
+
                         label siTN = molI->trackingNumber();
                         label oTN = molJ->trackingNumber();
-                        
+
                         if( testForPair(molI->id(), molJ->id(), siTN, oTN) )
                         {
                             scalar rIJmag = mag(molI->position() - molJ->position());
-                            
+
                             if(rIJmag <= b_)
                             {
                                 label ids = findIndex(siliconAtoms_, siTN);
-                                
+
                                 if(ids != -1)
                                 {
                                     siliconToOxygenBonds_[ids]++;
                                 }
                                 label ido = findIndex(oxygenAtoms_, oTN);
-                                
+
                                 if(ido != -1)
                                 {
                                     oxygenToSiliconBonds_[ido]++;
@@ -345,24 +344,24 @@ void polyHydroxylSiO2SurfaceBounded::check()
                     for (int j = 0; j < nMolsRef; j++)
                     {
                         molJ = molCloud_.kernel().referredInteractionList()[c][j];
-                        
+
                         label siTN = molI->trackingNumber();
                         label oTN = molJ->trackingNumber();
-                        
+
                         if( testForPair(molI->id(), molJ->id(), siTN, oTN) )
                         {
                             scalar rIJmag = mag(molI->position() - molJ->position());
-                            
+
                             if(rIJmag <= b_)
                             {
                                 label ids = findIndex(siliconAtoms_, siTN);
-                                
+
                                 if(ids != -1)
                                 {
                                     siliconToOxygenBonds_[ids]++;
                                 }
                                 label ido = findIndex(oxygenAtoms_, oTN);
-                                
+
                                 if(ido != -1)
                                 {
                                     oxygenToSiliconBonds_[ido]++;
@@ -374,26 +373,26 @@ void polyHydroxylSiO2SurfaceBounded::check()
             }
         }
     }
-    
+
     // oxygen
-    
+
     List<label> oBonds(10,0);
-    List<label> sBonds(10,0);    
-    
+    List<label> sBonds(10,0);
+
     forAll(oxygenToSiliconBonds_, i)
     {
         const label& nOB = oxygenToSiliconBonds_[i];
         oBonds[nOB]++;
     }
-    
+
     forAll(siliconToOxygenBonds_, i)
     {
         const label& nsB = siliconToOxygenBonds_[i];
         sBonds[nsB]++;
     }
-/*    Info << " system bond info: " << endl;    
+/*    Info << " system bond info: " << endl;
     Info << " oxygenToSiliconBonds_ " << oBonds << endl;
-    Info << " siliconToOxygenBonds_ " << sBonds << endl; */   
+    Info << " siliconToOxygenBonds_ " << sBonds << endl; */
 
 }
 
@@ -402,8 +401,8 @@ void polyHydroxylSiO2SurfaceBounded::checkForMoleculesInBox()
     // bound box details
     {
         List<label> oBondsBB(10,0);
-        List<label> sBondsBB(10,0); 
-        
+        List<label> sBondsBB(10,0);
+
         IDLList<polyMolecule>::iterator molI(molCloud_.begin());
 
         for
@@ -426,14 +425,14 @@ void polyHydroxylSiO2SurfaceBounded::checkForMoleculesInBox()
                     label id = findIndex(oxygenAtoms_,molI().trackingNumber());
                     const label& noB = oxygenToSiliconBonds_[id];
                     oBondsBB[noB]++;
-                }            
+                }
             }
         }
-        
+
         Info << nl << "Information in bound-box "<< endl;
 
         Info << " oxygenToSiliconBonds_ " << oBondsBB << endl;
-        Info << " siliconToOxygenBonds_ " << sBondsBB << endl;        
+        Info << " siliconToOxygenBonds_ " << sBondsBB << endl;
     }
 }
 
@@ -442,8 +441,8 @@ void polyHydroxylSiO2SurfaceBounded::checkForMoleculesInCylinder()
     // bound box details
     {
         List<label> oBondsBB(10,0);
-        List<label> sBondsBB(10,0); 
-        
+        List<label> sBondsBB(10,0);
+
        IDLList<polyMolecule>::iterator mol(molCloud_.begin());
 
         scalar rSEMag = mag(endPoint_ - startPoint_);
@@ -479,22 +478,22 @@ void polyHydroxylSiO2SurfaceBounded::checkForMoleculesInCylinder()
                         label id = findIndex(oxygenAtoms_,mol().trackingNumber());
                         const label& noB = oxygenToSiliconBonds_[id];
                         oBondsBB[noB]++;
-                    }            
+                    }
                 }
             }
         }
-        
+
         Info << nl << "Information in bound-box "<< endl;
 
         Info << " oxygenToSiliconBonds_ " << oBondsBB << endl;
-        Info << " siliconToOxygenBonds_ " << sBondsBB << endl;        
+        Info << " siliconToOxygenBonds_ " << sBondsBB << endl;
     }
 }
 
 void polyHydroxylSiO2SurfaceBounded::deleteMoleculesInBox()
 {
     DynamicList<polyMolecule*> molsToDel;
-    
+
     {
         IDLList<polyMolecule>::iterator molI(molCloud_.begin());
 
@@ -510,29 +509,29 @@ void polyHydroxylSiO2SurfaceBounded::deleteMoleculesInBox()
                 if(molI().id() == SiId_)
                 {
                     label id = findIndex(siliconAtoms_, molI().trackingNumber());
-                    
+
                     if(siliconToOxygenBonds_[id] < 4)
                     {
                         polyMolecule* mol = &molI();
-                        molsToDel.append(mol);                        
+                        molsToDel.append(mol);
                     }
                 }
             }
         }
     }
-        
+
     //molsToDel.shrink();
-    
+
     Info << nl<< "Silicon molecules to delete = " << molsToDel.size() << endl;
-    
-    
+
+
     forAll(molsToDel, m)
     {
 //         Info << "position = " << molsToDel[m]->position() << endl;
-        
+
         molCloud_.deleteParticle(*molsToDel[m]);
-    }    
-    
+    }
+
     molCloud_.rebuildCellOccupancy();
     molCloud_.prepareKernel();
 }
@@ -540,9 +539,9 @@ void polyHydroxylSiO2SurfaceBounded::deleteMoleculesInBox()
 void polyHydroxylSiO2SurfaceBounded::deleteMoleculesInCylinder()
 {
     DynamicList<polyMolecule*> molsToDel;
-    
+
     {
-       
+
        IDLList<polyMolecule>::iterator molI(molCloud_.begin());
 
         scalar rSEMag = mag(endPoint_ - startPoint_);
@@ -569,30 +568,30 @@ void polyHydroxylSiO2SurfaceBounded::deleteMoleculesInCylinder()
                     if(molI().id() == SiId_)
                     {
                         label id = findIndex(siliconAtoms_, molI().trackingNumber());
-                        
+
                         if(siliconToOxygenBonds_[id] < 4)
                         {
                             polyMolecule* mol = &molI();
-                            molsToDel.append(mol);                        
+                            molsToDel.append(mol);
                         }
                     }
                 }
             }
         }
     }
-        
+
     //molsToDel.shrink();
-    
+
     Info << nl<< "Silicon molecules to delete = " << molsToDel.size() << endl;
-    
-    
+
+
     forAll(molsToDel, m)
     {
 //         Info << "position = " << molsToDel[m]->position() << endl;
-        
+
         molCloud_.deleteParticle(*molsToDel[m]);
-    }    
-    
+    }
+
     molCloud_.rebuildCellOccupancy();
     molCloud_.prepareKernel();
 }
@@ -602,12 +601,12 @@ void polyHydroxylSiO2SurfaceBounded::addMoleculesInBoxAndCylinder()
 {
     DynamicList<polyMolecule*> molsToAddBox;
     DynamicList<polyMolecule*> molsToAddCylinder;
-  
+
     {
         IDLList<polyMolecule>::iterator molI(molCloud_.begin());
 
         scalar rSEMag = mag(endPoint_ - startPoint_);
-        
+
         for
         (
             molI = molCloud_.begin();
@@ -619,9 +618,9 @@ void polyHydroxylSiO2SurfaceBounded::addMoleculesInBoxAndCylinder()
             const vector& rI = molI().position();
             vector rSI = rI - startPoint_;
             scalar centreLineDistance = rSI & unitVector_;
-            
+
             bool added = false;
-            
+
             //- step 1: test polyMolecule is between starting point and end point
             if((centreLineDistance <= rSEMag) && (centreLineDistance >= 0.0))
             {
@@ -629,52 +628,52 @@ void polyHydroxylSiO2SurfaceBounded::addMoleculesInBoxAndCylinder()
 
                 //step 2: test polyMolecule is within radial distance of centre-line
                 if(mag(pointOnCentreLine-rI) <= (radius_ + deltaR_))
-                {      
+                {
                     if(molI().id() == OId_)
                     {
                         label id = findIndex(oxygenAtoms_, molI().trackingNumber());
-                        
+
                         if(oxygenToSiliconBonds_[id] < 2)
                         {
                             polyMolecule* mol = &molI();
-                            molsToAddCylinder.append(mol); 
+                            molsToAddCylinder.append(mol);
                             added = true;
                         }
-                    }   
+                    }
                 }
             }
-            
+
             if(!added)
-            {    
+            {
                 if(box_.contains(molI().position()))
                 {
                     if(molI().id() == OId_)
                     {
                         label id = findIndex(oxygenAtoms_, molI().trackingNumber());
-                        
+
                         if(oxygenToSiliconBonds_[id] < 2)
                         {
                             polyMolecule* mol = &molI();
-                            molsToAddBox.append(mol); 
+                            molsToAddBox.append(mol);
                         }
-                    }            
+                    }
                 }
             }
         }
     }
-    
+
     //molsToAddBox.shrink();
     //molsToAddCylinder.shrink();
-    
-    // add hydrogen molecules 
-    Info << nl<< "Hydrogen molecules to add in box = " << molsToAddBox.size() << endl;    
-    
+
+    // add hydrogen molecules
+    Info << nl<< "Hydrogen molecules to add in box = " << molsToAddBox.size() << endl;
+
     forAll(molsToAddBox, i)
     {
         vector newPosition = molsToAddBox[i]->position() + hDirection_;
-        
+
 //         Info << "position = " << newPosition << endl;
-        
+
         label cell = -1;
         label tetFace = -1;
         label tetPt = -1;
@@ -703,25 +702,25 @@ void polyHydroxylSiO2SurfaceBounded::addMoleculesInBoxAndCylinder()
             );
         }
     }
-    
-    
+
+
     Info << nl<< "Hydrogen molecules to add in cylinder = " << molsToAddCylinder.size() << endl;
-    
+
     forAll(molsToAddCylinder, i)
     {
         const vector&  rI = molsToAddCylinder[i]->position();
-        
+
         vector rICentre = (
                             (((rI - startPoint_ ) & unitVector_)*unitVector_)
                             + startPoint_
                           ) - rI;
-        
+
         rICentre /= mag(rICentre);
-        
+
         vector newPosition = rI + mag(hDirection_)*rICentre;
-        
+
 //         Info << "position = " << newPosition << endl;
-        
+
         label cell = mesh_.findCell(newPosition);
 
         if(cell != -1)
@@ -737,16 +736,16 @@ void polyHydroxylSiO2SurfaceBounded::addMoleculesInBoxAndCylinder()
                 bulkVelocity_
             );
         }
-    }    
-    
+    }
+
     molCloud_.rebuildCellOccupancy();
-    molCloud_.prepareKernel();    
+    molCloud_.prepareKernel();
 }
 /*
 void polyHydroxylSiO2SurfaceBounded::addMoleculesInBox()
 {
     DynamicList<polyMolecule*> molsToAdd;
-    
+
     {
         IDLList<polyMolecule>::iterator molI(molCloud_.begin());
 
@@ -762,28 +761,28 @@ void polyHydroxylSiO2SurfaceBounded::addMoleculesInBox()
                 if(molI().id() == OId_)
                 {
                     label id = findIndex(oxygenAtoms_, molI().trackingNumber());
-                    
+
                     if(oxygenToSiliconBonds_[id] < 2)
                     {
                         polyMolecule* mol = &molI();
-                        molsToAdd.append(mol);                        
+                        molsToAdd.append(mol);
                     }
-                }            
+                }
             }
         }
     }
-    
+
     molsToAdd.shrink();
-    
-    // add hydrogen molecules 
-    Info << nl<< "Hydrogen molecules to add = " << molsToAdd.size() << endl;    
-    
+
+    // add hydrogen molecules
+    Info << nl<< "Hydrogen molecules to add = " << molsToAdd.size() << endl;
+
     forAll(molsToAdd, i)
     {
         vector newPosition = molsToAdd[i]->position() + hDirection_;
-        
+
 //         Info << "position = " << newPosition << endl;
-        
+
         label cell = mesh_.findCell(newPosition);
 
         if(cell != -1)
@@ -800,9 +799,9 @@ void polyHydroxylSiO2SurfaceBounded::addMoleculesInBox()
             );
         }
     }
-    
+
     molCloud_.rebuildCellOccupancy();
-    molCloud_.prepareKernel();    
+    molCloud_.prepareKernel();
 }*/
 
 bool polyHydroxylSiO2SurfaceBounded::testForPair
@@ -814,25 +813,25 @@ bool polyHydroxylSiO2SurfaceBounded::testForPair
 )
 {
     bool correctPair = false;
-    
+
     if(idI != idJ)
     {
         if((idI == SiId_) && (idJ == OId_))
         {
             correctPair = true;
         }
-        
+
         if((idJ == SiId_) && (idI == OId_))
         {
             label tnTemp = tnI;
             tnI = tnJ;
             tnJ = tnTemp;
-            
+
             correctPair = true;
-        }        
-        
+        }
+
     }
-    
+
     return correctPair;
 }
 
@@ -920,9 +919,9 @@ void polyHydroxylSiO2SurfaceBounded::insertMolecule
     }
 
     const polyMolecule::constantProperties& cP = molCloud_.constProps(id);
-    
+
 //     Info << "mass = " << cP.mass() << endl;
-    
+
     vector v = equipartitionLinearVelocity(temperature, cP.mass());
 
     v += bulkVelocity;
@@ -958,7 +957,7 @@ void polyHydroxylSiO2SurfaceBounded::insertMolecule
     molCloud_.createMolecule
     (
         position,
-        cell,   
+        cell,
         Q,
         v,
         vector::zero,

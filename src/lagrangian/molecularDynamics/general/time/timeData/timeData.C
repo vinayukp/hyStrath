@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -67,7 +66,7 @@ timeData::timeData
 {}
 
 
-//- Construct from Time and timeDict 
+//- Construct from Time and timeDict
 timeData::timeData
 (
     Time& t,
@@ -178,7 +177,7 @@ void timeData::setInitialData()
     nControlSteps_ = averagingTime_.deltaT()/controlTime_.deltaT();
 
 
-   //-- offsetting the controlling time index so that the time-interval finishes 
+   //-- offsetting the controlling time index so that the time-interval finishes
     //   one time-step ahead of the calcProp time.
     controlTime_.timeIndex()--;
 }
@@ -186,13 +185,13 @@ void timeData::setInitialData()
 
 void timeData::checkAndModifyTimeProperties()
 {
-    //- checking 
+    //- checking
 
     bool changedProperties = false;
     const scalar& deltaTMD = mdTime_.deltaT();
 
     // - 1. averaging time
-    //   for now we ensure that the averaging interval is equal 
+    //   for now we ensure that the averaging interval is equal
     //   to the writing interval
 
     label& nAverages = averagingTime_.nSteps();
@@ -229,14 +228,14 @@ void timeData::checkAndModifyTimeProperties()
 
 
     // - 2. calcProp time
-    //   for now we ensure that the calculation property interval is either 
+    //   for now we ensure that the calculation property interval is either
     //   equal to the writing interval or else smaller than and a divisible factor
     //   of the writing interval
 
 //     label& nCalcProp = calcPropTime_.nSteps();
-// 
+//
 //     Info << "  nCalcProp steps (initial): " << nCalcProp;
-// 
+//
 //     if(nCalcProp < 1)
 //     {
 //         nCalcProp = 1;
@@ -258,13 +257,13 @@ void timeData::checkAndModifyTimeProperties()
 //             }
 //         }
 //     }
-// 
+//
 //     calcPropTime_.deltaT() = deltaTMD * scalar(nCalcProp);
-// 
+//
 //     Info << ", (final): " << nCalcProp
 //          << " time interval: " << calcPropTime_.deltaT()
 //          << endl;
-// 
+//
 
    // - 3. control time
 
@@ -345,8 +344,8 @@ void timeData::checkAndModifyTimeProperties()
     {
         FatalErrorIn("timeData::timeData()")
             << "Time data members have been changed."
-            << " Check and change them appropriately from the time dictionary" 
-            << nl 
+            << " Check and change them appropriately from the time dictionary"
+            << nl
             << exit(FatalError);
     }
 }
@@ -366,7 +365,7 @@ void timeData::setTimeData(const dictionary& timeDict)
     const label nAverages(readLabel(timeDict.lookup("nAverages")));
 //     const label nCalcProp(readLabel(timeDict.lookup("nCalcProp")));
     const label nControls(readLabel(timeDict.lookup("nControls")));
- 
+
     samplingTime_.nSteps() = nSamples;
     averagingTime_.nSteps() = nAverages;
 //     calcPropTime_.nSteps() = nCalcProp;
@@ -415,7 +414,7 @@ const bool& timeData::controlTime() const
 // {
 //     return calcPropTime_.endTime();
 // }
-// 
+//
 
 
 const label& timeData::nSamples() const

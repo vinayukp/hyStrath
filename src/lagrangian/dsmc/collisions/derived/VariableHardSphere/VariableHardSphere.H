@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ class VariableHardSphere
 {
 
 protected:
- 
+
     // Protected data
 
         //- The coefficients dictionary
@@ -99,7 +99,7 @@ public:
             const label cellI,
             scalar cR = -1
         );
-        
+
         //- Scatter parcels P and Q
         virtual void scatter
         (
@@ -108,7 +108,7 @@ public:
             const label cellI,
             scalar cR = -1
         );
-        
+
         //- Calculate post-collision velocities
         virtual void postCollisionVelocities
         (
@@ -118,7 +118,7 @@ public:
             vector& UQ,
             scalar cR = -1
         );
-        
+
         //- Calculate post-reaction velocities for both products
         virtual void postReactionVelocities
         (
@@ -128,7 +128,7 @@ public:
             vector& UQ,
             scalar cR
         );
-        
+
         //- Apply energy redistribution
         virtual void redistribute
         (

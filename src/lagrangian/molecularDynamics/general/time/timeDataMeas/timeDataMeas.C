@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -60,7 +59,7 @@ timeDataMeas::timeDataMeas
 {}
 
 
-//- Construct from Time and timeDict 
+//- Construct from Time and timeDict
 timeDataMeas::timeDataMeas
 (
     Time& t,
@@ -167,7 +166,7 @@ void timeDataMeas::setInitialData()
         samplingTime_.nSteps() = nSamplesDict;
         averagingTime_.nSteps() = label((averagingTime/deltaTMD) + 0.5);
 
-        Info << "Averaging time: " << averagingTime << ", deltaTMD: " << deltaTMD << averagingTime_.nSteps() << endl; 
+        Info << "Averaging time: " << averagingTime << ", deltaTMD: " << deltaTMD << averagingTime_.nSteps() << endl;
 //         checkAndModifyTimeProperties();
 
         //- test properties
@@ -341,7 +340,7 @@ void timeDataMeas::setInitialData()
     {
         FatalErrorIn("timeDataMeas::setInitialData()")
             << "timeOption: \"" << timeMeasOption_
-            << "\" is not one of the available options." << nl 
+            << "\" is not one of the available options." << nl
             << exit(FatalError);
     }
 
@@ -363,10 +362,10 @@ void timeDataMeas::setInitialData()
 
     totalNAvSteps_ = label ( ((endTime - startTime) / averagingTime_.deltaT()) + 0.5 );
 
-//     Info<< "test: " << " av time: " << averagingTime_.deltaT() 
-//         << " totalNavSteps: " << (endTime - startTime) / averagingTime_.deltaT() 
+//     Info<< "test: " << " av time: " << averagingTime_.deltaT()
+//         << " totalNavSteps: " << (endTime - startTime) / averagingTime_.deltaT()
 //         << " label: " << label((endTime - startTime) / averagingTime_.deltaT())
-//         << " adjustement : " 
+//         << " adjustement : "
 //         << label( ( (endTime - startTime) / averagingTime_.deltaT() ) + 0.5 )
 //         << " final result : " << totalNAvSteps_
 //         << endl;
@@ -382,7 +381,7 @@ void timeDataMeas::setInitialData()
     Info << nl << endl;
 
 //     averagingTimes_.setSize(totalNAvSteps_+1, 0.0);
-// 
+//
 //     forAll(averagingTimes_, tT)
 //     {
 //         averagingTimes_[tT] = startTime + tT*averagingTime_.deltaT();
@@ -391,7 +390,7 @@ void timeDataMeas::setInitialData()
     nAvTimeSteps_.value() = scalar(averagingTime_.nSteps());
 
 //     samplingTimes_.setSize(totalNSampSteps_+1, 0.0);
-// 
+//
 //     forAll(samplingTimes_, tT)
 //     {
 //         samplingTimes_[tT] = startTime + tT*samplingTime_.deltaT();
@@ -402,7 +401,7 @@ void timeDataMeas::setInitialData()
 
 void timeDataMeas::checkAndModifyTimeProperties()
 {
-    //- checking 
+    //- checking
 
     bool changedProperties = false;
 
@@ -470,8 +469,8 @@ void timeDataMeas::checkAndModifyTimeProperties()
 
         FatalErrorIn("timeDataMeas::timeDataMeas()")
             << "Time properties are inconsistent."
-            << " Check and change them appropriately from the time dictionary" 
-            << nl 
+            << " Check and change them appropriately from the time dictionary"
+            << nl
             << exit(FatalError);
     }
 }
@@ -490,12 +489,12 @@ void timeDataMeas::setTimeData(const dictionary& timeDict)
     const label nSamples(readLabel(timeDict.lookup("nSamples")));
     const label nAverages(readLabel(timeDict.lookup("nAverages")));
 //     const label nCalcProp(readLabel(timeDict.lookup("nCalcProp")));
-    
- 
+
+
     samplingTime_.nSteps() = nSamples;
     averagingTime_.nSteps() = nAverages;
 //     calcPropTime_.nSteps() = nCalcProp;
-    
+
 
     setInitialData();
 }
@@ -541,7 +540,7 @@ const bool& timeDataMeas::writeTime() const
 // {
 //     return calcPropTime_.endTime();
 // }
-// 
+//
 
 
 const label& timeDataMeas::nSamples() const

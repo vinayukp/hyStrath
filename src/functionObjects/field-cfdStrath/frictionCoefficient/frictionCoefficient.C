@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013-2016 OpenFOAM Foundation
-     \\/     M anipulation  | Copyright (C) 2016 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
+     \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ Foam::functionObjects::frictionCoefficient::frictionCoefficient
     );
 
     mesh_.objectRegistry::store(frictionCoefficientPtr);
-    
+
     //- Check if the wallShearStress field exists
     wallShearStressHeader_ = IOobject
     (
@@ -115,13 +115,13 @@ Foam::functionObjects::frictionCoefficient::frictionCoefficient
         mesh_,
         IOobject::MUST_READ
     );
-    
+
     if (!wallShearStressHeader_.typeHeaderOk<volVectorField>(false))
     {
         FatalErrorInFunction
             << "Unable to find the wallShearStress"
             << exit(FatalError);
-    } 
+    }
 }
 
 
@@ -137,10 +137,10 @@ bool Foam::functionObjects::frictionCoefficient::read(const dictionary& dict)
 {
     fvMeshFunctionObject::read(dict);
     writeFile::read(dict);
-    
-    wallShearStress_ = 
+
+    wallShearStress_ =
         dict.lookupOrDefault<word>("wallShearStress", "wallShearStress");
-        
+
     inflowPatchName_ = dict.lookupOrDefault<word>("inflowPatchName", "inlet");
 
     return true;
@@ -158,7 +158,7 @@ bool Foam::functionObjects::frictionCoefficient::execute()
     if (foundObject<turbulenceModel>(turbulenceModel::propertiesName))
     {
         if (foundObject<multi2Thermo>(multi2Thermo::dictName))
-        {    
+        {
             volScalarField::Boundary& frictionCoefficientBf =
                 frictionCoefficient.boundaryFieldRef();
 
@@ -167,46 +167,46 @@ bool Foam::functionObjects::frictionCoefficient::execute()
                 (
                     turbulenceModel::propertiesName
                 );
-                
+
             const multi2Thermo& thermo =
                 lookupObject<multi2Thermo>(multi2Thermo::dictName);
-                
+
             volVectorField wallShearStress(wallShearStressHeader_, mesh_);
-            
-            volVectorField::Boundary& wallShearStressBf = 
+
+            volVectorField::Boundary& wallShearStressBf =
                 wallShearStress.boundaryFieldRef();
 
-            const label inflowPatchId = 
+            const label inflowPatchId =
                 mesh_.boundaryMesh().findPatchID(inflowPatchName_);
-                
+
             tmp<volScalarField> trho = thermo.rho();
             const volScalarField::Boundary& rhoBf = trho().boundaryField();
 
             const volVectorField::Boundary& UBf = model.U().boundaryField();
-            
+
             const scalar rhoinf = rhoBf[inflowPatchId][0];
             const scalar magUinf = mag(UBf[inflowPatchId][0]);
 
             const fvPatchList& patches = mesh_.boundary();
-            
+
             forAll(patches, patchi)
             {
                 const fvPatch& patch = patches[patchi];
-                
+
                 if (isA<wallFvPatch>(patch))
                 {
                     const vectorField& Sfp = mesh_.Sf().boundaryField()[patchi];
                     const scalarField& magSfp = mesh_.magSf().boundaryField()[patchi];
                     vectorField n(-Sfp/magSfp);
-                    
+
                     wallShearStressBf[patchi] = wallShearStressBf[patchi] & (I - n*n);
-                    
+
                     forAll(patches[patchi], facei)
                     {
                         frictionCoefficientBf[patchi][facei] =
                             mag(wallShearStressBf[patchi][facei]);
                     }
-                    
+
                     frictionCoefficientBf[patchi] /= (0.5*rhoinf*pow(magUinf, 2));
                 }
             }
@@ -241,7 +241,7 @@ bool Foam::functionObjects::frictionCoefficient::write()
 
     frictionCoefficient.write();
 
-    const volScalarField::Boundary& frictionCoefficientBf = 
+    const volScalarField::Boundary& frictionCoefficientBf =
         frictionCoefficient.boundaryField();
     const fvPatchList& patches = mesh_.boundary();
 
@@ -251,7 +251,7 @@ bool Foam::functionObjects::frictionCoefficient::write()
 
         if (isA<wallFvPatch>(patch))
         {
-            const scalarField& frictionCoefficientp = 
+            const scalarField& frictionCoefficientp =
                 frictionCoefficientBf[patchi];
 
             const scalar minCf = gMin(frictionCoefficientp);

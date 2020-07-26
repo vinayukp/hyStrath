@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -119,17 +118,17 @@ void dsmcCLLWallFieldPatch::calculateProperties()
 }
 
 void dsmcCLLWallFieldPatch::controlParticle(dsmcParcel& p, dsmcParcel::trackingData& td)
-{    
+{
     measurePropertiesBeforeControl(p);
 
     vector& U = p.U();
-    
+
     label typeId = p.typeId();
 
     scalar& ERot = p.ERot();
-    
+
     labelList& vibLevel = p.vibLevel();
-    
+
     label wppIndex = p.patch(p.face());
 
     const polyPatch& patch = mesh_.boundaryMesh()[wppIndex];
@@ -176,59 +175,59 @@ void dsmcCLLWallFieldPatch::controlParticle(dsmcParcel& p, dsmcParcel::trackingD
     scalar mass = cloud_.constProps(typeId).mass();
 
     scalar rotationalDof = cloud_.constProps(typeId).rotationalDegreesOfFreedom();
-    
+
     scalar vibrationalDof = cloud_.constProps(typeId).nVibrationalModes();
-    
+
     const scalar& alphaT = tangentialAccommodationCoefficient_*(2.0 - tangentialAccommodationCoefficient_);
-    
+
     const scalar& alphaN = normalAccommodationCoefficient_;
-    
+
     scalar mostProbableVelocity = sqrt(2.0*physicoChemical::k.value()*T/mass);
-    
+
         //normalising the incident velocities
-    
+
     vector normalisedTangentialVelocity = Ut/mostProbableVelocity;
-    
+
     scalar normalisedNormalVelocity = U_dot_nw/mostProbableVelocity;
-    
-    
+
+
     //normal random number components
-    
+
     scalar thetaNormal = 2.0*pi*rndGen.sample01<scalar>();
-    
+
     scalar rNormal = sqrt(-alphaN*log(rndGen.sample01<scalar>()));
-    
-    
+
+
     //tangential random number components
-    
+
     scalar thetaTangential1 = 2.0*pi*rndGen.sample01<scalar>();
-    
+
     scalar rTangential1 = sqrt(-alphaT*log(rndGen.sample01<scalar>()));
-    
+
     scalar thetaTangential2 = 2.0*pi*rndGen.sample01<scalar>();
-    
+
     scalar rTangential2 = sqrt(-alphaT*log(rndGen.sample01<scalar>()));
-    
+
     scalar normalisedIncidentTangentialVelocity1 = mag(normalisedTangentialVelocity);
-    
+
     //selecting post-collision velocity components
-    
+
     scalar um = sqrt(1.0-alphaN)*normalisedNormalVelocity;
-    
-    vector normalVelocity = sqrt( 
-                                    (rNormal*rNormal) 
-                                    + (um*um) 
+
+    vector normalVelocity = sqrt(
+                                    (rNormal*rNormal)
+                                    + (um*um)
                                     + 2.0*rNormal*um*cos(thetaNormal)
                                 )*nw;
-    
+
     vector tangentialVelocity1 = (sqrt(1.0 - alphaT)*mag(normalisedIncidentTangentialVelocity1)
                                 + rTangential1*cos(thetaTangential1))*tw1;
-    
+
     vector tangentialVelocity2 = (rTangential2*cos(thetaTangential2))*tw2;
-   
+
 
     //setting the post interaction velocity
-    
+
     U =
         mostProbableVelocity
        *(
@@ -236,15 +235,15 @@ void dsmcCLLWallFieldPatch::controlParticle(dsmcParcel& p, dsmcParcel::trackingD
           + tangentialVelocity2
           - normalVelocity
         );
-      
+
     vector uWallNormal = (boundaryU_.boundaryField()[wppIndex][wppLocalFace] & nw) * nw;
-    vector uWallTangential1 = (boundaryU_.boundaryField()[wppIndex][wppLocalFace] & tw1) * tw1; 
+    vector uWallTangential1 = (boundaryU_.boundaryField()[wppIndex][wppLocalFace] & tw1) * tw1;
     vector uWallTangential2 = (boundaryU_.boundaryField()[wppIndex][wppLocalFace] & tw2) * tw2;
-    vector UNormal = ((U & nw) * nw) + uWallNormal*normalAccommodationCoefficient_;  
+    vector UNormal = ((U & nw) * nw) + uWallNormal*normalAccommodationCoefficient_;
     vector UTangential1 = (U & tw1) * tw1 + uWallTangential1*alphaT;
     vector UTangential2 = (U & tw2) * tw2 + uWallTangential2*alphaT;
-    
-    
+
+
     U = UNormal + UTangential1 + UTangential2;
 
 
@@ -279,11 +278,11 @@ void dsmcCLLWallFieldPatch::controlParticle(dsmcParcel& p, dsmcParcel::trackingD
     scalar cosThetaRot = cos(2.0*pi*rndGen.sample01<scalar>());
 
     ERot = physicoChemical::k.value()*T*(pow(rRot,2.0) + pow(om,2.0) + (2.0*rRot*om*cosThetaRot));
-    
+
 //     Info << "U after wall addition = " << U << endl;
 
     //     ERot = cloud_.equipartitionRotationalEnergy(T, rotationalDof);
-        
+
         vibLevel = cloud_.equipartitionVibrationalEnergyLevel(T, vibrationalDof, typeId);
 
     measurePropertiesAfterControl(p, 0.0);

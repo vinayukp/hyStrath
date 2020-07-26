@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,14 +34,24 @@ Foam::mixingRule::New
     const compressibleTurbulenceModel& turbulence
 )
 {
-    const word partialMixingRuleName = word(thermo.transportDictionary()
-            .subDict("transportModels").lookup("mixingRule"));
-        
-    word mixingRuleName = partialMixingRuleName + word("MR") 
-        +'<' + thermo.partialThermoName() + '>'; 
-        
-    Info<< "\nLoading the transport mixing rule:" << tab << partialMixingRuleName 
-        << "\n" << endl;
+    word partialMixingRuleName = word::null;
+    
+    if (thermo.composition().species().size() == 1)
+    {
+        partialMixingRuleName = "molar";
+    }
+    else
+    {
+        partialMixingRuleName = thermo.transportDictionary()
+            .subDict("transportModels")
+            .lookupOrDefault<word>("mixingRule", "Wilke");
+    }
+    
+    word mixingRuleName = partialMixingRuleName + word("MR")
+        +'<' + thermo.partialThermoName() + '>';
+
+    Info<< "\nLoading the transport mixing rule:" << tab 
+        << partialMixingRuleName << "\n" << endl;
 
     fvMeshConstructorTable::iterator cstrIter =
         fvMeshConstructorTablePtr_->find(mixingRuleName);

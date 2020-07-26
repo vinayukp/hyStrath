@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     brennerPotential
@@ -102,7 +101,7 @@ void brennerPotential::setPotential()
 
 
     // modify to reduced units
-    
+
 
     cIJ_ /= rU_.refEnergy();
     betaIJ_ *= rU_.refLength();
@@ -123,7 +122,7 @@ void brennerPotential::setPotential()
 
     Info << nl << "brenner properties in reduced units: " << endl;
 
-    Info<< "rIJ0 = " << rIJ0_ 
+    Info<< "rIJ0 = " << rIJ0_
         << nl << "rIJ1 = " << rIJ1_
         << nl << "rIJ2 = " << rIJ2_
         << nl << "betaIJ = " << betaIJ_
@@ -154,7 +153,7 @@ void brennerPotential::outputProperties()
 
     scalarField rField(nBins, 0.0);
     scalarField fIJField(nBins, 0.0);
-    
+
     for (label i=0; i<nBins; ++i)
     {
         rField[i] = rMin_+(i*dr_);
@@ -167,8 +166,8 @@ void brennerPotential::outputProperties()
     {
         forAll(rField, n)
         {
-            fileFij 
-                << rField[n] << "\t" 
+            fileFij
+                << rField[n] << "\t"
                 << fIJField[n]
                 << endl;
         }
@@ -199,9 +198,9 @@ void brennerPotential::outputProperties()
     {
         forAll(rField, n)
         {
-            fileUrep 
-                << rField[n] << "\t" 
-                << URepField[n] << "\t" 
+            fileUrep
+                << rField[n] << "\t"
+                << URepField[n] << "\t"
                 << fRepField[n]
                 << endl;
         }
@@ -214,7 +213,7 @@ void brennerPotential::outputProperties()
     }
 
 
-    // output attractive part of potential 
+    // output attractive part of potential
 
     scalarField UAttField(nBins, 0.0);
     scalarField fAttField(nBins, 0.0);
@@ -232,9 +231,9 @@ void brennerPotential::outputProperties()
     {
         forAll(rField, n)
         {
-            fileUatt 
-                << rField[n] << "\t" 
-                << UAttField[n] << "\t" 
+            fileUatt
+                << rField[n] << "\t"
+                << UAttField[n] << "\t"
                 << fAttField[n]
                 << endl;
         }
@@ -266,9 +265,9 @@ void brennerPotential::outputProperties()
     {
         forAll(rField, n)
         {
-            fileU 
-                << rField[n] << "\t" 
-                << UField[n] << "\t" 
+            fileU
+                << rField[n] << "\t"
+                << UField[n] << "\t"
                 << fField[n]
                 << endl;
         }
@@ -293,9 +292,9 @@ void brennerPotential::outputProperties()
 //             << "Attempted assignment to self"
 //             << abort(FatalError);
 //     }
-// 
+//
 //     Map<label>::operator=(rhs);
-// 
+//
 //     binWidth_ = rhs.binWidth();
 // }
 
@@ -309,14 +308,14 @@ void brennerPotential::outputProperties()
 // {
 //     os  << d.binWidth_
 //         << static_cast<const Map<label>&>(d);
-// 
+//
 //     // Check state of Ostream
 //     os.check
 //     (
 //         "Ostream& operator<<(Ostream&, "
 //         "const brennerPotential&)"
 //     );
-// 
+//
 //     return os;
 // }
 

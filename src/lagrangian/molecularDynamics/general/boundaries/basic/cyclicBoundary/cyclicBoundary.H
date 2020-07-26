@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,19 +19,18 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     cyclicBoundary
 
 Description
-    This is the definition of a cyclic boundary - data is read in from the 
-    cyclicBoundaries dictionary (see constructCyclicBoundaries class and 
-    createCyclicBoundaries utility for more info). 
-    
+    This is the definition of a cyclic boundary - data is read in from the
+    cyclicBoundaries dictionary (see constructCyclicBoundaries class and
+    createCyclicBoundaries utility for more info).
+
     Only linear translations has been implemented between coupled cyclis,
-    but it is possible to introduce rotational translations as well in the future. 
+    but it is possible to introduce rotational translations as well in the future.
     This was present in 1.7.x but it was discontinued until it is required.
 
 
@@ -79,38 +78,38 @@ protected:
 
         //- name of this patch
         word patchName_;
-        
+
         //- id on boundaryMesh
         label patchId_;
 
         // normal vector (pointing outwards)
         vector nF_;
-        
-        // centroid of patch 
+
+        // centroid of patch
         vector centroid_;
-        
+
         // 4 points (assuming a rectangular patch)
         List<vector> boundaryPoints_;
 
         // total number of faces on patch
         label nFaces_;
-        
+
         // separationVector direction from this patch to neighbour
-        vector separationVector_;        
+        vector separationVector_;
 
         //- name of neighbour patch
-        word patchNameN_;        
+        word patchNameN_;
         label patchNId_;
 
         // angle between coupled patches
         scalar theta_;
         bool rotate_;
-// 
+//
 //         vector rotationStartPoint_;
 //         vector rotationEndPoint_;
 //         vector rotationAxis_;
 //         vector rotationPt_;
-// 
+//
 //         // rotational tensors
 //         tensor RAB_;
 //         tensor RBA_;
@@ -167,7 +166,7 @@ public:
             ),
             (t, mesh, dict)
         );
-   
+
     // Constructors
 
         //- Construct from components
@@ -195,10 +194,10 @@ public:
 
 
     // Member Functions
-    
-            
+
+
         bool isPatchNeighbour(const word& patchNameNeighbour);
-            
+
         void setCoupledPatchInfo
         (
             const vector& centroid,
@@ -210,18 +209,18 @@ public:
             //- return the name of the control patch
             const word& patchName() const;
             const label& patchId() const;
-            const vector& separationVector() const;            
+            const vector& separationVector() const;
             const List<vector>& boundaryPoints() const;
-            const vector& normal() const;             
-            const vector& centroid() const;               
+            const vector& normal() const;
+            const vector& centroid() const;
 
             // neighbour
             const word& patchNameN() const;
-            const label& patchIdN() const;           
-            
+            const label& patchIdN() const;
+
             // parallel reconstructed number of faces
 //             const label& nFaces() const;
-// 
+//
 //             //- retrun faces on patch
 //             const labelList& controlPatch() const;
 //             const labelList& controlPatchA() const;
@@ -245,12 +244,12 @@ public:
             const bool& rotate() const;
 //             const vector& rotationAxis() const;
 //             const vector& rotationAxisStartPt() const;
-// 
+//
 //             const vector& rotationPt() const;
 //             const tensor& RAB() const;
 //             const tensor& RBA() const;
 
-    
+
 };
 
 

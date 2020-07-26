@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     noTimeCounter
@@ -100,9 +99,9 @@ void noTimeCounter::collide()
     forAll(cellOccupancy, cellI)
     {
         const scalar deltaT = cloud_.deltaTValue(cellI);
-        
+
         const DynamicList<dsmcParcel*>& cellParcels(cellOccupancy[cellI]);
-        
+
         const scalar& cellVolume = mesh.cellVolumes()[cellI];
 
         const label nC(cellParcels.size());
@@ -141,14 +140,14 @@ void noTimeCounter::collide()
             // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
             scalar sigmaTcRMax = cloud_.sigmaTcRMax()[cellI];
-            
+
             //scalar selectedPairs = 0.0;
-            
+
             scalar selectedPairs =
                 cloud_.collisionSelectionRemainder()[cellI]
-                + 0.5*nC*(nC - 1)*cloud_.nParticles(cellI, true)*sigmaTcRMax*deltaT
+                + 0.5*nC*(nC - 1)*cloud_.nParticles(cellI)*sigmaTcRMax*deltaT
                 /cellVolume;
-               
+
             const label nCandidates(selectedPairs);
 
             cloud_.collisionSelectionRemainder()[cellI] = selectedPairs - nCandidates;
@@ -223,9 +222,9 @@ void noTimeCounter::collide()
 
                 chargeP = cloud_.constProps(parcelP.typeId()).charge();
                 chargeQ = cloud_.constProps(parcelQ.typeId()).charge();
-                
+
                 //do not allow electron-electron collisions
-                
+
                 if(!(chargeP == -1 && chargeQ == -1))
                 {
 
@@ -234,7 +233,7 @@ void noTimeCounter::collide()
                         parcelP,
                         parcelQ
                     );
-                    
+
 
                     // Update the maximum value of sigmaTcR stored, but use the
                     // initial value in the acceptance-rejection criteria because
@@ -253,7 +252,7 @@ void noTimeCounter::collide()
                         // find which reaction model parcel p and q should use
                         label rMId = cloud_.reactions().returnModelId(parcelP, parcelQ);
 
-    //                             Info << " parcelP id: " <<  parcelP.typeId() 
+    //                             Info << " parcelP id: " <<  parcelP.typeId()
     //                                 << " parcelQ id: " << parcelQ.typeId()
     //                                 << " reaction model: " << rMId
     //                                 << endl;
@@ -280,7 +279,7 @@ void noTimeCounter::collide()
                                 (
                                     parcelP,
                                     parcelQ
-                                );                                    
+                                );
     //                         }
                             // if reaction unsuccessful use conventional collision model
                             if(cloud_.reactions().reactions()[rMId]->relax())
@@ -315,9 +314,9 @@ void noTimeCounter::collide()
     reduce(collisionCandidates, sumOp<label>());
 
     cloud_.sigmaTcRMax().correctBoundaryConditions();
-    
+
     infoCounter_++;
-        
+
     if(infoCounter_ >= cloud_.nTerminalOutputs())
     {
         if (collisionCandidates)
@@ -327,13 +326,13 @@ void noTimeCounter::collide()
     //             << "    Acceptance rate                 = "
     //             << scalar(collisions)/scalar(collisionCandidates) << nl
                 << endl;
-                
+
             infoCounter_ = 0;
         }
         else
         {
             Info<< "    No collisions" << endl;
-            
+
             infoCounter_ = 0;
         }
     }

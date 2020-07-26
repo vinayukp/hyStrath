@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     twoDimForceDistribution
@@ -46,7 +45,7 @@ namespace Foam
 //     for(label i = 0; i < noOfBins_; i++)
 //     {
 //         magRadii_[i] = 0.5*binWidth_ + scalar(i)*binWidth_;
-// 
+//
 //         radii_[i] = startPoint_ + (0.5*binWidth_ + scalar(i)*binWidth_)*unitVector_;
 //     }
 // }
@@ -136,7 +135,7 @@ twoDimForceDistribution::~twoDimForceDistribution()
 
 void twoDimForceDistribution::addToDistribution
 (
-    const vector& r, 
+    const vector& r,
     const vector& force,
     const scalar& energy
 )
@@ -154,7 +153,7 @@ void twoDimForceDistribution::addToDistribution
     {
         label nX = label(rX/binWidthX_);
         label nY = label(rY/binWidthY_);
-    
+
         if
         (
             (nX < nBinsX_) &&
@@ -187,7 +186,7 @@ bool twoDimForceDistribution::isWithinDistributionRange(const vector& r)
     {
         label nX = label(rX/binWidthX_);
         label nY = label(rY/binWidthY_);
-    
+
         if
         (
             (nX < nBinsX_) &&
@@ -224,7 +223,7 @@ void twoDimForceDistribution::scaleForceDistribution
     const List< scalarField>& values
 )
 {
-    //check 
+    //check
     if(forces_.size() == values.size())
     {
         forAll(forces_, x)
@@ -291,14 +290,14 @@ void twoDimForceDistribution::write
             {
                 for (label j = 0; j < nBinsY_; j++)
                 {
-                    vector pos = startPoint_ + 
+                    vector pos = startPoint_ +
                                  (0.5 + scalar(i))*binWidthX_*unitVectorX_ +
                                  (0.5 + scalar(j))*binWidthY_*unitVectorY_;
 
-                    positionsFile 
+                    positionsFile
                         << "(" << pos.x() << " " << pos.y() << " "
                         << pos.z() << ") " << mesh.findCell(pos)
-                        << endl;  
+                        << endl;
                 }
             }
 
@@ -324,15 +323,15 @@ void twoDimForceDistribution::write
             {
                 for (label j = 0; j < nBinsY_; j++)
                 {
-                    vector pos = startPoint_ + 
+                    vector pos = startPoint_ +
 
                                 (0.5 + scalar(i))*binWidthX_*unitVectorX_ +
                                 (0.5 + scalar(j))*binWidthY_*unitVectorY_;
 
-                    positionsFile2 
+                    positionsFile2
                         << "(" << pos.x() << " " << pos.y() << " "
-                        << pos.z() << ")" 
-                        << endl;  
+                        << pos.z() << ")"
+                        << endl;
                 }
             }
 
@@ -361,10 +360,10 @@ void twoDimForceDistribution::write
             {
                 for (label j = 0; j < nBinsY_; j++)
                 {
-                    forcesFile 
+                    forcesFile
                         << "(" << forces_[i][j].x() << " " << forces_[i][j].y() << " "
-                        << forces_[i][j].z() << ") " 
-                        << endl;  
+                        << forces_[i][j].z() << ") "
+                        << endl;
                 }
             }
 
@@ -390,7 +389,7 @@ void twoDimForceDistribution::write
             {
                 for (label j = 0; j < nBinsY_; j++)
                 {
-                    energiesFile 
+                    energiesFile
                         << energies_[i][j]
                         << endl;
                 }

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -33,13 +32,13 @@ Description
 namespace Foam
 {
 
-//- Null Constructor 
+//- Null Constructor
 cyclicBoundaries::cyclicBoundaries
 (
     Time& t,
     const polyMesh& mesh
 )
-:    
+:
     time_(t),
     boundariesDict_
     (
@@ -80,7 +79,7 @@ cyclicBoundaries::cyclicBoundaries
             IOobject::MUST_READ,
             IOobject::NO_WRITE
         )
-    ),    
+    ),
     cyclicBoundaryList_(boundariesDict_.lookup("cyclicBoundaries")),
     cyclicBoundaryNames_(cyclicBoundaryList_.size()),
     cyclicBoundaryIds_(cyclicBoundaryList_.size()),
@@ -96,7 +95,7 @@ cyclicBoundaries::cyclicBoundaries
     label nCyclicBoundaries = 0;
 
     DynamicList<word> cyclicNames(0);
-    
+
     forAll(bM, patchI)
     {
         const polyPatch& patch = bM[patchI];
@@ -125,20 +124,20 @@ cyclicBoundaries::cyclicBoundaries
         {
             const entry& boundaryI = cyclicBoundaryList_[c];
             const dictionary& boundaryIDict = boundaryI.dict();
-    
+
             cyclicBoundaryModels_[c] = autoPtr<cyclicBoundary>
             (
                 cyclicBoundary::New(t, mesh, boundaryIDict)
             );
-    
+
             cyclicBoundaryNames_[c] = cyclicBoundaryModels_[c]->type();
             cyclicBoundaryIds_[c] = c;
         }
     }
-    
+
     forAll(cyclicBoundaryModels_, i)
     {
-        
+
         forAll(cyclicBoundaryModels_, j)
         {
             if(i != j)
@@ -148,7 +147,7 @@ cyclicBoundaries::cyclicBoundaries
                     (
                         cyclicBoundaryModels_[j]->patchName()
                     );
-                                
+
                 if(neighbour)
                 {
                     cyclicBoundaryModels_[i]->setCoupledPatchInfo

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     multiRampForce
@@ -73,13 +72,13 @@ multiRampForce::multiRampForce
 
 {
     partialLoadingTime_ = loadingTime_/noOfStops_;
-    
+
     direction_ /= mag(direction_);
 
     forceGradient_ = (finalForce_ - initialForce_)/loadingTime_;
 
     force_ = direction_*initialForce_;
-    
+
     Info << nl << "breathing time per stop = " << breathingTime_
          << ", total breathing time = " << breathingTime_*noOfStops_
          << nl << "loading time per stop = " << partialLoadingTime_
@@ -114,24 +113,24 @@ void multiRampForce::updateForce()
 
     currentTime_ += deltaTMD_;
     timeLoading_ += deltaTMD_;
-    
+
     if(currentTime_ <= loadingTime_)
     {
         if(timeLoading_ <= partialLoadingTime_)
         {
             Info << "loading" << endl;
-            
+
             force_ = (forceGradient_*currentTime_ + initialForce_)*direction_;
             timeBreathing_ = 0.0;
         }
         else
         {
             Info << "breathing" << endl;
-            
+
             timeBreathing_ += deltaTMD_;
-            
+
             initialForce_ -= forceGradient_*deltaTMD_;
-            
+
             if(timeBreathing_ >= breathingTime_)
             {
                 timeLoading_ = 0.0;
@@ -142,7 +141,7 @@ void multiRampForce::updateForce()
     {
         force_ = finalForce_*direction_;
     }
-    
+
     Info << "force mag = " << mag(force_) << endl;
 }
 

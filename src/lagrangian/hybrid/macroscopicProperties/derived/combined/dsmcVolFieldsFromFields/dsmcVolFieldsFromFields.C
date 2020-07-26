@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,12 +19,11 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
-Measures overall temperature, including vibrational temperature, for a single species gas 
+Measures overall temperature, including vibrational temperature, for a single species gas
 or a gas mixture and writes the results to a volume scalar field that can be viewed in Paraview.
 
 Translational, rotatational and vibrational temperature field will also be written automatically.
@@ -136,7 +135,7 @@ dsmcVolFieldsFromFields::dsmcVolFieldsFromFields
                 (
                     cloud_.constProps(iD).nVibrationalModes()
                 );
-                    
+
                 forAll(mesh_.cells(), cell)
                 {
                     if (EVib.size() > 0)
@@ -153,14 +152,14 @@ dsmcVolFieldsFromFields::dsmcVolFieldsFromFields
         forAll(mesh_.cells(), cell)
         {
             const scalar nTVBynEq = nTBynEq*V_[cell];
-            
+
             eRotU_[cell] = heatFluxRotVector_[cell].x() * nTVBynEq
                 + rotationalEMean_[cell] * UMean_[cell].x();
             eRotV_[cell] = heatFluxRotVector_[cell].y() * nTVBynEq
                 + rotationalEMean_[cell] * UMean_[cell].y();
             eRotW_[cell] = heatFluxRotVector_[cell].z() * nTVBynEq
                 + rotationalEMean_[cell] * UMean_[cell].z();
-                
+
             eVibU_[cell] = heatFluxVibVector_[cell].x() * nTVBynEq
                 + eVib_[cell] * UMean_[cell].x();
             eVibV_[cell] = heatFluxVibVector_[cell].y() * nTVBynEq
@@ -181,7 +180,7 @@ dsmcVolFieldsFromFields::~dsmcVolFieldsFromFields()
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 void dsmcVolFieldsFromFields::calculateField()
-{  
+{
     dsmcVolFields::calculateField();
 
     forAllConstIter(dsmcCloud, cloud_, iter)
@@ -192,9 +191,9 @@ void dsmcVolFieldsFromFields::calculateField()
         if (iD != -1)
         {
             const label cell = p.cell();
-                
+
             scalar vibEn = cloud_.constProps(p.typeId()).eVib_tot(p.vibLevel());
-            
+
             eRotU_[cell] += p.ERot()*p.U().x();
             eRotV_[cell] += p.ERot()*p.U().y();
             eRotW_[cell] += p.ERot()*p.U().z();
@@ -204,7 +203,7 @@ void dsmcVolFieldsFromFields::calculateField()
             eVib_[cell] += vibEn;
         }
     }
-    
+
     if (time_.time().outputTime())
     {
         forAll(rhoNMean_, cell)
@@ -269,7 +268,7 @@ void dsmcVolFieldsFromFields::calculateField()
                 heatFluxVibVector_[cell] = vector::zero;
                 heatFluxVector_[cell] = vector::zero;
             }
-            
+
             heatFluxTraVector_.write();
             heatFluxRotVector_.write();
             heatFluxVibVector_.write();
@@ -302,7 +301,7 @@ void dsmcVolFieldsFromFields::calculateField()
 void dsmcVolFieldsFromFields::resetField()
 {
     dsmcVolFields::resetField();
-    
+
     eRotU_.clear();
     eRotV_.clear();
     eRotW_.clear();
@@ -310,7 +309,7 @@ void dsmcVolFieldsFromFields::resetField()
     eVibV_.clear();
     eVibW_.clear();
     eVib_.clear();
-    
+
     eRotU_.setSize(mesh_.nCells(), 0.0);
     eRotV_.setSize(mesh_.nCells(), 0.0);
     eRotW_.setSize(mesh_.nCells(), 0.0);

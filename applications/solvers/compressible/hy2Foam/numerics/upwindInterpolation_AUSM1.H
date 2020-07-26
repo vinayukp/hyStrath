@@ -8,6 +8,13 @@ Info << "mesh.magSf(): " << mesh.magSf() << endl;
 surfaceScalarField phiv_pos("phiv_pos", (U_pos & mesh.Sf())); //- Step II, + direction
 surfaceScalarField phiv_neg("phiv_neg", (U_neg & mesh.Sf())); //- Step II, - direction
 
+// Make fluxes relative to mesh-motion
+if (mesh.moving())
+{
+    phiv_pos -= mesh.phi();
+    phiv_neg -= mesh.phi();
+}
+
 Info << "phiv_pos: " << phiv_pos << endl;
 Info << "phiv_neg: " << phiv_neg << endl;
 
@@ -16,11 +23,14 @@ surfaceScalarField cSf_pos
     "cSf_pos",
     fvc::interpolate(c, pos, "reconstruct(T)")*mesh.magSf()*sign(mesh.Sf().component(0))
 );
+cSf_pos.setOriented();
+
 surfaceScalarField cSf_neg
 (
     "cSf_neg",
     fvc::interpolate(c, neg, "reconstruct(T)")*mesh.magSf()*sign(mesh.Sf().component(0))
 );
+cSf_neg.setOriented();
 
 Info << "cSf_pos: " << cSf_pos << endl;
 Info << "cSf_neg: " << cSf_neg << endl;
@@ -107,7 +117,7 @@ surfaceScalarField Machf //- Step VI
 
 Machf -= AUSM_Kp/scalingFunction*max(1.0-AUSM_sigma*meanSqrMach, 0.0)*(p_neg-p_pos)
   / (0.5*(rho_pos+rho_neg)*sqr(cf/mesh.magSf()));
-  
+
 Info << "Machf: " << Machf << endl;
 
 Info << "p_pos: " << p_pos << endl;
@@ -118,7 +128,7 @@ Info << "splitPressureDeg5_pos(Mach_pos, AUSM_alpha): " << splitPressureDeg5_pos
 
 Info << "splitPressureDeg5_neg(Mach_neg, AUSM_alpha): " << splitPressureDeg5_neg(Mach_neg, AUSM_alpha) << endl;
 
-surfaceScalarField pf 
+surfaceScalarField pf
 (
     "pf",
     splitPressureDeg5_pos(Mach_pos, AUSM_alpha)*p_pos + splitPressureDeg5_neg(Mach_neg, AUSM_alpha)*p_neg

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     neighbourExclusions
@@ -64,39 +63,39 @@ neighbourExclusions::neighbourExclusions
 
 void neighbourExclusions::initialiseExclusions()
 {
-    // read in tracking numbers 
+    // read in tracking numbers
     List<label> molPointsA = List<label>(propsDict_.lookup("trackingNumbersA"));
     List<label> molPointsB = List<label>(propsDict_.lookup("trackingNumbersB"));
-    
+
     if(molPointsA.size() != molPointsB.size())
     {
         FatalErrorIn("neighbourExclusions::neighbourExclusions()")
             << "size of trackingNumbersA = " << molPointsA
             << " is not the same as trackingNumbersB = : " << molPointsA
             << nl << "in system/potentialDict"
-            << exit(FatalError);        
+            << exit(FatalError);
     }
-    
+
     tNsA_.setSize(molPointsA.size());
     tNsB_.setSize(molPointsB.size());
-    
+
     forAll(tNsA_, i)
     {
         tNsA_[i]=molPointsA[i];
         tNsB_[i]=molPointsB[i];
     }
-    
+
     label N=molCloud_.moleculeTracking().getMaxTrackingNumber();
-    
+
     Info << "N = " << N << endl;
-    
+
     fullTNs_.setSize(N);
-    
+
     forAll(tNsA_, i)
     {
         label tNA = tNsA_[i];
-        label tNB = tNsB_[i];        
-        
+        label tNB = tNsB_[i];
+
         fullTNs_[tNA].append(tNB);
         fullTNs_[tNB].append(tNA);
     }
@@ -146,7 +145,7 @@ bool neighbourExclusions::excludeSites
                     return true;
                 }
             }
-            
+
             return false;
         }
     }

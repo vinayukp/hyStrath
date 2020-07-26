@@ -5,6 +5,13 @@ surfaceScalarField phiv_neg("phiv_neg", (U_neg & mesh.Sf())/mesh.magSf()); //- S
 surfaceScalarField phiv_pos("phiv_pos", (U_pos & mesh.Sf())); //- Step II, + direction
 surfaceScalarField phiv_neg("phiv_neg", (U_neg & mesh.Sf())); //- Step II, - direction
 
+// Make fluxes relative to mesh-motion
+if (mesh.moving())
+{
+    phiv_pos -= mesh.phi();
+    phiv_neg -= mesh.phi();
+}
+
 /*Info << "phiv_pos2: " << phiv_pos[2] << tab << "phiv_neg" << phiv_neg[2] << endl;
 Info << "phiv_pos3: " << phiv_pos[3] << tab << "phiv_neg" << phiv_neg[3] << endl;
 Info << "phiv_pos4: " << phiv_pos[4] << tab << "phiv_neg" << phiv_neg[4] << endl;
@@ -101,10 +108,10 @@ surfaceScalarField Machf //- Step VI
 
 /*Machf -= AUSM_Kp/scalingFunction*max(1.0-AUSM_sigma*meanSqrMach, 0.0)*(p_pos-p_neg)
   / (0.5*(rho_pos+rho_neg)*sqr(cf));*/
-  
+
 Info << "Machf" << tab << Machf[2] << tab << Machf[3] << endl;
 
-surfaceScalarField pf 
+surfaceScalarField pf
 (
     "pf",
     //splitPressureDeg5_pos(Mach_neg, AUSM_alpha)*p_neg + splitPressureDeg5_neg(Mach_pos, AUSM_alpha)*p_pos

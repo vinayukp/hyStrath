@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     cuboidBinII
@@ -113,15 +112,15 @@ cuboidBinII::cuboidBinII
     n2_ /= mag(n2_);
 
     area_ = d1_*4.0*d2_;
-    
+
     rSEMag_ = mag(endPoint_ - startPoint_);
-    
+
     midpoint_ = startPoint_ + unitVector_*rSEMag_*0.5;
-    
-    
+
+
     vector minV = startPoint_+ d1_*n1_+d2_*n2_;
     vector maxV = endPoint_ - d1_*n1_ -d2_*n2_;
-    
+
     checkBoundBox(box_, minV, maxV);
 }
 
@@ -148,18 +147,18 @@ label cuboidBinII::isPointWithinBin
 
     if(box_.contains(rI))
     {
-        vector rSI = rI - startPoint_;    
+        vector rSI = rI - startPoint_;
         scalar rD = rSI & unitVector_;
         label n = label(rD/binWidth_);
-        
+
         if(n >= 0)
         {
-            if(n == nBins_) 
+            if(n == nBins_)
             {
                 n--;
             }
-            
-            binNumber = n;            
+
+            binNumber = n;
         }
     }
 

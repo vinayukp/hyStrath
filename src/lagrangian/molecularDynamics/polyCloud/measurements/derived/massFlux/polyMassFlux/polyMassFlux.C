@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -120,11 +119,11 @@ polyMassFlux::polyMassFlux
                 }
             }
         }
-        
+
         processorFaces.shrink();
 
         label nInternalFaces = faces.size() - processorFaces.size();
-           
+
         List<label> internalFaces(nInternalFaces, 0);
 
         label counter = 0;
@@ -150,11 +149,11 @@ polyMassFlux::polyMassFlux
         }
 
 
-    
+
         forAll(processorFaces, f)
         {
             const label& faceI = processorFaces[f];
-            zoneSurfaceArea_ += 0.5*mag(mesh_.faceAreas()[faceI]);           
+            zoneSurfaceArea_ += 0.5*mag(mesh_.faceAreas()[faceI]);
         }
 
         if(Pstream::parRun())
@@ -170,20 +169,20 @@ polyMassFlux::polyMassFlux
                     }
                 }
             }
-        
+
             //- receiving
             for (int p = 0; p < Pstream::nProcs(); p++)
             {
                 if(p != Pstream::myProcNo())
                 {
                     scalar zoneSurfaceAreaProc;
-    
+
                     const int proc = p;
                     {
                         IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
                         fromNeighbour >> zoneSurfaceAreaProc;
                     }
-        
+
                     zoneSurfaceArea_ += zoneSurfaceAreaProc;
                 }
             }
@@ -247,15 +246,15 @@ void polyMassFlux::calculateField()
     {
         reduce(massFlux, sumOp<scalar>());
     }
-    
+
     const scalar& deltaT = time_.time().deltaT().value();
-    massFlux /= deltaT;  
+    massFlux /= deltaT;
     cumulativeFlux_ += massFlux;
     massFlux_.append(massFlux);
 
     Info << fieldName_ << " - mass flow rate = " << cumulativeFlux_ << endl;
 }
-    
+
 void polyMassFlux::writeField()
 {
     const Time& runTime = time_.time();
@@ -267,17 +266,17 @@ void polyMassFlux::writeField()
             massFlux_.shrink();
             scalarField timeField (massFlux_.size(), 0.0);
             scalarField massFlux (massFlux_.size(), 0.0);
-            
+
             massFlux.transfer(massFlux_);
             massFlux_.clear();
 
             const scalar& deltaT = time_.time().deltaT().value();
-            
+
             forAll(timeField, i)
             {
                 timeField[timeField.size()-i-1]=runTime.timeOutputValue()-(deltaT*i);
             }
-            
+
             writeTimeData
             (
                 casePath_,
@@ -286,9 +285,9 @@ void polyMassFlux::writeField()
                 massFlux,
                 true
             );
-                 
+
             const reducedUnits& rU = molCloud_.redUnits();
-    
+
             if(rU.outputSIUnits())
             {
                 writeTimeData
@@ -311,7 +310,7 @@ void polyMassFlux::measureDuringForceComputation
 ){}
 
 void polyMassFlux::measureDuringForceComputationSite
-(   
+(
     polyMolecule* molI,
     polyMolecule* molJ,
     label sI,

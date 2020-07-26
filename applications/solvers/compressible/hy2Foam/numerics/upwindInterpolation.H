@@ -14,7 +14,7 @@ if(downgradeSingleT or downgradeSingleTv)
 else
 {
     forAll(pD_pos, speciei)
-    { 
+    {
         pD_pos.set
         (
             speciei,
@@ -27,7 +27,7 @@ else
     }
 
     forAll(pD_neg, speciei)
-    { 
+    {
         pD_neg.set
         (
             speciei,
@@ -57,13 +57,13 @@ PtrList<surfaceScalarField> evk_neg(noSolvedVibEq);
 if(downgradeSingleT)
 {
     evk_pos.clear();
-    evk_neg.clear();  
+    evk_neg.clear();
 }
 else if(downgradeSingleTv)
 {
     evk_pos.resize(1);
     evk_neg.resize(1);
-    
+
     evk_pos.set
     (
         0,
@@ -73,7 +73,7 @@ else if(downgradeSingleTv)
             interpolate(ev, pos, "T")
         )
     );
-    
+
     evk_neg.set
     (
         0,
@@ -87,7 +87,7 @@ else if(downgradeSingleTv)
 else
 {
     forAll(evk_pos, speciei)
-    { 
+    {
         evk_pos.set
         (
             speciei,
@@ -100,7 +100,7 @@ else
     }
 
     forAll(evk_neg, speciei)
-    { 
+    {
         evk_neg.set
         (
             speciei,
@@ -128,8 +128,11 @@ surfaceScalarField cSf_pos //- Intermediate quantity to appear in Eq.8a
     "cSf_pos",
     interpolate(c, pos, "T")*mesh.magSf()
 );
+cSf_pos.setOriented();
+
 surfaceScalarField cSf_neg //- Intermediate quantity to appear in Eq.8b
 (
     "cSf_neg",
     interpolate(c, neg, "T")*mesh.magSf()
 );
+cSf_neg.setOriented();

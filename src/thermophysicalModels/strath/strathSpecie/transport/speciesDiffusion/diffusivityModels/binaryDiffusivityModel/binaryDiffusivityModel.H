@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Namespace
     Foam::binaryDiffusivityModels
@@ -68,25 +67,25 @@ class binaryDiffusivityModel
 protected:
 
     // Protected data
-    
+
         //- Species name
         const word& name1_, name2_;
-        
+
         //- Thermo properties dictionary
         const dictionary& dictThermo_;
-        
+
         //- Transport properties dictionary
         const dictionary& dictTransport_;
-        
+
         //- Pressure [Pa]
         const volScalarField& p_;
-        
+
         //- Electron pressure [Pa]
         const volScalarField& pe_;
 
         //- Temperature [K]
         const volScalarField& T_;
-        
+
         //- Integer to mark the type of collision interaction
         //  0: 2 neutrals, 1: 1 neutral-ion/e-, 2: 2 ions, 3: ion-electron
         //  4: 2 electrons
@@ -126,7 +125,7 @@ public:
             ),
             (name1, name2, dictThermo, dictTransport, p, pe, T)
         );
-        
+
 
     // Selectors
 
@@ -140,7 +139,7 @@ public:
             const volScalarField& p,
             const volScalarField& T
         );
-        
+
         //- Return a reference to the selected diffusivity model
         static autoPtr<binaryDiffusivityModel> New
         (
@@ -166,7 +165,7 @@ public:
             const volScalarField& p,
             const volScalarField& T
         );
-        
+
         //- Construct from components
         binaryDiffusivityModel
         (
@@ -187,10 +186,10 @@ public:
 
 
     // Member Functions
-    
+
         //- Binary diffusion coefficient [m^2/s]
          virtual tmp<volScalarField> D() const;
-         
+
         //- Binary diffusion coefficient for patch [m^2/s]
         virtual tmp<scalarField> D
         (
@@ -198,7 +197,7 @@ public:
             const scalarField& T,
             const label patchi
         ) const;
-        
+
         //- Binary diffusion coefficient for patch [m^2/s]
         //  with addition of the electron pressure
         virtual tmp<scalarField> D
@@ -208,7 +207,7 @@ public:
             const scalarField& T,
             const label patchi
         ) const;
-       
+
 };
 
 

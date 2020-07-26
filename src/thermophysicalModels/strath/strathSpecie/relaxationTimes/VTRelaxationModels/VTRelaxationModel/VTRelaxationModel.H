@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Namespace
     Foam::VTRelaxationModels
@@ -68,16 +67,16 @@ class VTRelaxationModel
 protected:
 
     // Protected data
-    
+
         //- Two-temperature model dictionary
         const dictionary& dict1_;
-        
+
         //- Thermophysical properties dictionary
         const dictionary& dict2_;
 
         //- Species name
         const word& name1_, name2_;
-        
+
         //- Species label associated with the names
         const label& lname1_, lname2_;
 
@@ -86,22 +85,22 @@ protected:
 
         // Heavy-particle temperature [K]
         const volScalarField& Tt_;
-        
+
         // Vibrational temperatures [K]
         const PtrList<volScalarField>& Tv_;
-        
+
         // Number densities [m^-3]
-        const PtrList<volScalarField>& nD_;       
-                        
+        const PtrList<volScalarField>& nD_;
+
         //- Full (true) or partial/pre coefficients formulation
         bool VTFullCoeffsForm_;
-        
+
         //- Overwrite the default coefficients for V-T energy transfers
         bool VTOverwriteDefault_;
-        
+
         //- If overwrite is on, are the coefficients species dependent
         bool VTSpeciesDependent_;
-        
+
         //- If overwrite is on, does the colliding pair matters
         bool VTCollidingPartner_;
 
@@ -122,7 +121,7 @@ public:
 
 
     // Declare run-time constructor selection table
-    
+
       declareRunTimeSelectionTable
       (
           autoPtr,
@@ -187,10 +186,10 @@ public:
 
 
     // Member Functions
-    
+
         //- V-T relaxation time [s]
          virtual tmp<volScalarField> tauVT() const = 0;
-         
+
         //- V-T relaxation time for patch [s]
         virtual tmp<scalarField> tauVT
         (
@@ -198,9 +197,9 @@ public:
             const scalarField& p,
             const scalarField& Tt,
             const PtrList<scalarField>& Tv,
-            const PtrList<scalarField>& nD            
+            const PtrList<scalarField>& nD
         ) const = 0;
-       
+
 };
 
 

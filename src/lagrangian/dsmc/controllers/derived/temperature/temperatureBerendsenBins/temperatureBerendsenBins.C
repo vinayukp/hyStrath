@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -63,7 +62,7 @@ temperatureBerendsenBins::temperatureBerendsenBins
     resetFieldsAtOutput_(true)
 {
 
-    // standard to reading typeIds ------------ 
+    // standard to reading typeIds ------------
     const List<word> molecules (propsDict_.lookup("typeIds"));
 
     DynamicList<word> moleculesReduced(0);
@@ -105,7 +104,7 @@ temperatureBerendsenBins::temperatureBerendsenBins
     (
         binModel::New(mesh_, propsDict_)
     );
-    
+
     const label& nBins = binModel_->nBins();
 
     mols_.setSize(nBins, 0.0);
@@ -117,66 +116,66 @@ temperatureBerendsenBins::temperatureBerendsenBins
     UMean_.setSize(nBins, vector::zero);
     chi_.setSize(nBins, 1.0);
     binTemperatures_.setSize(nBins, 0.0);
-    translationalTemperature_.setSize(nBins, 0.0);    
-    
+    translationalTemperature_.setSize(nBins, 0.0);
+
     bool readTemperatures = false;
-    
+
     if(propsDict_.found("temperatures"))
     {
         readTemperatures = true;
     }
-    
+
     if(!readTemperatures)
     {
         scalar startTemperature = readScalar(propsDict_.lookup("startTemperature"));
         scalar endTemperature = readScalar(propsDict_.lookup("endTemperature"));
-        
+
         scalar meanTemperature = (startTemperature + endTemperature)*0.5;
-        
+
         translationalTemperature_ = meanTemperature;
         binTemperatures_ = meanTemperature;
-    
-   
+
+
         // set target temperature in bins
 
         Info << "temperatureBerendsenBins: output target temperatures: " << nl << endl;
 
         const scalar deltaTBin = (endTemperature - startTemperature)/(nBins - 1);
-        
+
         forAll(binTemperatures_, n)
         {
             binTemperatures_[n] = startTemperature + n*deltaTBin;
-            
+
             Info << "\t bin (#) " << n  << ": T = " << binTemperatures_[n] << endl;
         }
     }
     else
     {
         List<scalar> temperatures (propsDict_.lookup("temperatures"));
-        
+
         if(temperatures.size() != nBins)
         {
             FatalErrorIn("temperatureBerendsenBins::temperatureBerendsenBins()")
                 << "bins size = " << nBins << " not equal to temperatures list: "
                 << temperatures.size() << nl << "in: "
                 << t.system()/"controllersDict"
-                << exit(FatalError); 
+                << exit(FatalError);
         }
-        
+
         scalar meanTemperature = 0.0;
-        
+
         forAll(binTemperatures_, n)
         {
             binTemperatures_[n] = temperatures[n];
             meanTemperature += temperatures[n];
             Info << "\t bin (#) " << n  << ": T = " << binTemperatures_[n] << endl;
         }
-        
+
         translationalTemperature_ = meanTemperature/scalar(temperatures.size());
     }
-    
+
     Info << nl << endl;
-    
+
     if(propsDict_.found("resetFieldsAtOutput"))
     {
         resetFieldsAtOutput_= Switch(propsDict_.lookup("resetFieldsAtOutput"));
@@ -199,16 +198,16 @@ void temperatureBerendsenBins::calculateProperties()
 {
 //     timeIndex_++;
     averagingCounter_ += 1.0;
-      
+
     const List< DynamicList<dsmcParcel*> >& cellOccupancy
             = cloud_.cellOccupancy();
-            
+
     const labelList& cells = mesh_.cellZones()[regionId_];
 
     forAll(cells, c)
     {
         const label& cellI = cells[c];
-        
+
         const List<dsmcParcel*>& molsInCell = cellOccupancy[cellI];
 
         forAll(molsInCell, mIC)
@@ -223,33 +222,33 @@ void temperatureBerendsenBins::calculateProperties()
             {
                 if(findIndex(typeIds_, p->typeId()) != -1)
                 {
-                    const dsmcParcel::constantProperties& constProp = 
+                    const dsmcParcel::constantProperties& constProp =
                         cloud_.constProps(p->typeId());
-                                    
+
                     const scalar nParticle = cloud_.nParticles(cellI);
-                    
+
                     const scalar mass = constProp.mass()*nParticle;
 
                     mols_[n] += nParticle;
                     dsmcMols_[n] += 1.0;
                     mass_[n] += mass;
-                    mcc_[n] += mass*mag(p->U())*mag(p->U());                   
+                    mcc_[n] += mass*mag(p->U())*mag(p->U());
                     UCollected_[n] += p->U();
                     mom_[n] += mass*p->U();
                 }
             }
         }
     }
-    
+
     {
-        
+
         scalarField mass = mass_;
         scalarField mols = mols_;
         scalarField dsmcMols = dsmcMols_;
         scalarField mcc = mcc_;
         vectorField mom = mom_;
         vectorField UCollected = UCollected_;
-        
+
         //- parallel communication
 
         if(Pstream::parRun())
@@ -260,7 +259,7 @@ void temperatureBerendsenBins::calculateProperties()
                 reduce(dsmcMols[n], sumOp<scalar>());
                 reduce(mass[n], sumOp<scalar>());
                 reduce(mcc[n], sumOp<scalar>());
-                reduce(mom[n], sumOp<vector>());                
+                reduce(mom[n], sumOp<vector>());
                 reduce(UCollected[n], sumOp<vector>());
             }
         }
@@ -270,7 +269,7 @@ void temperatureBerendsenBins::calculateProperties()
             if(mols[n] > 0.0)
             {
                 UMean_[n] = UCollected[n]/dsmcMols[n];
-                
+
                 translationalTemperature_[n] = (1.0/(3.0*physicoChemical::k.value()))
                     *(
                         ((mcc[n]/(mols[n])))
@@ -280,12 +279,12 @@ void temperatureBerendsenBins::calculateProperties()
                     );
             }
         }
-        
+
         if(resetFieldsAtOutput_)
         {
             //- reset fields
             averagingCounter_ = 0.0;
-            
+
             mols_ = 0.0;
             dsmcMols = 0.0;
             mass_ = 0.0;
@@ -293,20 +292,20 @@ void temperatureBerendsenBins::calculateProperties()
             mom_ = vector::zero;
             UCollected_ = vector::zero;
         }
-        
-        const scalar& deltaTDSMC = mesh_.time().deltaTValue(); // time step 
+
+        const scalar& deltaTDSMC = mesh_.time().deltaTValue(); // time step
 
         Info << " Thermostat (temperatureBerendsenBins) output: " << nl <<  endl;
 
         chi_ = 1.0;
-        
+
         forAll(translationalTemperature_, n)
         {
             if(translationalTemperature_[n] > 0.0)
-            {    
+            {
                 chi_[n] = sqrt(1.0 + (deltaTDSMC/tauT_)*((binTemperatures_[n]/translationalTemperature_[n]) - 1.0) );
 
-                Info<< "target temperature: " << binTemperatures_[n] 
+                Info<< "target temperature: " << binTemperatures_[n]
                     << " measured T: " << translationalTemperature_[n]
                     << " chi: " << chi_[n]
                     << endl;
@@ -319,7 +318,7 @@ void temperatureBerendsenBins::calculateProperties()
 
 void temperatureBerendsenBins::controlParcelsBeforeMove()
 {
-	
+
 }
 
 
@@ -344,13 +343,13 @@ void temperatureBerendsenBins::controlParcelsBeforeCollisions()
 
     const List< DynamicList<dsmcParcel*> >& cellOccupancy
             = cloud_.cellOccupancy();
-            
+
     const labelList& cells = mesh_.cellZones()[regionId_];
 
     forAll(cells, c)
     {
         const label& cellI = cells[c];
-        
+
         const List<dsmcParcel*>& molsInCell = cellOccupancy[cellI];
 
         forAll(molsInCell, mIC)

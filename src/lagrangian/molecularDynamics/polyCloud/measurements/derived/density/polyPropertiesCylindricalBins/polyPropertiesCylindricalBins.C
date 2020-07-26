@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -88,23 +87,23 @@ polyPropertiesCylindricalBins::polyPropertiesCylindricalBins
     momY_(nBinsX_),
     sqrMomX_(nBinsX_),
     sqrMomY_(nBinsX_),
-    
+
     // for sampling the temperature, add by Jun Zhang
     kE_(nBinsX_),
     dof_(nBinsX_),
-    
-    
+
+
     oldCenterOfMass_(propsDict_.lookup("startPoint")),
 
     densityField_(nBinsX_),
-    
+
     // for output the velocity, add by Jun Zhang
     velocityFieldX_(nBinsX_),
     velocityFieldY_(nBinsX_),
-    
+
     // for output the temperature, add by Jun Zhang
     temperatureField_(nBinsX_),
-    
+
     magRadii_(),
     binWidths_(),
     volume_(),
@@ -119,7 +118,7 @@ polyPropertiesCylindricalBins::polyPropertiesCylindricalBins
     regionId_ = cellZones.findZoneID(regionName_);
 
     if(regionId_ == -1)
-    { 
+    {
         FatalErrorIn("polyDensityRadialMOBZone::polyDensityRadialMOBZone()")
             << "Cannot find region: " << regionName_ << nl << "in: "
             << time_.time().system()/"fieldPropertiesDict"
@@ -135,7 +134,7 @@ polyPropertiesCylindricalBins::polyPropertiesCylindricalBins
     );
 
     molIds_ = ids.molIds();
-    
+
     avVolume_ = radius_*radius_*mathematicalConstant::pi*binWidthX_/nBinsY_;
 
     DynamicList<scalar> radii(0);
@@ -163,7 +162,7 @@ polyPropertiesCylindricalBins::polyPropertiesCylindricalBins
     }
 
     binWidths.shrink();
-    radii.shrink(); 
+    radii.shrink();
 
     nBinsY_ = binWidths.size();
 
@@ -175,17 +174,17 @@ polyPropertiesCylindricalBins::polyPropertiesCylindricalBins
     {
         mols_[x].setSize(nBinsY_, 0.0);
         densityField_[x].setSize(nBinsY_, 0.0);
-        
+
         // for velocity add by Jun Zhang
         mass_[x].setSize(nBinsY_, 0.0);
         momX_[x].setSize(nBinsY_, 0.0);
         momY_[x].setSize(nBinsY_, 0.0);
         sqrMomX_[x].setSize(nBinsY_, 0.0);
         sqrMomY_[x].setSize(nBinsY_, 0.0);
-        
+
         velocityFieldX_[x].setSize(nBinsY_, 0.0);
         velocityFieldY_[x].setSize(nBinsY_, 0.0);
-        
+
         kE_[x].setSize(nBinsY_, 0.0);
         dof_[x].setSize(nBinsY_, 0.0);
         temperatureField_[x].setSize(nBinsY_, 0.0);
@@ -261,7 +260,7 @@ label polyPropertiesCylindricalBins::findBin(const scalar& r)
             n++;
         }
     }
-    
+
     return n;
 }
 
@@ -280,7 +279,7 @@ void polyPropertiesCylindricalBins::calculateField()
         scalar domainLengthX = fabs(domainLength.x());
         scalar domainLengthY = fabs(domainLength.y());
         scalar domainLengthZ = fabs(domainLength.z());
-    
+
     // for sampling density and velocity
      if(time_.samplingTime())
     {
@@ -299,51 +298,51 @@ void polyPropertiesCylindricalBins::calculateField()
             if(molsInCell.size() > 0)
             {
                 forAll(molsInCell, mIC)
-                {                    
+                {
                     polyMolecule* molI = molsInCell[mIC];
 
-                    vector rI = molI->position(); 
+                    vector rI = molI->position();
                     vector roC = rI - oldCenterOfMass_;
-                    
+
                     if(fabs(roC.x())>domainLengthX/2.0)
                     {
                         if(rI.x() > oldCenterOfMass_.x())
-                        {    
+                        {
                             rI.x() -= domainLengthX;
                         }
                         else
-                        {    
+                        {
                             rI.x() += domainLengthX;
                         }
                     }
-                    
+
                     if(fabs(roC.y())>domainLengthY/2.0)
                     {
                         if(rI.y() > oldCenterOfMass_.y())
-                        {    
+                        {
                             rI.y() -= domainLengthY;
                         }
                         else
-                        {    
+                        {
                             rI.y() += domainLengthY;
                         }
                     }
-                    
+
                     if(fabs(roC.z())>domainLengthZ/2.0)
                     {
                         if(rI.z() > oldCenterOfMass_.z())
-                        {    
+                        {
                             rI.z() -= domainLengthZ;
                         }
                         else
-                        {    
+                        {
                             rI.z() += domainLengthZ;
                         }
                     }
-                    
+
                     if(findIndex(molIds_, molI->id()) != -1)
                     {
-                    const polyMolecule::constantProperties& constProp 
+                    const polyMolecule::constantProperties& constProp
                             = molCloud_.constProps(molI->id());
                     mass += constProp.mass();
                     centreOfMass += constProp.mass()*rI;
@@ -390,7 +389,7 @@ void polyPropertiesCylindricalBins::calculateField()
 
         centreOfMass =  ((centreOfMass ^ unitVectorX_)^ unitVectorX_)*(-1.0)
                         + (startPoint_ & unitVectorX_) * unitVectorX_;
-           
+
         if(centreOfMass.x() > globalBb.max().x())
         {
             centreOfMass.x() -= domainLengthX;
@@ -415,9 +414,9 @@ void polyPropertiesCylindricalBins::calculateField()
         {
             centreOfMass.z() += domainLengthZ;
         }
-        
+
          oldCenterOfMass_ = centreOfMass;
-            
+
         forAll(cells, c)
         {
             const label& cellI = cells[c];
@@ -429,53 +428,53 @@ void polyPropertiesCylindricalBins::calculateField()
                 {
                     polyMolecule* molI = molsInCell[mIC];
 
-                    vector rI = molI->position(); 
+                    vector rI = molI->position();
 
                     vector rSI = rI - centreOfMass;
-                    
+
                     if(fabs(rSI.x())>domainLengthX/2.0)
                     {
                         if(rI.x() > centreOfMass.x())
-                        {    
+                        {
                             rI.x() -= domainLengthX;
                         }
                         else
-                        {    
+                        {
                             rI.x() += domainLengthX;
                         }
                     }
-                    
+
                     if(fabs(rSI.y())>domainLengthY/2.0)
                     {
                         if(rI.y() > centreOfMass.y())
-                        {    
+                        {
                             rI.y() -= domainLengthY;
                         }
                         else
-                        {    
+                        {
                             rI.y() += domainLengthY;
                         }
                     }
-                    
+
                     if(fabs(rSI.z())>domainLengthZ/2.0)
                     {
                         if(rI.z() > centreOfMass.z())
-                        {    
+                        {
                             rI.z() -= domainLengthZ;
                         }
                         else
-                        {    
+                        {
                             rI.z() += domainLengthZ;
                         }
                     }
-                    
+
                     scalar rD = rSI & unitVectorX_;
 
                     if((rD <= h_) && (rD >= 0.0))
                     {
 
                         scalar rN = mag((rD*unitVectorX_ + centreOfMass) - rI);
-                        
+
                         if(rN <= radius_)
                         {
                             label nY = findBin(rN);
@@ -495,17 +494,17 @@ void polyPropertiesCylindricalBins::calculateField()
 
                                 if(findIndex(molIds_, molI->id()) != -1)
                                 {
-                                    const polyMolecule::constantProperties& constProp 
+                                    const polyMolecule::constantProperties& constProp
                                                 = molCloud_.constProps(molI->id());
 
                                     const scalar& massI = constProp.mass();
-                                    
+
                                     vector newRSI = rI - centreOfMass;
-                                    
+
                                     scalar radius = sqrt(sqr(newRSI.x())+sqr(newRSI.z()));
                                     scalar unitDirectionX = newRSI.x()/radius;
                                     scalar unitDirectionZ = newRSI.z()/radius;
-                                    
+
                                     mols_[nX][nY] += 1.0;
                                     mass_[nX][nY] += massI;
                                     // momemtum in axial direction
@@ -513,14 +512,14 @@ void polyPropertiesCylindricalBins::calculateField()
                                     // momemtum in radial direction
                                     momY_[nX][nY] += massI*(molI->v().x()*unitDirectionX
                                                            +molI->v().z()*unitDirectionZ);
-                                    
+
                                     sqrMomX_[nX][nY] += massI*sqr(molI->v().y());
                                     sqrMomY_[nX][nY] += massI*sqr(molI->v().x()*unitDirectionX
                                                                  +molI->v().z()*unitDirectionZ);
-                                    
+
                                     // dof should be subtract 1 cause 3D is transferred to 2D.
                                     dof_[nX][nY] += constProp.degreesOfFreedom();
-                                                            
+
                                 }
                             }
                         }
@@ -551,7 +550,7 @@ void polyPropertiesCylindricalBins::calculateField()
                     const int proc = p;
                     {
                         OPstream toNeighbour(Pstream::commsTypes::blocking, proc);
-                        toNeighbour << mols << mass << momX << momY 
+                        toNeighbour << mols << mass << momX << momY
                                     << sqrMomX << sqrMomY << dof;
                     }
                 }
@@ -573,7 +572,7 @@ void polyPropertiesCylindricalBins::calculateField()
                     const int proc = p;
                     {
                         IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
-                        fromNeighbour >> molsProc >> massProc >> momXProc >> momYProc 
+                        fromNeighbour >> molsProc >> massProc >> momXProc >> momYProc
                                       >> sqrMomXProc >> sqrMomYProc >> dofProc;
                     }
 
@@ -602,21 +601,21 @@ void polyPropertiesCylindricalBins::calculateField()
             {
                 densityField_[x][y] = mols[x][y]/(nAvTimeSteps*volume_[y]);
                 if(mass[x][y] > 0.0)
-                {    
+                {
                     velocityFieldX_[x][y] = momX[x][y]/mass[x][y];
                     velocityFieldY_[x][y] = momY[x][y]/mass[x][y];
-                    
+
                     temperatureField_[x][y] = (sqrMomX[x][y]+sqrMomY[x][y]
                                             -mass[x][y]*sqr(velocityFieldX_[x][y])
                                             -mass[x][y]*sqr(velocityFieldY_[x][y]))
                                             /(kB*2.0*mols[x][y]);
-                                            
+
                 }
                 else
                 {
                     velocityFieldX_[x][y] = 0.0;
                     velocityFieldY_[x][y] = 0.0;
-                    
+
                     temperatureField_[x][y] = 0.0;
                 }
             }

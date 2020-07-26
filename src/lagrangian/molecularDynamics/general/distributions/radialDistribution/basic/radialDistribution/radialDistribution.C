@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     radialDistribution
@@ -81,7 +80,7 @@ radialDistribution::radialDistribution(const word& name)
 {}
 
 
-//- Construct from name, rMax and noOfBins 
+//- Construct from name, rMax and noOfBins
 //- (used for sampling radial distribution)
 radialDistribution::radialDistribution
 (
@@ -222,7 +221,7 @@ scalar radialDistribution::readBinWidth()
     {
         FatalErrorIn("radialDistribution")
             << "Size of RDF:  " << name_
-            << " is zero" 
+            << " is zero"
             << abort(FatalError);
     }
 
@@ -245,7 +244,7 @@ scalar radialDistribution::readBinWidth()
 
 //             Info << " width: " << newBinWid << endl;
 
-            if(mag(newBinWid - binWidth) > SMALL) 
+            if(mag(newBinWid - binWidth) > SMALL)
             {
                 constantBinWidth = false;
                 break;
@@ -257,7 +256,7 @@ scalar radialDistribution::readBinWidth()
     {
         FatalErrorIn("radialDistribution")
             << "Check binWidth in RDF: " << name_
-            << " for constant binWidth" 
+            << " for constant binWidth"
             << abort(FatalError);
     }
 
@@ -469,7 +468,7 @@ void radialDistribution::readRDF
     setRDF(rdf);
 
     // set bin width of distribution class (this)
-//     setBinWidth(readBinWidth()); 
+//     setBinWidth(readBinWidth());
 }
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
@@ -483,9 +482,9 @@ void radialDistribution::readRDF
 //             << "Attempted assignment to self"
 //             << abort(FatalError);
 //     }
-// 
+//
 //     Map<label>::operator=(rhs);
-// 
+//
 //     binWidth_ = rhs.binWidth();
 // }
 
@@ -499,14 +498,14 @@ void radialDistribution::readRDF
 // {
 //     os  << d.binWidth_
 //         << static_cast<const Map<label>&>(d);
-// 
+//
 //     // Check state of Ostream
 //     os.check
 //     (
 //         "Ostream& operator<<(Ostream&, "
 //         "const radialDistribution&)"
 //     );
-// 
+//
 //     return os;
 // }
 

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -115,7 +114,7 @@ void Foam::polyMolecule::readFields(Cloud<polyMolecule>& mC)
     }
 
     particle::readFields(mC);
-    
+
     Info << "Reading fields" << endl;
 
     IOField<tensor> Q(mC.fieldIOobject("Q", IOobject::MUST_READ));
@@ -123,7 +122,7 @@ void Foam::polyMolecule::readFields(Cloud<polyMolecule>& mC)
 
     // MB: I have removed reading/writing these fields because no one ever uses them
     //    and they by doing this we are saving a lot on hard disk space
-    
+
 //     IOField<tensor> rf(mC.fieldIOobject("rf", IOobject::MUST_READ));
 //     mC.checkFieldIOobject(mC, rf);
 
@@ -143,7 +142,7 @@ void Foam::polyMolecule::readFields(Cloud<polyMolecule>& mC)
     (
         mC.fieldIOobject("specialPosition", IOobject::MUST_READ)
     );
-    
+
     mC.checkFieldIOobject(mC, specialPosition);
 
     IOField<label> special(mC.fieldIOobject("special", IOobject::MUST_READ));
@@ -151,9 +150,9 @@ void Foam::polyMolecule::readFields(Cloud<polyMolecule>& mC)
 
     IOField<label> id(mC.fieldIOobject("id", IOobject::MUST_READ));
     mC.checkFieldIOobject(mC, id);
-    
+
     IOField<label> trackingNumber(mC.fieldIOobject("trackingNumber", IOobject::MUST_READ));
-    mC.checkFieldIOobject(mC, trackingNumber);    
+    mC.checkFieldIOobject(mC, trackingNumber);
 
     label i = 0;
     forAllIter(polyMoleculeCloud, mC, iter)
@@ -169,7 +168,7 @@ void Foam::polyMolecule::readFields(Cloud<polyMolecule>& mC)
         mol.specialPosition_ = specialPosition[i];
         mol.special_ = special[i];
         mol.id_ = id[i];
-        mol.trackingNumber_ = trackingNumber[i];        
+        mol.trackingNumber_ = trackingNumber[i];
         i++;
     }
 }
@@ -178,7 +177,7 @@ void Foam::polyMolecule::readFields(Cloud<polyMolecule>& mC)
 void Foam::polyMolecule::writeFields(const Cloud<polyMolecule>& mC)
 {
     particle::writeFields(mC);
-    
+
     label np = mC.size();
 
     IOField<tensor> Q(mC.fieldIOobject("Q", IOobject::NO_READ), np);
@@ -195,36 +194,36 @@ void Foam::polyMolecule::writeFields(const Cloud<polyMolecule>& mC)
     IOField<label> special(mC.fieldIOobject("special", IOobject::NO_READ), np);
     IOField<label> id(mC.fieldIOobject("id", IOobject::NO_READ), np);
     IOField<label> trackingNumber(mC.fieldIOobject("trackingNumber", IOobject::NO_READ), np);
-    
+
     // Post processing fields
 
     // MB: I have removed reading/writing these fields because no one ever uses them
     //    and they by doing this we are saving a lot on hard disk space
-    
+
 //     IOField<vector> piGlobal
 //     (
 //         mC.fieldIOobject("piGlobal", IOobject::NO_READ),
 //         np
 //     );
-// 
+//
 //     IOField<vector> tauGlobal
 //     (
 //         mC.fieldIOobject("tauGlobal", IOobject::NO_READ),
 //         np
 //     );
-// 
+//
 //     IOField<vector> orientation1
 //     (
 //         mC.fieldIOobject("orientation1", IOobject::NO_READ),
 //         np
 //     );
-// 
+//
 //     IOField<vector> orientation2
 //     (
 //         mC.fieldIOobject("orientation2", IOobject::NO_READ),
 //         np
 //     );
-// 
+//
 //     IOField<vector> orientation3
 //     (
 //         mC.fieldIOobject("orientation3", IOobject::NO_READ),
@@ -246,7 +245,7 @@ void Foam::polyMolecule::writeFields(const Cloud<polyMolecule>& mC)
         special[i] = mol.special_;
         id[i] = mol.id_;
         trackingNumber[i] = mol.trackingNumber_;
-        
+
 //         piGlobal[i] = mol.Q_ & mol.pi_;
 //         tauGlobal[i] = mol.Q_ & mol.tau_;
 
@@ -267,7 +266,7 @@ void Foam::polyMolecule::writeFields(const Cloud<polyMolecule>& mC)
     special.write();
     id.write();
     trackingNumber.write();
-    
+
 //     piGlobal.write();
 //     tauGlobal.write();
 
@@ -276,7 +275,7 @@ void Foam::polyMolecule::writeFields(const Cloud<polyMolecule>& mC)
 //     orientation3.write();
 
     Info<< "writeFields " << mC.name() << endl;
-    
+
     if (isA<polyMoleculeCloud>(mC))
     {
         const polyMoleculeCloud& m = dynamic_cast<const polyMoleculeCloud&>(mC);

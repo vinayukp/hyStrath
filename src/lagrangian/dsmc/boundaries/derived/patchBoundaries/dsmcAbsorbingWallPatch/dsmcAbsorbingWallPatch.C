@@ -2,23 +2,25 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
     for more details.
+
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
-    
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
 Description
 
 \*---------------------------------------------------------------------------*/
@@ -79,7 +81,7 @@ void dsmcAbsorbingWallPatch::setProperties()
 
         typeIds_[i] = typeId;
     }
-    
+
     absorptionProbs_.clear();
 
     absorptionProbs_.setSize(typeIds_.size(), 0.0);
@@ -92,46 +94,45 @@ void dsmcAbsorbingWallPatch::setProperties()
                 .lookup(moleculesReduced[i])
         );
     }
-    
+
     const scalar saturationLimitPerSquareMeters = propsDict_
         .lookupOrDefault<scalar>("saturationLimit", VGREAT);
-        
+
     const scalarList& facesArea = mesh_.magSf().boundaryField()[patchId()];
-    
+
     forAll(saturationLimit_, facei)
     {
-        saturationLimit_[facei] = 
-            saturationLimitPerSquareMeters*facesArea[facei]
-           /cloud_.nParticles(patchId(), facei);
+        saturationLimit_[facei] =
+            saturationLimitPerSquareMeters*facesArea[facei];
     }
 }
 
 
 void dsmcAbsorbingWallPatch::readPatchField()
 {
-    tmp<volScalarField> tnAbsorbedParcels
+    tmp<volScalarField> tnAbsorbedParticles
     (
         new volScalarField
         (
             IOobject
             (
-                "nAbsorbedParcels",
+                "nAbsorbedParticles",
                 mesh_.time().timeName(),
                 mesh_,
                 IOobject::READ_IF_PRESENT,
                 IOobject::NO_WRITE
             ),
             mesh_,
-            dimensionedScalar("nAbsorbedParcels", dimless, 0.0)
+            dimensionedScalar("nAbsorbedParticles", dimless, 0.0)
         )
     );
-    
-    volScalarField& nAbsorbedParcels = tnAbsorbedParcels.ref();
-    
-    cloud_.boundaryFluxMeasurements().setBoundarynAbsorbedParcels
+
+    volScalarField& nAbsorbedParticles = tnAbsorbedParticles.ref();
+
+    cloud_.boundaryFluxMeasurements().setBoundarynAbsorbedParticles
     (
         patchId(),
-        nAbsorbedParcels.boundaryField()[patchId()]
+        nAbsorbedParticles.boundaryField()[patchId()]
     );
 }
 
@@ -145,53 +146,62 @@ bool dsmcAbsorbingWallPatch::isNotSaturated
     if
     (
         saturationLimit(facei) - cloud_.boundaryFluxMeasurements()
-            .pnAbsorbedParcels(patchi)[facei] > 1e-6
+            .pnAbsorbedParticles(patchi)[facei] > 1e-6
     )
     {
         return true;
     }
-    
+
     return false;
 }
 
 
 void dsmcAbsorbingWallPatch::absorbParticle
 (
-    const label patchi,
-    const label facei,
+    dsmcParcel& p,
     dsmcParcel::trackingData& td
 )
 {
-    //- Delete particle
+    // Particle location on patch / face
+    const label wppIndex = patchId();
+    const label wppLocalFace =
+        mesh_.boundaryMesh()[wppIndex].whichFace(p.face());
+
+    // Calculate the real number of particles that this parcel represented
+    const scalar nAbsorbedParticles = p.RWF() * cloud_.coordSystem().dtModel()
+        .nParticles(wppIndex, wppLocalFace);
+
+    // Delete parcel
     td.keepParticle = false;
-    
-    //- Update the boundaryMeasurement relative to this absorbing patch
-    cloud_.boundaryFluxMeasurements().updatenAbsorbedParcelOnPatch
+
+    // Update the boundaryMeasurement relative to this absorbing patch
+    cloud_.boundaryFluxMeasurements().updatenAbsorbedParticlesOnPatch
     (
-        patchi,
-        facei
+        wppIndex,
+        wppLocalFace,
+        nAbsorbedParticles
     );
 }
 
 
 void dsmcAbsorbingWallPatch::testParticleForAbsorption
 (
-    dsmcParcel& p, 
+    dsmcParcel& p,
     dsmcParcel::trackingData& td
 )
 {
     const label iD = findIndex(dsmcAbsorbingWallPatch::typeIds_, p.typeId());
-    
-    if(iD != -1) 
+
+    if(iD != -1)
     {
         const label wppIndex = patchId();
-        
-        const label wppLocalFace = 
+
+        const label wppLocalFace =
             mesh_.boundaryMesh()[wppIndex].whichFace(p.face());
-                
+
         //- absorption probability
         const scalar absorptionProbability = absorptionProbs_[iD];
-            
+
         if
         (
             absorptionProbability > cloud_.rndGen().sample01<scalar>()
@@ -199,11 +209,11 @@ void dsmcAbsorbingWallPatch::testParticleForAbsorption
         )
         {
             //- absorb particle
-            absorbParticle(wppIndex, wppLocalFace, td);
+            absorbParticle(p, td);
         }
     }
 }
-    
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -225,9 +235,9 @@ dsmcAbsorbingWallPatch::dsmcAbsorbingWallPatch
     writeInTimeDir_ = false;
     writeInCase_ = false;
     measurePropertiesAtWall_ = true;
-    
+
     setProperties();
-    
+
     readPatchField();
 }
 

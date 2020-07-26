@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -97,17 +97,17 @@ void Foam::fixed2TREnergyFvPatchScalarField::updateCoeffs()
         return;
     }
 
-    //Info << "fixed2TREnergy is used for patch called " << patch().name() << endl; 
-    
+    //Info << "fixed2TREnergy is used for patch called " << patch().name() << endl;
+
     const multi2Thermo& thermo = multi2Thermo::lookup2Thermo(*this);
     const label patchi = patch().index();
 
     const scalarField& pw = thermo.p().boundaryField()[patchi];
-    
+
     fvPatchScalarField& Ttw =
         const_cast<fvPatchScalarField&>(thermo.Tt().boundaryField()[patchi]);
     Ttw.evaluate();
-    
+
     operator==(thermo.het(pw, Ttw, patchi)); // Force an assignment, overriding fixedValue status
 
     fixedValueFvPatchScalarField::updateCoeffs();

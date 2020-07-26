@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     dsmcVolFields
@@ -59,9 +58,9 @@ class dsmcVolFields
 protected:
 
     // Protected data
-    
+
         dictionary propsDict_;
-        
+
         label sampleInterval_;
         label sampleCounter_;
         scalar mfpReferenceTemperature_;
@@ -84,8 +83,8 @@ protected:
         volScalarField meanCollisionRate_;
         volScalarField meanCollisionTime_;
         volScalarField meanCollisionTimeTimeStepRatio_;
-        //- Measured local collision rate 
-        volScalarField cr_; 
+        //- Measured local collision rate
+        volScalarField cr_;
         volScalarField meanCollisionSeparation_;
         volScalarField SOF_;
         volScalarField Ma_;
@@ -146,17 +145,17 @@ protected:
         List<scalarField> nGroundElectronicLevel_;
         List<scalarField> nFirstElectronicLevel_;
 
-        //- Effective degrees of freedom 
+        //- Effective degrees of freedom
         List<scalarField> vDof_;
-        
+
         //- Mean free path
-        List<scalarField> mfp_; 
-        
+        List<scalarField> mfp_;
+
         //- Mean collision rate
         List<scalarField> mcr_;
-        
-        
-        
+
+
+
 
         //- Boundary measurements
         List<scalarField> rhoNBF_;
@@ -171,33 +170,33 @@ protected:
         List<scalarField> speciesRhoNElecBF_;
         List<vectorField> momentumBF_;
         List<vectorField> fDBF_;
-        
+
         List<List<scalarField>> vibrationalEBF_;
         List<List<scalarField>> electronicEBF_;
-        List<List<scalarField>> speciesRhoNBF_;   
+        List<List<scalarField>> speciesRhoNBF_;
         List<List<scalarField>> mccSpeciesBF_;
         List<List<scalarField>> vibTBF_;
         List<List<scalarField>> vDofBF_;
         List<List<List<scalarField>>> evmsBF_;
-        
+
         //- Wall unit vectors - temporary storage, should be done in boundaries/patch
         List<vectorField> n_;
         List<vectorField> t1_;
         List<vectorField> t2_;
-        
+
         bool averagingAcrossManyRuns_;
         bool measureClassifications_;
         bool measureMeanFreePath_;
         bool measureErrors_;
         bool densityOnly_;
         bool measureHeatFluxShearStress_;
-        
+
     // Protected Member Functions
 
         void readIn();
 
         void writeOut();
-        
+
         void calculateWallUnitVectors();
 
 
@@ -229,7 +228,7 @@ public:
 
       //- calculate field
       virtual void calculateField();
-      
+
       //- reset field if mesh has changed
       virtual void resetField();
 
@@ -237,14 +236,14 @@ public:
       virtual void writeField();
 
       virtual void updateProperties(const dictionary& dict);
-      
+
     // Access
-    
+
       virtual scalar translationalT(const label cellI)
       {
           return translationalT_[cellI];
       }
-      
+
       virtual scalar overallT(const label cellI)
       {
           return overallT_[cellI];

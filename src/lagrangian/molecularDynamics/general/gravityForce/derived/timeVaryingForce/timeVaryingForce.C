@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     timeVaryingForce
@@ -62,16 +61,16 @@ timeVaryingForce::timeVaryingForce
     force_(vector::zero),
     forceDirection_(propsDict_.lookup("forceDirection")),
     offsetTime_(readScalar(propsDict_.lookup("offsetTime"))),
-//     deltaT_(readScalar(propsDict_.lookup("deltaT"))),    
+//     deltaT_(readScalar(propsDict_.lookup("deltaT"))),
 //     elapsedTime_(0.0),
 //     index_(0),
 //     times_(),
     forces_()
 
-        
+
 {
     timeVarying_ = true;
-    
+
     forceDirection_ /= mag(forceDirection_);
 
     const word distributionName = propsDict_.lookup("forceDistributionName");
@@ -97,14 +96,14 @@ timeVaryingForce::timeVaryingForce
     }
 
     nBins_ = forces.size();
-    
+
     forces_.setSize(nBins_, 0.0);
 
     forAll(forces, bin)
     {
         forces_[bin] = forces[bin].second();
     }
-    
+
     binWidth_ = forces[1].first()-forces[0].first();
 
     Info << "binWidth = " << binWidth_ << endl;
@@ -131,11 +130,11 @@ vector timeVaryingForce::force(const vector& position)
 vector timeVaryingForce::force(const scalar& time)
 {
     scalar t = time + offsetTime_;
-    
+
     force_ = getForce(t);
-    
+
 //     Info << "force = " << force_ << endl;
-    
+
     return force_;
 }
 
@@ -145,18 +144,18 @@ void timeVaryingForce::updateForce()
 vector timeVaryingForce::getForce(const scalar& t)
 {
     label index = label(t/binWidth_);
-    
+
     if(index < nBins_)
     {
         return forces_[index]*forceDirection_;
     }
     else
     {
-        Info<< "WARNING in timeVaryingForce::getForce() " 
+        Info<< "WARNING in timeVaryingForce::getForce() "
             <<  nl << "exceeded the time-varying list. "
             <<endl;
-            
-        return forces_[nBins_-1]*forceDirection_;    
+
+        return forces_[nBins_-1]*forceDirection_;
     }
 }
 

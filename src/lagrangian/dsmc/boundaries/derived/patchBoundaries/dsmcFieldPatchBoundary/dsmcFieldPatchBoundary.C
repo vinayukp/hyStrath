@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -57,13 +56,13 @@ void dsmcFieldPatchBoundary::readPatchFields()
             mesh_
         )
     );
-    
+
     volScalarField& boundaryT = tboundaryT.ref();
-    
+
     boundaryT_ = boundaryT.boundaryField()[patchId()];
 
     cloud_.boundaryFluxMeasurements().setBoundaryT(patchId(), boundaryT_);
-    
+
     //- Velocity field
     tmp<volVectorField> tboundaryU
     (
@@ -80,11 +79,11 @@ void dsmcFieldPatchBoundary::readPatchFields()
             mesh_
         )
     );
-    
+
     volVectorField& boundaryU = tboundaryU.ref();
-    
+
     boundaryU_ = boundaryU.boundaryField()[patchId()];
-    
+
     cloud_.boundaryFluxMeasurements().setBoundaryU(patchId(), boundaryU_);
 }
 
@@ -95,7 +94,7 @@ void dsmcFieldPatchBoundary::readPatchFields()
     const polyPatch& patch = mesh_.boundaryMesh()[wppIndex];
 
     const label wppLocalFace = patch.whichFace(p.face());
-    
+
     return boundaryT_.boundaryField()[wppIndex][wppLocalFace];
 }
 
@@ -107,7 +106,7 @@ vector dsmcFieldPatchBoundary::patchLocalVelocity(const dsmcParcel& p)
     const polyPatch& patch = mesh_.boundaryMesh()[wppIndex];
 
     const label wppLocalFace = patch.whichFace(p.face());
-    
+
     return boundaryU_.boundaryField()[wppIndex][wppLocalFace];
 }*/
 
@@ -160,7 +159,7 @@ dsmcFieldPatchBoundary::dsmcFieldPatchBoundary
     writeInTimeDir_ = false;
     writeInCase_ = false;
     measurePropertiesAtWall_ = true;
-    
+
     readPatchFields();
 }
 
@@ -194,7 +193,7 @@ void dsmcFieldPatchBoundary::updateProperties(const dictionary& newDict)
 {
     //- the main properties should be updated first
     updateBoundaryProperties(newDict);
-    
+
     readPatchFields();
 }
 
@@ -203,9 +202,9 @@ void dsmcFieldPatchBoundary::updateProperties(const dictionary& newDict)
 
 scalar dsmcFieldPatchBoundary::patchLocalTemperature(const dsmcParcel& p) const
 {
-    const label wppLocalFace = 
+    const label wppLocalFace =
         mesh_.boundaryMesh()[patchId()].whichFace(p.face());
-    
+
     return boundaryT_[wppLocalFace];
 }
 
@@ -213,9 +212,9 @@ scalar dsmcFieldPatchBoundary::patchLocalTemperature(const dsmcParcel& p) const
 const vector&
 dsmcFieldPatchBoundary::patchLocalVelocity(const dsmcParcel& p) const
 {
-    const label wppLocalFace = 
+    const label wppLocalFace =
         mesh_.boundaryMesh()[patchId()].whichFace(p.face());
-    
+
     return boundaryU_[wppLocalFace];
 }
 

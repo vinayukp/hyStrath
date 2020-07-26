@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ void Foam::he2Thermo<BasicThermo, MixtureType>::init()
             patchi
         );
     }
-    
+
     this->hetBoundaryCorrection(this->het_);
 }
 
@@ -1049,7 +1049,7 @@ Foam::he2Thermo<BasicThermo, MixtureType>::Cv_t() const
             pCvt[facei] = /*this->patchFaceMixture_Cv_t
             (
                 //&Foam::species::multiThermo<BasicThermo, MixtureType>::Cv_t,
-                patchi, 
+                patchi,
                 facei,
                 pp[facei],
                 pTt[facei]
@@ -1201,7 +1201,7 @@ Foam::he2Thermo<BasicThermo, MixtureType>::Cp_t() const
         {
             pCpt[facei] = /*this->patchFaceMixture_Cp_t
             (
-                patchi, 
+                patchi,
                 facei,
                 pp[facei],
                 pTt[facei]

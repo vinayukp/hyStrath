@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ protected:
 
         //- Transport dictionary
         IOdictionary transportDictionary_;
-        
+
 
 public:
 
@@ -110,18 +110,18 @@ public:
     // Member functions
 
         static const word transportDictName;
-        
+
         IOdictionary& transportDictionary()
         {
             return transportDictionary_;
         }
-        
+
         // Access to thermodynamic state variables
 
             //- Compressibility [s^2/m^2]
             virtual const volScalarField& psi() const = 0;
-            
-            //- Return non-const access to the local compressibility 
+
+            //- Return non-const access to the local compressibility
             //  field [s^2/m^2]
             virtual volScalarField& getPsi() = 0;
 
@@ -133,7 +133,7 @@ public:
 
             //- Dynamic viscosity of mixture for patch [kg/m/s]
             //virtual const scalarField& mu(const label patchi) const = 0;
-            
+
             //- Return the dynamic laminar viscosity of the mixture [kg/m/s]
             virtual tmp<volScalarField> mu() const = 0;
 
@@ -146,7 +146,7 @@ public:
 
             //- Kinematic viscosity of mixture for patch [m^2/s]
             virtual tmp<scalarField> nu(const label patchi) const;
-            
+
 };
 
 

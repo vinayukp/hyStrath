@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     polyMoleculeCloud
@@ -60,14 +59,14 @@ void polyMoleculeCloud::updateNeighbouringRadii
             polyMolecule* molJ = cellOccupancy_[dICL[dCell]][m];
 
             vector rIJ = molI->position() - molJ->position();
-    
+
             scalar rIJMag = mag(rIJ);
-    
+
             if(molI->R() > rIJMag)
             {
                 molI->R() = rIJMag;
             }
-    
+
             if(molJ->R() > rIJMag)
             {
                 molJ->R() = rIJMag;
@@ -84,14 +83,14 @@ void polyMoleculeCloud::updateNeighbouringRadii
         if(molJ != molI)
         {
             vector rIJ = molI->position() - molJ->position();
-    
+
             scalar rIJMag = mag(rIJ);
-    
+
             if(molI->R() > rIJMag)
             {
                 molI->R() = rIJMag;
             }
-    
+
             if(molJ->R() > rIJMag)
             {
                 molJ->R() = rIJMag;
@@ -99,8 +98,8 @@ void polyMoleculeCloud::updateNeighbouringRadii
         }
     }
 
-    //- referred cells 
-    
+    //- referred cells
+
     const labelList& rs = iL_.sourceCellToRefs()[cell];
 
     forAll(rs, r)
@@ -108,14 +107,14 @@ void polyMoleculeCloud::updateNeighbouringRadii
         const label& rId = rs[r];
 
         referredCell& refCellI = iL_.refCells()[rId];
-        
+
         // OLDER const polyMolecule& particle = *molI;
         //OLDER iL_.referredCloud().append(particle.clone().ptr());
 
 // OLD        iL_.referredCloud().append(molI);
 
 
-        const polyMolecule& molIN = *molI;            
+        const polyMolecule& molIN = *molI;
         iL_.referredCloud().append(molIN.clone().ptr());
 
 
@@ -123,24 +122,24 @@ void polyMoleculeCloud::updateNeighbouringRadii
 
         refCellI.transformPoint(molN->position());
         molN->transformProperties(refCellI.translation());
-        
+
         forAll(refCellI.neighbouringCells(), c)
         {
             const label& realCellI = refCellI.neighbouringCells()[c];
-        
+
             forAll(cellOccupancy_[realCellI], mols)
             {
                 polyMolecule* molJ = cellOccupancy_[realCellI][mols];
-        
+
                 vector rIJ = molN->position() - molJ->position();
-        
+
                 scalar rIJMag = mag(rIJ);
-        
+
                 if(molN->R() > rIJMag)
                 {
                     molN->R() = rIJMag;
                 }
-        
+
                 if(molJ->R() > rIJMag)
                 {
                     molJ->R() = rIJMag;
@@ -159,7 +158,7 @@ void polyMoleculeCloud::updateRadii()
         forAll(refCellI.neighbouringCells(), c)
         {
             const label& realCellI = refCellI.neighbouringCells()[c];
-    
+
             forAll(cellOccupancy_[realCellI], mols)
             {
                 polyMolecule* molI = cellOccupancy_[realCellI][mols];
@@ -167,9 +166,9 @@ void polyMoleculeCloud::updateRadii()
                 forAll(iL_.refCellsParticles()[r], molsJ)
                 {
                     polyMolecule* molJ = iL_.refCellsParticles()[r][molsJ];
-        
+
                     vector rIJ = molI->position() - molJ->position();
-                
+
                     scalar rIJMag = mag(rIJ);
 
                     if(molI->R() > rIJMag)

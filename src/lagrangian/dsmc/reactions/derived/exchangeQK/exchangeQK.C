@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -45,20 +44,20 @@ addToRunTimeSelectionTable(dsmcReaction, exchangeQK, dictionary);
 void exchangeQK::setProperties()
 {
     dsmcReaction::setProperties();
-    
+
     if (reactantIds_.size() != 2)
     {
         //- There must be exactly 2 reactants
         FatalErrorIn("exchangeQK::setProperties()")
             << "For reaction named " << reactionName_ << nl
-            << "There should be two reactants, instead of " 
-            << reactantIds_.size() << nl 
+            << "There should be two reactants, instead of "
+            << reactantIds_.size() << nl
             << exit(FatalError);
     }
 
     bool moleculeFound = false;
     bool atomFound = false;
-    
+
     forAll(reactantIds_, r)
     {
         //- Check if this reactant is a molecule
@@ -77,26 +76,26 @@ void exchangeQK::setProperties()
             FatalErrorIn("exchangeQK::setProperties()")
                 << "For reaction named " << reactionName_ << nl
                 << "Reactant " << cloud_.typeIdList()[reactantIds_[r]]
-                << " is neither a molecule nor an atom" << nl 
+                << " is neither a molecule nor an atom" << nl
                 << exit(FatalError);
         }
     }
-    
+
     if (!moleculeFound)
     {
         FatalErrorIn("exchangeQK::setProperties()")
             << "For reaction named " << reactionName_ << nl
-            << "None of the reactants is a molecule." << nl 
+            << "None of the reactants is a molecule." << nl
             << exit(FatalError);
     }
     else if (!atomFound)
     {
         FatalErrorIn("exchangeQK::setProperties()")
             << "For reaction named " << reactionName_ << nl
-            << "None of the reactants is an atom." << nl 
+            << "None of the reactants is an atom." << nl
             << exit(FatalError);
     }
-    
+
     //- Reading in exchange products
     const wordList productsExchange(propsDict_.lookup("exchangeProducts"));
 
@@ -104,32 +103,32 @@ void exchangeQK::setProperties()
     {
         FatalErrorIn("exchangeQK::setProperties()")
             << "For reaction named " << reactionName_ << nl
-            << "There should be two products, instead of " 
-            << productsExchange.size() << nl 
+            << "There should be two products, instead of "
+            << productsExchange.size() << nl
             << exit(FatalError);
     }
-    
+
     productIdsExchange_.setSize(productsExchange.size());
-    
+
     moleculeFound = false;
     atomFound = false;
 
     forAll(productIdsExchange_, r)
     {
-        const label productIndex = 
+        const label productIndex =
             findIndex
             (
-                cloud_.typeIdList(), 
+                cloud_.typeIdList(),
                 productsExchange[r]
             );
 
-        //- Check that products belong to the typeIdList as defined in 
+        //- Check that products belong to the typeIdList as defined in
         //  constant/dsmcProperties
         if (productIndex == -1)
         {
             FatalErrorIn("exchangeQK::setProperties()")
                 << "For reaction named " << reactionName_ << nl
-                << "Cannot find type id: " << productsExchange[r] << nl 
+                << "Cannot find type id: " << productsExchange[r] << nl
                 << exit(FatalError);
         }
 
@@ -156,23 +155,23 @@ void exchangeQK::setProperties()
             FatalErrorIn("exchangeQK::setProperties()")
                 << "For reaction named " << reactionName_ << nl
                 << "Product " << cloud_.typeIdList()[productIndex]
-                << " is neither a molecule nor an atom" << nl 
+                << " is neither a molecule nor an atom" << nl
                 << exit(FatalError);
         }
     }
-    
+
     if (!moleculeFound)
     {
         FatalErrorIn("exchangeQK::setProperties()")
             << "For reaction named " << reactionName_ << nl
-            << "None of the products is a molecule." << nl 
+            << "None of the products is a molecule." << nl
             << exit(FatalError);
     }
     else if (!atomFound)
     {
         FatalErrorIn("exchangeQK::setProperties()")
             << "For reaction named " << reactionName_ << nl
-            << "None of the products is an atom." << nl 
+            << "None of the products is an atom." << nl
             << exit(FatalError);
     }
 }
@@ -189,12 +188,12 @@ void exchangeQK::testExchange
 )
 {
     const label typeIdP = p.typeId();
-    
+
     //- Collision temperature: Eq.(10) of Bird's QK paper.
     const scalar TColl = translationalEnergy/physicoChemical::k.value()
-        /(2.5 - omegaPQ); 
-    
-    const scalar aDash = 
+        /(2.5 - omegaPQ);
+
+    const scalar aDash =
         aCoeff_
        *(
             pow(2.5 - omegaPQ, bCoeff_)
@@ -202,13 +201,13 @@ void exchangeQK::testExchange
            /exp(lgamma(2.5 - omegaPQ + bCoeff_))
         );
 
-    scalar activationEnergy = 
+    scalar activationEnergy =
         (
             aDash*pow(TColl/273.0, bCoeff_)
            *fabs(heatOfReactionExchangeJoules_)
         );
-    
-    if (heatOfReactionExchangeJoules_ < 0.0) 
+
+    if (heatOfReactionExchangeJoules_ < 0.0)
     {
         //- forward (endothermic) exchange reaction
         activationEnergy -= heatOfReactionExchangeJoules_;
@@ -220,10 +219,10 @@ void exchangeQK::testExchange
         const label vibLevel_m = p.vibLevel()[m];
         const scalar kBByThetaVP = physicoChemical::k.value()*cloud_.constProps(typeIdP).thetaV_m(m);
         const scalar EVibP_m = cloud_.constProps(typeIdP).eVib_m(m, vibLevel_m);
-        
+
         //- Total collision energy
         collisionEnergy = translationalEnergy + EVibP_m;
-        
+
         //- Condition for the exchange reaction to possibly occur
         if(collisionEnergy > activationEnergy)
         {
@@ -232,7 +231,7 @@ void exchangeQK::testExchange
             if(activationEnergy < kBByThetaVP)
             {
                 // this refers to the first sentence in Bird's QK paper after Eq.(12).
-                summation = 1.0; 
+                summation = 1.0;
             }
             else
             {
@@ -240,7 +239,7 @@ void exchangeQK::testExchange
 
                 for(label i=0; i<=iaP; i++)
                 {
-                    summation += 
+                    summation +=
                         pow
                         (
                             1.0 - cloud_.constProps(typeIdP).eVib_m(m, i)/collisionEnergy,
@@ -257,14 +256,14 @@ void exchangeQK::testExchange
                     1.5 - omegaPQ
                 )
                 /summation;
-            
+
             m = p.vibLevel().size();
         }
-        
+
         m += 1;
-        
+
     } while (m < p.vibLevel().size());
-    
+
     totalReactionProbability += reactionProbability;
 }
 
@@ -278,24 +277,24 @@ void exchangeQK::exchange
 {
     const label typeIdP = p.typeId();
     const label typeIdQ = q.typeId();
-    
+
     nTotExchangeReactions_++;
     nExchangeReactionsPerTimeStep_++;
-    
+
     if (allowSplitting_)
     {
         relax_ = false;
-        
+
         vector UP = p.U();
         vector UQ = q.U();
-        
+
         const scalar mP = cloud_.constProps(typeIdP).mass();
         const scalar mQ = cloud_.constProps(typeIdQ).mass();
         const scalar mR = mP*mQ/(mP + mQ);
         const scalar cRsqr = magSqr(UP - UQ);
-        
+
         scalar translationalEnergy = 0.5*mR*cRsqr;
-        
+
         //- Center of mass velocity (pre-exchange)
         const vector Ucm = (mP*UP + mQ*UQ)/(mP + mQ);
 
@@ -306,23 +305,23 @@ void exchangeQK::exchange
         const scalar mPExch = cloud_.constProps(typeIdAtom).mass();
         const scalar mQExch = cloud_.constProps(typeIdMol).mass();
         const scalar mRExch = mPExch*mQExch/(mPExch + mQExch);
-        
+
         const scalar EVibP = cloud_.constProps(typeIdP).eVib_tot(p.vibLevel());
         const scalar EEleP = cloud_.constProps(typeIdP).electronicEnergyList()[p.ELevel()];
         const scalar EEleQ = cloud_.constProps(typeIdQ).electronicEnergyList()[q.ELevel()];
-        
+
         //  Assumption: no energy redistribution for both particles
         //  All the energy is stored in the translational mode
-        translationalEnergy += p.ERot() + EVibP + EEleP + EEleQ 
+        translationalEnergy += p.ERot() + EVibP + EEleP + EEleQ
             + heatOfReactionExchangeJoules_;
-        
+
         const scalar relVelExchMol = sqrt(2.0*translationalEnergy/mRExch);
-        
+
         //- Variable Hard Sphere collision part for collision of molecules
         const scalar cosTheta = 2.0*cloud_.rndGen().sample01<scalar>() - 1.0;
         const scalar sinTheta = sqrt(1.0 - cosTheta*cosTheta);
         const scalar phi = twoPi*cloud_.rndGen().sample01<scalar>();
-    
+
         const vector postCollisionRelU =
             relVelExchMol
            *vector
@@ -331,14 +330,14 @@ void exchangeQK::exchange
                 sinTheta*cos(phi),
                 sinTheta*sin(phi)
             );
-        
+
         UP = Ucm + postCollisionRelU*mQExch/(mPExch + mQExch);
         UQ = Ucm - postCollisionRelU*mPExch/(mPExch + mQExch);
-        
+
         //- p is originally the molecule and becomes the atom
         p.typeId() = typeIdAtom;
         p.U() = UP;
-        p.ERot() = 0.0; 
+        p.ERot() = 0.0;
         p.vibLevel().setSize
         (
             cloud_.constProps
@@ -348,7 +347,7 @@ void exchangeQK::exchange
             0
         );
         p.ELevel() = 0;
-        
+
         //- q is originally the atom and becomes the molecule
         q.typeId() = typeIdMol;
         q.U() = UQ;
@@ -405,14 +404,14 @@ exchangeQK::~exchangeQK()
 void exchangeQK::initialConfiguration()
 {
     setProperties();
-    
+
     const word& reactantA = cloud_.typeIdList()[reactantIds_[0]];
     const word& reactantB = cloud_.typeIdList()[reactantIds_[1]];
-    
+
     const word& productA = cloud_.typeIdList()[productIdsExchange_[0]];
     const word& productB = cloud_.typeIdList()[productIdsExchange_[1]];
-    
-    exchangeStr_ = "Exchange reaction " + reactantA + " + " 
+
+    exchangeStr_ = "Exchange reaction " + reactantA + " + "
         + reactantB + " --> " + productA + " + " + productB;
 }
 
@@ -437,7 +436,7 @@ bool exchangeQK::tryReactMolecules
             return true;
         }
     }
-        
+
     return false;
 }
 
@@ -458,40 +457,40 @@ void exchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
 {
     //- Reset the relax switch
     relax_ = true;
-    
+
     const label typeIdP = p.typeId();
     const label typeIdQ = q.typeId();
-    
-    //- Exchange reaction AB + C --> A + BC 
+
+    //- Exchange reaction AB + C --> A + BC
     //  If P is the first reactant AB (i.e., not the atom)
     //  NB: Q is necessarily M otherwise this class would not have been selected
     if
     (
         cloud_.constProps(typeIdP).type() != 10
      && cloud_.constProps(typeIdP).type() != 11
-    ) 
-    { 
+    )
+    {
         const scalar mP = cloud_.constProps(typeIdP).mass();
         const scalar mQ = cloud_.constProps(typeIdQ).mass();
         const scalar mR = mP*mQ/(mP + mQ);
-        
+
         const scalar omegaPQ =
             0.5
             *(
                   cloud_.constProps(typeIdP).omega()
                 + cloud_.constProps(typeIdQ).omega()
             );
-        
+
         const scalar cRsqr = magSqr(p.U() - q.U());
         const scalar translationalEnergy = 0.5*mR*cRsqr;
-        
+
         //- Possible reactions:
         // 1. Exchange reaction
-        
+
         scalar totalReactionProbability = 0.0;
         scalarList reactionProbabilities(1, 0.0);
         scalarList collisionEnergies(1, 0.0);
-        
+
         testExchange
         (
             p,
@@ -501,7 +500,7 @@ void exchangeQK::reaction(dsmcParcel& p, dsmcParcel& q)
             totalReactionProbability,
             reactionProbabilities[0]
         );
-        
+
         //- Decide if an exchange reaction is to occur
         if (totalReactionProbability > cloud_.rndGen().sample01<scalar>())
         {
@@ -520,9 +519,9 @@ void exchangeQK::outputResults(const label& counterIndex)
 {
     if (writeRatesToTerminal_)
     {
-        //- measure density 
+        //- measure density
         const List<DynamicList<dsmcParcel*>>& cellOccupancy = cloud_.cellOccupancy();
-            
+
         volume_ = 0.0;
 
         labelList molsReactants(2, 0);
@@ -534,7 +533,7 @@ void exchangeQK::outputResults(const label& counterIndex)
             forAll(parcelsInCell, pIC)
             {
                 dsmcParcel* p = parcelsInCell[pIC];
-                
+
                 const label pos = findIndex(reactantIds_, p->typeId());
 
                 if (pos != -1)
@@ -545,23 +544,23 @@ void exchangeQK::outputResults(const label& counterIndex)
 
             volume_ += mesh_.cellVolumes()[c];
         }
-        
+
         scalar volume = volume_;
         if (Pstream::parRun())
         {
             reduce(volume, sumOp<scalar>());
         }
-        
+
         scalarList numberDensities(2, cloud_.nParticle()/volume);
         numberDensities[0] *= molsReactants[0];
         numberDensities[1] *= molsReactants[1];
-        
+
         label nTotExchangeReactions = nTotExchangeReactions_;
         label nExchangeReactionsPerTimeStep = nExchangeReactionsPerTimeStep_;
 
         const scalar deltaT = mesh_.time().deltaT().value();
         scalar factor = 0.0;
-        
+
         if (reactantIds_[0] == reactantIds_[1] && numberDensities[0] > 0.0)
         {
             factor = cloud_.nParticle()/
@@ -580,7 +579,7 @@ void exchangeQK::outputResults(const label& counterIndex)
                    *volume
                 );
         }
-        
+
         if (Pstream::parRun())
         {
             //- Parallel communication
@@ -589,9 +588,9 @@ void exchangeQK::outputResults(const label& counterIndex)
             reduce(nTotExchangeReactions, sumOp<label>());
             reduce(nExchangeReactionsPerTimeStep, sumOp<label>());
         }
-        
+
         const scalar reactionRateExchange = factor*nTotExchangeReactions;
-        
+
         Info<< exchangeStr_
             << ", reaction rate = " << reactionRateExchange
             << ", nReactions = " << nExchangeReactionsPerTimeStep
@@ -599,20 +598,20 @@ void exchangeQK::outputResults(const label& counterIndex)
     }
     else
     {
-        label nTotExchangeReactions = nTotExchangeReactions_;   
+        label nTotExchangeReactions = nTotExchangeReactions_;
         label nExchangeReactionsPerTimeStep = nExchangeReactionsPerTimeStep_;
-        
+
         if (Pstream::parRun())
         {
             //- Parallel communication
             reduce(nTotExchangeReactions, sumOp<label>());
             reduce(nExchangeReactionsPerTimeStep, sumOp<label>());
         }
-        
+
         if (nTotExchangeReactions > 0)
         {
             Info<< exchangeStr_
-                << " is active, nReactions this time step = " 
+                << " is active, nReactions this time step = "
                 << nExchangeReactionsPerTimeStep
                 << endl;
          }

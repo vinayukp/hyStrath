@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ class constantTransport
 
         //- Constant dynamic viscosity [Pa.s]
         scalar mu_;
-        
+
         //- Factor in vibrational thermal conductivity kappave
         // Hard-sphere: (7-2*omega_m)/5 with omega_m = 0.5
         // Default value: 1.2
@@ -150,19 +150,19 @@ public:
 
         //- Thermal conductivity, translational mode [W/mK]
         inline scalar kappatrans(const scalar p, const scalar Tt) const;
-        
+
         //- Thermal conductivity, rotational mode [W/mK]
         inline scalar kappar(const scalar p, const scalar Tr) const;
-        
+
         //- Thermal conductivity, trans-rotational mode [W/mK]
         inline scalar kappatr(const scalar p, const scalar Tt) const;
-        
+
         //- Thermal conductivity, vib-electronic mode [W/mK]
         inline scalar kappave(const scalar p, const scalar Tt, const scalar Tve) const;
-        
+
         //- Thermal diffusivity, trans-rotational mode [kg/ms]
         inline scalar alphatr(const scalar p, const scalar Tt) const;
-        
+
         //- Thermal diffusivity, vib-electronic mode [kg/ms]
         inline scalar alphave(const scalar p, const scalar Tt, const scalar Tve) const;
 

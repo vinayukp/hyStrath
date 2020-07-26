@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     polyInstantBinsMethod
@@ -33,13 +32,13 @@ Description
 
     Any binModel may be applied. So far implemented the following:
 
-        normal, cylindrical, multi sub-zones, cuboid 
+        normal, cylindrical, multi sub-zones, cuboid
 
     Choice of properties to output also available.
 
     This is an implemented model for running transient measurements ( very costly )
-    
-    
+
+
 SourceFiles
     polyInstantBinsMethodI.H
     polyInstantBinsMethod.C
@@ -87,7 +86,7 @@ private:
         autoPtr<binModel> binModel_;
 
         label nBins_;
-        
+
         word regionName_;
         label regionId_;
         word fieldName_;
@@ -103,7 +102,7 @@ private:
 //         Field<DynamicList<scalar> > angularKeSum_;
 //         Field<DynamicList<scalar> > dof_;
 //         Field<DynamicList<tensor> > kineticTensor_;
-//         Field<DynamicList<tensor> > virialTensor_        
+//         Field<DynamicList<tensor> > virialTensor_
 
         // fields
 //         Field<DynamicList<scalar> > N_;
@@ -118,16 +117,16 @@ private:
 
         bool overideVolume_;
         List<scalar> volumes_;
-        
+
 //         scalar nAvTimeSteps_;
-        
+
 //         bool resetAtOutput_;
-        
-        
-        
+
+
+
     // Private Member Functions
-        
-        
+
+
 //             void writeToStorage();
 
 //             bool readFromStorage();
@@ -180,7 +179,7 @@ public:
 
         //- write field
         void writeField();
-}; 		
+};
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

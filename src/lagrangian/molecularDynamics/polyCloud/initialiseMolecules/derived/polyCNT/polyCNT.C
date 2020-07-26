@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -73,7 +72,7 @@ polyCNT::~polyCNT()
 void polyCNT::setInitialConfiguration()
 {
     const reducedUnits& rU = molCloud_.redUnits();
-    
+
     // READ IN PROPERTIES
 
     label N = readLabel(mdInitialiseDict_.lookup("N"));
@@ -81,9 +80,9 @@ void polyCNT::setInitialConfiguration()
     vector startPoint = mdInitialiseDict_.lookup("startPoint");
     vector endPoint = mdInitialiseDict_.lookup("endPoint");
     scalar bondLength = readScalar(mdInitialiseDict_.lookup("bondLengthSI"));
-    
-    bondLength /= rU.refLength();    
-    
+
+    bondLength /= rU.refLength();
+
     vector cntNormal = (endPoint - startPoint) / mag(endPoint - startPoint);
 
     const scalar& bo = bondLength;
@@ -100,7 +99,7 @@ void polyCNT::setInitialConfiguration()
     if(molId == -1)
     {
         FatalErrorIn("polyCNTId::setInitialConfiguration()")
-            << "Cannot find molecule id: " << molIdName 
+            << "Cannot find molecule id: " << molIdName
             << nl << "in moleculeProperties/idList."
             << exit(FatalError);
     }
@@ -136,7 +135,7 @@ void polyCNT::setInitialConfiguration()
         frozen = Switch(mdInitialiseDict_.lookup("frozen"));
     }
 
-    // default value for triming the graphene sheet. Make sure it is a small number, 
+    // default value for triming the graphene sheet. Make sure it is a small number,
     // smaller than the bond length
 
     scalar offset = 0.01;
@@ -147,7 +146,7 @@ void polyCNT::setInitialConfiguration()
         offset = readScalar(mdInitialiseDict_.lookup("trimSheetOffset"));
     }
 
-    // you can specify a perpendicular vector 
+    // you can specify a perpendicular vector
     bool rotateAboutMidAxis = false;
     vector tPerp = vector::zero;
 
@@ -162,10 +161,10 @@ void polyCNT::setInitialConfiguration()
         if(rD > SMALL)
         {
             FatalErrorIn("void Foam::polyMoleculeCloud::createCNTs() : ")
-                << "chosen perpendicularVector: " << tPerp 
+                << "chosen perpendicularVector: " << tPerp
                 << " is not perpendicular to the cnt normal: " << cntNormal
-                << ". Angle to normal is: " 
-                << acos(rD)*180.0/constant::mathematical::pi 
+                << ". Angle to normal is: "
+                << acos(rD)*180.0/constant::mathematical::pi
                 << " (degrees)."
                 << nl
                 << exit(FatalError);
@@ -182,7 +181,7 @@ void polyCNT::setInitialConfiguration()
 
     scalar length = mag(endPoint - startPoint);
 
-    scalar theta = 
+    scalar theta =
     atan
     (
         (sqrt(3.0)*n)/
@@ -198,7 +197,7 @@ void polyCNT::setInitialConfiguration()
 
     scalar D = mag(cH)/constant::mathematical::pi;
 
-    // information 
+    // information
     Info << nl << "Creating polyCNT. " << nl << endl;
 
     Info<< "CNT INFORMATION: "<< nl
@@ -260,7 +259,7 @@ void polyCNT::setInitialConfiguration()
     }
 
     //firstLayerPositions.shrink();
-    
+
     for(label i=1; i<nRows; i++)
     {
         forAll(firstLayerPositions, p)
@@ -320,11 +319,11 @@ void polyCNT::setInitialConfiguration()
         Info << "WARNING: CNT NOT ROLLED!" << endl;
 
         label noCatomsCreated = 0;
-        
+
         forAll(truncatedGrapheneSheet, c)
-        {  
+        {
             vector p = truncatedGrapheneSheet[c];
-            
+
             label cell = -1;
             label tetFace = -1;
             label tetPt = -1;
@@ -352,19 +351,19 @@ void polyCNT::setInitialConfiguration()
 
             noCatomsCreated += 1;
         }
-    
+
         if (Pstream::parRun())
         {
             reduce(noCatomsCreated, sumOp<label>());
         }
-    
+
         Info << tab << "CNT molecules added: " << noCatomsCreated << endl;
     }
     else
     {
         // Roll cnt
         vectorField rolledSheet;
-        
+
         rolledSheet.transfer(truncatedGrapheneSheet);
 
         scalar s = mag(cH); // circumference
@@ -392,7 +391,7 @@ void polyCNT::setInitialConfiguration()
                 if(c2 > c1)
                 {
                     const vector& p2 = rolledSheet[c2];
-                    
+
                     scalar rD = mag(p2-p1);
 
                     if(rD < 0.5*bo)
@@ -423,7 +422,7 @@ void polyCNT::setInitialConfiguration()
             }
         }
 
-        // orient CNT from the local co-ordinate axis used to setup CNT, to fit 
+        // orient CNT from the local co-ordinate axis used to setup CNT, to fit
         // in the global co-ordinate axis where it was defined.
 
 
@@ -439,15 +438,15 @@ void polyCNT::setInitialConfiguration()
         {
             scalar magV = 0.0;
             vector tangent;
-        
+
             while (magV < SMALL)
             {
                 vector testThis = molCloud_.rndGen().sampleVectorMD<vector>();
-        
+
                 tangent = testThis - (testThis & cntNormal)*cntNormal;
                 magV = mag(tangent);
             }
-    
+
             t1 = tangent/magV;
             t2 = cntNormal ^ t1;
         }
@@ -456,15 +455,15 @@ void polyCNT::setInitialConfiguration()
 
         forAll(cntMolecules, c)
         {
-            cntMolecules[c] = startPoint + cntMolecules[c].y()*cntNormal 
-                                + t1*cntMolecules[c].x() 
+            cntMolecules[c] = startPoint + cntMolecules[c].y()*cntNormal
+                                + t1*cntMolecules[c].x()
                                 + t2*cntMolecules[c].z();
         }
 
         // create atoms
 
         label noCatomsCreated = 0;
-        
+
         forAll(cntMolecules, c)
         {
             vector p = cntMolecules[c];
@@ -480,7 +479,7 @@ void polyCNT::setInitialConfiguration()
                 tetFace,
                 tetPt
             );
-        
+
             if (cell != -1)
             {
                 insertMolecule
@@ -506,12 +505,12 @@ void polyCNT::setInitialConfiguration()
                      << endl;
             }
         }
-    
+
         if (Pstream::parRun())
         {
             reduce(noCatomsCreated, sumOp<label>());
         }
-    
+
         Info << tab << " CNT molecules added: " << noCatomsCreated << endl;
     }
 }

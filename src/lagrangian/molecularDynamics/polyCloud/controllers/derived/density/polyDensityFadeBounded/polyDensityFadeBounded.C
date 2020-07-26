@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -52,7 +51,7 @@ polyDensityFadeBounded::polyDensityFadeBounded
     propsDict_(dict.subDict(typeName + "Properties")),
     samplingVolume_(0.0),
     controlVolume_(0.0),
-	pointsBox_(molCloud_.rndGen()), 
+	pointsBox_(molCloud_.rndGen()),
 	molId_(-1),
     maxN_(readLabel(propsDict_.lookup("maxNumberMols"))),
     insertionScheme_(molCloud.rndGen()), //Construct polyFadeII object from polyCloud cachedRandomMD object
@@ -78,13 +77,13 @@ polyDensityFadeBounded::polyDensityFadeBounded
     setBoundBox(propsDict_, bbcontrol_, "controlBoundBox");
     samplingVolume_ = bbsampling_.volume();
     controlVolume_ = bbcontrol_.volume();
-   
+
     //- select polyMolecule id for insertion
     {
         const List<word>& idList(molCloud_.cP().molIds());
         const word molId = propsDict_.lookup("molId");
         molId_ = findIndex(idList, molId);
-    
+
         if(molId_ == -1)
         {
             FatalErrorIn("polyDensityFadeBounded::polyDensityFadeBounded()")
@@ -95,38 +94,38 @@ polyDensityFadeBounded::polyDensityFadeBounded
     }
 
     pointsBox_.setBoundedBox(bbcontrol_);
-    
+
     scalar writeInterval = readScalar(t.controlDict().lookup("writeInterval"));
     scalar deltaT = t.deltaT().value();
-    
+
     nControlSteps_ = label((writeInterval/deltaT)+0.5);
-    
+
     Info << nl << "NO. OF CONTROL STEPS = " << nControlSteps_ << endl;
-    
+
     if (propsDict_.found("output"))
     {
         output_ = Switch(propsDict_.lookup("output"));
     }
-    
+
     if (propsDict_.found("distribution"))
     {
         const word option = propsDict_.lookup("distribution");
         uniform_ = false;
-        
+
         if(option == "uniform")
         {
             uniform_ = true;
-            Info << "Choosing distribution: UNIFORM" << endl;             
+            Info << "Choosing distribution: UNIFORM" << endl;
         }
         else if(option == "random")
         {
             random_ = true;
-            Info << "Choosing distribution: RANDOM" << endl; 
-        }        
-    }    
+            Info << "Choosing distribution: RANDOM" << endl;
+        }
+    }
     else
     {
-        Info << "Choosing default distribution: UNIFORM" << endl; 
+        Info << "Choosing default distribution: UNIFORM" << endl;
     }
 }
 
@@ -143,11 +142,11 @@ void polyDensityFadeBounded::setBoundBox
 (
     const dictionary& propsDict,
     boundedBox& bb,
-    const word& name 
+    const word& name
 )
 {
     const dictionary& dict(propsDict.subDict(name));
-    
+
     vector startPoint = dict.lookup("startPoint");
     vector endPoint = dict.lookup("endPoint");
 
@@ -162,8 +161,8 @@ void polyDensityFadeBounded::initialConfiguration()
 
 //     const polyMolecule::constantProperties& constProp = molCloud_.constProps(molId_);
     const scalar& massI = molCloud_.cP().mass(molId_);
-    molMass_ = massI;    
-    
+    molMass_ = massI;
+
     velocity_ = propsDict_.lookup("velocity");
     temperature_ = readScalar(propsDict_.lookup("temperature"));
 
@@ -176,9 +175,9 @@ void polyDensityFadeBounded::initialConfiguration()
         scalar massDensity = readScalar(propsDict_.lookup("massDensitySI"));
         density_ = massDensity/(molCloud_.redUnits().refMassDensity()*molMass_);
 
-        Info<< "Target mass density: " << massDensity << " (SI), " 
+        Info<< "Target mass density: " << massDensity << " (SI), "
              << massDensity/(molCloud_.redUnits().refMassDensity())
-             << " (red. units), number density " 
+             << " (red. units), number density "
              << density_ << " (red. units)."
              << endl;
     }
@@ -193,12 +192,12 @@ void polyDensityFadeBounded::initialConfiguration()
         scalar massDensity = readScalar(propsDict_.lookup("massDensity"));
         density_ = massDensity/molMass_;
     }
-    
+
     // set initial  properties
-    
+
     const word insertionMethod = propsDict_.lookup("insertionMethod");
-    const word deletionMethod = propsDict_.lookup("deletionMethod");    
-    
+    const word deletionMethod = propsDict_.lookup("deletionMethod");
+
     insertionScheme_.createInitialConfiguration
     (
         propsDict_,
@@ -207,24 +206,24 @@ void polyDensityFadeBounded::initialConfiguration()
         insertionMethod,
         deletionMethod
     );
-    
+
     insertionScheme_.temperature() = temperature_;
-    insertionScheme_.velocity() = velocity_; 
-    
+    insertionScheme_.velocity() = velocity_;
+
     insertionScheme_.output(time_);
-    
+
     if (propsDict_.found("controlFromStart"))
     {
         bool controlFromStart = false;
-        
+
         controlFromStart = Switch(propsDict_.lookup("controlFromStart"));
-        
+
         if(controlFromStart)
         {
             controlTimeIndex_ = nControlSteps_ + 1;
         }
     }
-        
+
 }
 
 void polyDensityFadeBounded::controlBeforeVelocityI()
@@ -248,52 +247,52 @@ void polyDensityFadeBounded::controlDuringForces
 void polyDensityFadeBounded::controlAfterForces()
 {
     insertionScheme_.checkFractions(molCloud_);
-    
+
     controlTimeIndex_++;
 
     // sampling
     measureProperties();
-    
+
     // control on the first time-step of the write interval
     if(controlTimeIndex_ > nControlSteps_)
     {
         Info << "polyDensityFadeBounded: control ... " << endl;
-        
+
         averageProperties();
-        
+
         label molsToControl = noOfMolsToControl();
-        
+
         label totalMols = molsToControl;
-        
+
         if(mag(totalMols) > 0)
-        {        
+        {
             nMolsToInsert(molsToControl);
-            
-            Pout << "mols to control = " << molsToControl << endl; 
-            
+
+            Pout << "mols to control = " << molsToControl << endl;
+
             List<vector> molPositions(molPoints_.size(), vector::zero);
-        
+
             forAll(molPoints_, i)
             {
                 molPositions[i] = molPoints_[i];
             }
-        
+
             insertionScheme_.controlMolecules
             (
                 molCloud_,
                 molsToControl,
                 bbcontrol_,
-                molPositions 
+                molPositions
             );
 
             if(deltaN_)
             {
                 label nInserted = insertionScheme_.nInserted();
                 label nDeleted = insertionScheme_.nDeleted();
-        
+
                 molsControlled_ += nInserted;
                 molsControlled_ -= nDeleted;
-            } 
+            }
         }
 
         mols_ = 0.0;
@@ -305,7 +304,7 @@ void polyDensityFadeBounded::controlAfterForces()
 void polyDensityFadeBounded::measureProperties()
 {
     scalar mols = 0.0;
-    
+
     IDLList<polyMolecule>::iterator mol(molCloud_.begin());
 
     for (mol = molCloud_.begin(); mol != molCloud_.end(); ++mol)
@@ -323,7 +322,7 @@ void polyDensityFadeBounded::measureProperties()
             }
         }
     }
-    
+
     if(Pstream::parRun())
     {
         reduce(mols, sumOp<scalar>());
@@ -336,12 +335,12 @@ void polyDensityFadeBounded::measureProperties()
 void polyDensityFadeBounded::averageProperties()
 {
     rhoN_ = mols_/(nMeas_*samplingVolume_);
-    
+
     if(Pstream::parRun())
     {
-        Pout<< "[measured] number density (R.U.) = " << rhoN_ 
+        Pout<< "[measured] number density (R.U.) = " << rhoN_
             << ", mass density (R.U.) = " << mols_*molMass_/(nMeas_*samplingVolume_)
-            << ", mass density (S.I.) = " 
+            << ", mass density (S.I.) = "
             << molCloud_.redUnits().refMassDensity()*mols_*molMass_/(nMeas_*samplingVolume_)
             << endl;
     }
@@ -355,13 +354,13 @@ label polyDensityFadeBounded::noOfMolsToControl()
     if(deltaN_)
     {
         nMols = molsToControlN_ - molsControlled_;
-        
+
         Info << "[Delta N]"
-             << " Target mols to control = " << molsToControlN_ 
+             << " Target mols to control = " << molsToControlN_
              << ", mols controlled = " << molsControlled_
              << ", controlling left = " <<  nMols
              << endl;
-             
+
     }
 
     if(mag(nMols) > maxN_)
@@ -408,21 +407,21 @@ void polyDensityFadeBounded::nMolsToInsert(label& molsToControl)
         else if(uniform_)
         {
             nMolsPoints = pointsBox_.uniform(mag(molsToControl));
-        }        
+        }
     }
-        
+
     if(Pstream::parRun())
     {
         forAll(nMolsPoints, i)
         {
-            reduce(nMolsPoints[i], sumOp<vector>());         
+            reduce(nMolsPoints[i], sumOp<vector>());
         }
     }
- 
-    DynamicList<vector> molPoints;     
-    
+
+    DynamicList<vector> molPoints;
+
     List<bool> pointsOnThisProc(mag(molsToControl), false);
-    
+
     forAll(nMolsPoints, i)
     {
         label cellI = mesh_.findCell(nMolsPoints[i]);
@@ -432,11 +431,11 @@ void polyDensityFadeBounded::nMolsToInsert(label& molsToControl)
             molPoints.append(nMolsPoints[i]);
             pointsOnThisProc[i]=true;
         }
-    } 
- 
+    }
+
     // test for bug - are same molecules on different processors
     if(Pstream::parRun())
-    { 
+    {
         //- sending
         for (int p = 0; p < Pstream::nProcs(); p++)
         {
@@ -449,20 +448,20 @@ void polyDensityFadeBounded::nMolsToInsert(label& molsToControl)
                 }
             }
         }
-    
+
         //- receiving
         for (int p = 0; p < Pstream::nProcs(); p++)
         {
             if(p != Pstream::myProcNo())
             {
                 List<bool> pointsOnThisProcRec;
-                
+
                 const int proc = p;
                 {
                     IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
                     fromNeighbour >> pointsOnThisProcRec;
                 }
-                
+
                 forAll(pointsOnThisProcRec, i)
                 {
                     if(pointsOnThisProcRec[i] && pointsOnThisProc[i])
@@ -470,14 +469,14 @@ void polyDensityFadeBounded::nMolsToInsert(label& molsToControl)
                         if(Pstream::myProcNo() > p)
                         {
                             pointsOnThisProc[i]=false;
-                        }    
+                        }
                     }
                 }
             }
         }
-        
+
         molPoints.clear();
-        
+
         forAll(nMolsPoints, i)
         {
             if(pointsOnThisProc[i])
@@ -486,13 +485,13 @@ void polyDensityFadeBounded::nMolsToInsert(label& molsToControl)
             }
         }
     }
-    
+
     //molPoints.shrink();
     molPoints_.clear();
     molPoints_.transfer(molPoints);
-    
-    label newMolsToControl = 0;    
-    
+
+    label newMolsToControl = 0;
+
     if(molsToControl > 0)
     {
         newMolsToControl = molPoints_.size();
@@ -501,17 +500,17 @@ void polyDensityFadeBounded::nMolsToInsert(label& molsToControl)
     {
         newMolsToControl = -molPoints_.size();
     }
-    
+
     if(Pstream::parRun())
     {
         label totalMols = newMolsToControl;
-          
+
         reduce(totalMols, sumOp<label>());
 
         if(mag(molsToControl) > 0)
         {
-            Pout<< "measured number density: " << rhoN_ 
-                <<", total nMols (target): " << molsToControl 
+            Pout<< "measured number density: " << rhoN_
+                <<", total nMols (target): " << molsToControl
                 << ", total nMols (check): " << totalMols
                 << ", this processor nMols: "<< newMolsToControl
                 << endl;
@@ -523,14 +522,14 @@ void polyDensityFadeBounded::nMolsToInsert(label& molsToControl)
 
         if(mag(molsToControl) > 0)
         {
-            Info<< "measured density: " << rhoN_ 
-                <<", total nMols (target): " << molsToControl 
+            Info<< "measured density: " << rhoN_
+                <<", total nMols (target): " << molsToControl
                 << ", total nMols (check): " << totalMols
                 << endl;
         }
     }
-    
-    molsToControl = newMolsToControl;    
+
+    molsToControl = newMolsToControl;
 }
 
 

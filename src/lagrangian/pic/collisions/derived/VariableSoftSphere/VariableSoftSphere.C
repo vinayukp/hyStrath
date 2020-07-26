@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -93,13 +93,13 @@ Foam::scalar Foam::VariableSoftSphere::sigmaTcR
             cloud_.constProps(typeIdP).omega()
           + cloud_.constProps(typeIdQ).omega()
         );
-       
-       
+
+
 //     if(typeIdP == 1 && typeIdQ == 0)
 //     {
 //         omegaPQ = 0.725;
 //     }
-//     
+//
 //     if(typeIdP == 0 && typeIdQ == 1)
 //     {
 //         omegaPQ = 0.725;
@@ -142,24 +142,24 @@ void Foam::VariableSoftSphere::collide
     label typeIdQ = pQ.typeId();
     vector& UP = pP.U();
     vector& UQ = pQ.U();
-    
-    scalar alphaPQ = 
+
+    scalar alphaPQ =
         0.5
         *(
             (cloud_.constProps(typeIdP).alpha())
             + (cloud_.constProps(typeIdQ).alpha())
         );
-    
+
 //     if(typeIdP == 1 && typeIdQ == 0)
 //     {
 //         alphaPQ = 1.0/1.64;
 //     }
-//     
+//
 //     if(typeIdP == 0 && typeIdQ == 1)
 //     {
 //         alphaPQ = 1.0/1.64;
 //     }
-    
+
 //     Info << "alphaPQ = " << alphaPQ << endl;
 
     Random& rndGen(cloud_.rndGen());
@@ -171,7 +171,7 @@ void Foam::VariableSoftSphere::collide
     vector Ucm = (mP*UP + mQ*UQ)/(mP + mQ);
 
     scalar cR = mag(UP - UQ);
-    
+
     vector cRComponents = UP - UQ;
 
     scalar cosTheta = 2.0*(pow(rndGen.sample01<scalar>(),(1.0/alphaPQ))) - 1.0;
@@ -179,11 +179,11 @@ void Foam::VariableSoftSphere::collide
     scalar sinTheta = sqrt(1.0 - cosTheta*cosTheta);
 
     scalar phi = twoPi*rndGen.sample01<scalar>();
-    
+
     scalar D = sqrt(cRComponents.y()*cRComponents.y() + cRComponents.z()*cRComponents.z());
-    
+
     vector postCollisionRelU = vector::zero;
-    
+
 //     if(D > VSMALL)
 //     {
         postCollisionRelU =

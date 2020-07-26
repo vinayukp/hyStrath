@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -67,7 +66,7 @@ writeTimeData::writeTimeData
 )
 {
     fileName writeFile(pathName/nameFile);
-    
+
     scalarField xData(data.size());
     scalarField yData(data.size());
 
@@ -96,7 +95,7 @@ writeTimeData::writeTimeData
     {
         forAll(xData, n)
         {
-            file 
+            file
                 << xData[n]
                 << endl;
         }
@@ -123,9 +122,9 @@ writeTimeData::writeTimeData
     {
         forAll(xData, n)
         {
-            file 
-                << xData[n].x() << "\t" 
-                << xData[n].y() << "\t" 
+            file
+                << xData[n].x() << "\t"
+                << xData[n].y() << "\t"
                 << xData[n].z() << "\t"
                 << endl;
         }
@@ -152,13 +151,13 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(xData, n)
             {
-                file 
-                    << xData[n] << "\t" 
+                file
+                    << xData[n] << "\t"
                     << yData[n]
                     << endl;
             }
@@ -172,7 +171,7 @@ writeTimeData::writeTimeData
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -180,7 +179,7 @@ writeTimeData::writeTimeData
 }
 
 
-//- vector field, scalar field, 
+//- vector field, scalar field,
 writeTimeData::writeTimeData
 (
     const fileName& pathName,
@@ -192,14 +191,14 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(yData, n)
             {
-                file 
-                    << xData[n].x() << "\t" 
-                    << xData[n].y() << "\t" 
+                file
+                    << xData[n].x() << "\t"
+                    << xData[n].y() << "\t"
                     << xData[n].z() << "\t"
                     << yData[n]
                     << endl;
@@ -214,7 +213,7 @@ writeTimeData::writeTimeData
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -234,16 +233,16 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(yData, n)
             {
-                file 
-                    << xData[n] << "\t" 
-                    << yData[n].x() << "\t" 
+                file
+                    << xData[n] << "\t"
+                    << yData[n].x() << "\t"
                     << yData[n].y() << "\t"
-                    << yData[n].z() 
+                    << yData[n].z()
                     << endl;
             }
         }
@@ -256,7 +255,7 @@ writeTimeData::writeTimeData
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -276,14 +275,14 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(yData, n)
             {
-                file 
-                    << xData[n] << "\t" 
-                    << yData[n].Re() << "\t" 
+                file
+                    << xData[n] << "\t"
+                    << yData[n].Re() << "\t"
                     << yData[n].Im() << "\t"
                     << endl;
             }
@@ -297,7 +296,7 @@ writeTimeData::writeTimeData
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -305,7 +304,7 @@ writeTimeData::writeTimeData
 }
 
 
-//- vector field, vector field, 
+//- vector field, vector field,
 writeTimeData::writeTimeData
 (
     const fileName& pathName,
@@ -317,18 +316,18 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(yData, n)
             {
-                file 
-                    << xData[n].x() << "\t" 
-                    << xData[n].y() << "\t" 
+                file
+                    << xData[n].x() << "\t"
+                    << xData[n].y() << "\t"
                     << xData[n].z() << "\t"
-                    << yData[n].x() << "\t" 
+                    << yData[n].x() << "\t"
                     << yData[n].y() << "\t"
-                    << yData[n].z() 
+                    << yData[n].z()
                     << endl;
             }
         }
@@ -341,7 +340,7 @@ writeTimeData::writeTimeData
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -349,7 +348,7 @@ writeTimeData::writeTimeData
 }
 
 
-//- scalar field, tensor field, 
+//- scalar field, tensor field,
 writeTimeData::writeTimeData
 (
     const fileName& pathName,
@@ -361,7 +360,7 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(yData, n)
@@ -383,14 +382,14 @@ writeTimeData::writeTimeData
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
-    } 
+    }
 }
 
-//- vector field, tensor field, 
+//- vector field, tensor field,
 writeTimeData::writeTimeData
 (
     const fileName& pathName,
@@ -402,14 +401,14 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(yData, n)
             {
                 file
-                    << xData[n].x() << "\t" 
-                    << xData[n].y() << "\t" 
+                    << xData[n].x() << "\t"
+                    << xData[n].y() << "\t"
                     << xData[n].z() << "\t"
                     << yData[n].xx() << "\t" << yData[n].xy() << "\t" << yData[n].xz() << "\t"
                     << yData[n].yx() << "\t" << yData[n].yy() << "\t" << yData[n].yz() << "\t"
@@ -426,11 +425,11 @@ writeTimeData::writeTimeData
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
-    } 
+    }
 }
 
 
@@ -450,7 +449,7 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         fileName fName(pathName/nameFile);
-    
+
         std::ofstream file(fName.c_str(),ios_base::app);
         file.precision(11);
 
@@ -469,12 +468,12 @@ writeTimeData::writeTimeData
                 << "Cannot open file " << fName
                 << abort(FatalError);
         }
-    
+
         file.close();
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -517,12 +516,12 @@ writeTimeData::writeTimeData
     else
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(xData, n)
             {
-                file 
+                file
                     << xData[n]
                     << endl;
             }
@@ -532,7 +531,7 @@ writeTimeData::writeTimeData
             FatalErrorIn("void writeTimeData::writeTimeData()")
                 << "Cannot open file " << file.name()
                 << abort(FatalError);
-        }    
+        }
     }
 }
 
@@ -542,20 +541,20 @@ writeTimeData::writeTimeData
     const fileName& pathName,
     const word& nameFile,
     const scalarField& xData,
-    const word& option, 
-    const bool& dummy     
+    const word& option,
+    const bool& dummy
 
 )
 {
     if(option == "once")
     {
         OFstream file(pathName/nameFile);
-    
+
         if(file.good())
         {
             forAll(xData, n)
             {
-                file 
+                file
                     << xData[n]
                     << endl;
             }
@@ -565,7 +564,7 @@ writeTimeData::writeTimeData
             FatalErrorIn("void writeTimeData::writeTimeData()")
                 << "Cannot open file " << file.name()
                 << abort(FatalError);
-        }    
+        }
     }
     if(option == "append")
     {
@@ -589,11 +588,11 @@ writeTimeData::writeTimeData
         }
 
         file.close();
-    }    
+    }
     if(option == "sidewaysAppend")
     {
 //         Pout <<"xData = " << xData << endl;
-        
+
         fileName fName(pathName/nameFile);
 
         std::ofstream file(fName.c_str(),ios_base::app);
@@ -605,7 +604,7 @@ writeTimeData::writeTimeData
             {
                 file << xData[n] << " ";
             }
-            
+
             file << nl;
         }
         else
@@ -633,7 +632,7 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         fileName fName(pathName/nameFile);
-    
+
         std::ofstream file(fName.c_str(),ios_base::app);
         file.precision(11);
         if(file.is_open())
@@ -641,9 +640,9 @@ writeTimeData::writeTimeData
             forAll(xData, n)
             {
                 file
-                    << xData[n] << "\t" 
-                    << yData[n].x() << "\t" 
-                    << yData[n].y() << "\t" 
+                    << xData[n] << "\t"
+                    << yData[n].x() << "\t"
+                    << yData[n].y() << "\t"
                     << yData[n].z() << nl;
             }
         }
@@ -653,12 +652,12 @@ writeTimeData::writeTimeData
                 << "Cannot open file " << fName
                 << abort(FatalError);
         }
-    
+
         file.close();
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -683,9 +682,9 @@ writeTimeData::writeTimeData
     {
         forAll(yData, n)
         {
-            file 
-                << yData[n].x() << "\t" 
-                << yData[n].y() << "\t" 
+            file
+                << yData[n].x() << "\t"
+                << yData[n].y() << "\t"
                 << yData[n].z() << nl;
         }
     }
@@ -715,17 +714,17 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         fileName fName(pathName/nameFile);
-    
+
         std::ofstream file(fName.c_str(),ios_base::app);
 
         file.precision(11);
-    
+
         if(file.is_open())
         {
             forAll(xData, n)
             {
                 file
-                    << xData[n] << "\t" 
+                    << xData[n] << "\t"
                     << yData[n].xx() << "\t" << yData[n].xy() << "\t" << yData[n].xz() << "\t"
                     << yData[n].yx() << "\t" << yData[n].yy() << "\t" << yData[n].yz() << "\t"
                     << yData[n].zx() << "\t" << yData[n].zy() << "\t" << yData[n].zz()
@@ -738,12 +737,12 @@ writeTimeData::writeTimeData
                 << "Cannot open file " << fName
                 << abort(FatalError);
         }
-    
+
         file.close();
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -763,25 +762,25 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         fileName fName(pathName/nameFile);
-    
+
         std::ofstream file(fName.c_str(),ios_base::app);
-    
+
         if(file.is_open())
         {
             forAll(xData, n)
             {
                 label ySize = yData[n].size();
-                
-                file 
+
+                file
                     << xData[n] << "\t";
 
-                    
+
                     for(label i = 0; i < ySize; i++)
                     {
                         file
                             << yData[n][i] << "\t";
                     }
-                    
+
                 file
                     << nl;
             }
@@ -792,12 +791,12 @@ writeTimeData::writeTimeData
                 << "Cannot open file " << fName
                 << abort(FatalError);
         }
-    
+
         file.close();
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -817,16 +816,16 @@ writeTimeData::writeTimeData
     if(xData.size() == yData.size())
     {
         fileName fName(pathName/nameFile);
-    
+
         std::ofstream file(fName.c_str(),ios_base::app);
-    
+
         if(file.is_open())
         {
             forAll(yData, n)
             {
-                file 
-                    << xData[n] << "\t" 
-                    << yData[n].Re() << "\t" 
+                file
+                    << xData[n] << "\t"
+                    << yData[n].Re() << "\t"
                     << yData[n].Im() << nl;
             }
         }
@@ -836,12 +835,12 @@ writeTimeData::writeTimeData
                 << "Cannot open file " << fName
                 << abort(FatalError);
         }
-        
+
         file.close();
     }
     else
     {
-        Info << "WARNING: size of two fields for output are not equal: " 
+        Info << "WARNING: size of two fields for output are not equal: "
              << xData.size() << " and " << yData.size()
              << nl << " in writeTimeData."
              << endl;
@@ -867,7 +866,7 @@ writeTimeData::writeTimeData
     {
         forAll(yData, n)
         {
-            file 
+            file
                 << yData[n].xx() << "\t" << yData[n].xy() << "\t" << yData[n].xz() << "\t"
                 << yData[n].yx() << "\t" << yData[n].yy() << "\t" << yData[n].yz() << "\t"
                 << yData[n].zx() << "\t" << yData[n].zy() << "\t" << yData[n].zz()
@@ -885,8 +884,8 @@ writeTimeData::writeTimeData
 }
 
 
-        
-// write out List<scalarField>     component only    
+
+// write out List<scalarField>     component only
 writeTimeData::writeTimeData
 (
     const fileName& pathName,
@@ -905,7 +904,7 @@ writeTimeData::writeTimeData
             {
                 file << data[nX][nY] << "\t";
             }
-            
+
             file << endl;
         }
     }
@@ -915,7 +914,7 @@ writeTimeData::writeTimeData
             << "Cannot open file " << file.name()
             << abort(FatalError);
     }
-} 
+}
 
 // write out List<vectorField>        component only
 writeTimeData::writeTimeData
@@ -937,42 +936,42 @@ writeTimeData::writeTimeData
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].x() << "\t";
                 }
-                
+
                 file << endl;
             }
         }
-        
+
         if(option == "y")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].y() << "\t";
                 }
-                
+
                 file << endl;
             }
-        }   
-        
+        }
+
         if(option == "z")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].z() << "\t";
                 }
-                
+
                 file << endl;
             }
-        }       
-        
+        }
+
     }
     else
     {
@@ -980,7 +979,7 @@ writeTimeData::writeTimeData
             << "Cannot open file " << file.name()
             << abort(FatalError);
     }
-} 
+}
 
 // List<vectorField> component only (with append possible)
 writeTimeData::writeTimeData
@@ -1003,7 +1002,7 @@ writeTimeData::writeTimeData
         {
             forAll(data[i], j)
             {
-            
+
                 if(option == "x")
                 {
                     file << data[i][j].x() << " ";
@@ -1017,9 +1016,9 @@ writeTimeData::writeTimeData
                     file << data[i][j].z() << " ";
                 }
             }
-            
+
             file << nl;
-                
+
         }
     }
     else
@@ -1054,40 +1053,40 @@ writeTimeData::writeTimeData
                 {
                     file << data[nX][nY].xx() << "\t";
                 }
-                
+
                 file << endl;
             }
         }
-        
+
         if(option == "xy")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].xy() << "\t";
                 }
-                
+
                 file << endl;
             }
-        }   
-        
+        }
+
         if(option == "xz")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].xz() << "\t";
                 }
-                
+
                 file << endl;
             }
         }
-        
-        
+
+
         if(option == "yx")
         {
             forAll(data, nX)
@@ -1096,40 +1095,40 @@ writeTimeData::writeTimeData
                 {
                     file << data[nX][nY].yx() << "\t";
                 }
-                
+
                 file << endl;
             }
         }
-        
+
         if(option == "yy")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].yy() << "\t";
                 }
-                
+
                 file << endl;
             }
-        }   
-        
+        }
+
         if(option == "yz")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].yz() << "\t";
                 }
-                
+
                 file << endl;
             }
-        }  
-        
-        
+        }
+
+
         if(option == "zx")
         {
             forAll(data, nX)
@@ -1138,39 +1137,39 @@ writeTimeData::writeTimeData
                 {
                     file << data[nX][nY].zx() << "\t";
                 }
-                
+
                 file << endl;
             }
         }
-        
+
         if(option == "zy")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].zy() << "\t";
                 }
-                
+
                 file << endl;
             }
-        }   
-        
+        }
+
         if(option == "zz")
         {
             forAll(data, nX)
             {
                 forAll(data[nX], nY)
                 {
-                    
+
                     file << data[nX][nY].zz() << "\t";
                 }
-                
+
                 file << endl;
             }
-        }        
-        
+        }
+
     }
     else
     {
@@ -1178,7 +1177,7 @@ writeTimeData::writeTimeData
             << "Cannot open file " << file.name()
             << abort(FatalError);
     }
-} 
+}
 
 writeTimeData::~writeTimeData()
 {}

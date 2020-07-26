@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     Foam::reducedUnits
@@ -112,7 +111,7 @@ public:
 
     // Static data members
 
-        //- Static data 
+        //- Static data
         static const scalar kb;
         static const scalar elementaryCharge;
         static const scalar vacuumPermittivity;
@@ -134,8 +133,8 @@ public:
         reducedUnits
         (
             label unity
-        );        
-        
+        );
+
         //- Construct from dictionary
         reducedUnits(const IOdictionary& reducedUnitsDict);
         reducedUnits(Time& runTime, const polyMesh& mesh);
@@ -167,16 +166,16 @@ public:
 
             inline scalar refLength() const;
 //             inline scalar& refLength();
-            
+
             inline scalar refTime() const;
 //             inline scalar& refTime();
-            
+
             inline scalar refMass() const;
 //             inline scalar& refMass();
-            
+
             inline scalar refCharge() const;
 //             inline scalar& refCharge();
-            
+
             inline scalar refTemp() const;
 
             inline scalar refEnergy() const;
@@ -203,7 +202,7 @@ public:
             inline scalar refAmpere() const;
 
 
-            //- calculated properties   
+            //- calculated properties
 
             inline scalar kB() const;
 

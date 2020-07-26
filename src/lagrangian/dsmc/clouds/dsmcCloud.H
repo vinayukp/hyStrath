@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ private:
 
         //- Dictionary of particle properties
         IOdictionary particleProperties_;
-        
+
         //- Dictionary of simulation properties
         dictionary controlDict_;
 
@@ -103,38 +103,38 @@ private:
 
         //- Coordinate system model: Cartesian, axisymmetric, spherical
         autoPtr<dsmcCoordinateSystem> dsmcCoordinateSystem_;
-        
+
         //- Porous measurements model: no, instantaneous, global
         autoPtr<porousMeasurements> porousMeasurements_;
-        
+
         //- Write out the information to terminal every nTerminalOutputs
         label nTerminalOutputs_;
 
         //- A data structure holding which particles are in which cell
         //List<DynamicList<dsmcParcel*> > cellOccupancy_;
         DynamicList<DynamicList<dsmcParcel*>> cellOccupancy_; // EDITED VINCENT
-        
+
         //- A data structure holding electron number density
         scalarList rhoNMeanElectron_;
-        
+
         //- A data structure holding electron mass density
         scalarList rhoMMeanElectron_;
-        
+
         //- A data structure holding all species mass density
         scalarList rhoMMean_;
-        
+
         //- A data structure holding electron momentum
         List<vector> momentumMeanElectron_;
-        
+
         //- A data structure holding all species momentum
         List<vector> momentumMean_;
-        
+
         //- A data structure holding electron linearKE
         scalarList linearKEMeanElectron_;
-        
+
         //- A data structure holding electron temperature
         scalarList electronTemperature_;
-        
+
         //- A data structure holding cell velocity
         List<vector> cellVelocity_;
 
@@ -154,22 +154,22 @@ private:
 
         //- Controllers
         dsmcControllers controllers_;
-        
+
         //- Load balancing
         dsmcDynamicLoadBalancing dynamicLoadBalancing_;
 
         //- Boundary measurements
         boundaryMeasurements boundaryMeas_;
-        
+
         //- Measurement fields
         //dsmcStandardFields standardFields_;
-        
-        dsmcFieldProperties fields_; 
+
+        dsmcFieldProperties fields_;
 
         //- Boundaries
         dsmcBoundaries boundaries_;
 
-        //- Flux-face tracking 
+        //- Flux-face tracking
         dsmcFaceTracker trackingInfo_;
 
 
@@ -177,18 +177,18 @@ private:
 
         //- Binary collision model
         autoPtr<BinaryCollisionModel> binaryCollisionModel_;
-        
+
         //- Collision selection routine model
         autoPtr<collisionPartnerSelection> collisionPartnerSelectionModel_;
 
         //- Chemical reactions
         dsmcReactions reactions_;
-        
+
         //- Calculation of the mean collision separation
         cellMeasurements cellMeas_;
 
-        
-        
+
+
     // Private Member Functions
 
 
@@ -197,7 +197,7 @@ private:
             DynamicList<label>& candidatesInCell
         );
 
-        // Whenever you pick from the candidate list 
+        // Whenever you pick from the candidate list
         // always update the candidate sublist
         void updateCandidateSubList
         (
@@ -217,24 +217,27 @@ private:
         //- Record which particles are in which cell
         void buildCellOccupancy();
 
+        //- When mesh changed, relocate the patch/face of stuck parcels
+        void relocateStuckParcels();
+
         //- When mesh has changed, changed the size of cellOccupancy_
         void buildCellOccupancyFromScratch();
-        
+
         //- When mesh has changed, change the size of collisionSelectionRemainder_
         void buildCollisionSelectionRemainderFromScratch();
-        
+
         //- When mesh has changed, update the boundaries
         void resetBoundaries();
-        
+
         //- When mesh has changed, update the measurement tools
         void resetMeasurementTools();
-        
+
         //- Remove electrons after adding their velocities to a DynamicList
         void removeElectrons();
-        
+
         //- Add an electron where an ion is found, after the move function
         void addElectrons();
-        
+
         //- Calculate collisions between molecules
         void collisions();
 
@@ -316,7 +319,7 @@ public:
 
         //- Return particle properties dictionary
         inline const IOdictionary& particleProperties() const;
-        
+
         //- Return particle properties dictionary
         inline const dictionary& controlDict() const;
 
@@ -325,31 +328,24 @@ public:
 
         //- Return the number of real particles represented by one parcel
         inline scalar nParticle() const;
-        
+
         //- Return the number of real particles represented by one parcel
         inline const volScalarField& nParticles() const;
-        
+
         //- Return the number of real particles represented by one parcel for
         //  a given cell
-        //  Locally in the code, the radialWeightingMethod (RWM) can be
-        //  changed from "cell"- to "particle"-based if rWMethod is set to
-        //  mixed and the method call uses mixedRWM = true (e.g., nTC)
-        inline scalar nParticles
-        (
-            const label celli,
-            const bool mixedRWMethod = false
-        ) const;
-        
+        inline scalar nParticles(const label celli) const;
+
         //- Return the number of real particles represented by one parcel for
         //  a given patch/face couple
         inline scalar nParticles(const label patchi, const label facei) const;
-        
+
         //- Return the DSMC time-step field
         inline const scalarField& deltaTField() const;
-        
+
         //- Return the DSMC time-step for a given cell
         inline scalar deltaTValue(const label celli = 0) const;
-        
+
         //- Return the number of timesteps to write out to terminal at
         inline label nTerminalOutputs() const;
 
@@ -394,7 +390,7 @@ public:
             const scalar temperature,
             const scalar mass
         );
-        
+
         //- Generate a random velocity sampled from the Chapman-Enskog speed
         // distribution
         vector chapmanEnskogVelocity
@@ -404,8 +400,8 @@ public:
             const vector& q,
             const tensor& tau
         );
-        
-        //- Generate a random velocity sampled from the Generalised 
+
+        //- Generate a random velocity sampled from the Generalised
         //  Chapman-Enskog distribution speed
         void generalisedChapmanEnskog
         (
@@ -432,7 +428,7 @@ public:
             const scalar temperature,
             const scalar rotationalDegreesOfFreedom
         );
-        
+
         //- Generate a random vibrational energy
         labelList equipartitionVibrationalEnergyLevel
         (
@@ -440,7 +436,7 @@ public:
             const label nVibrationalModes,
             const label typeId
         );
-        
+
         //- Generate a random electronic energy level
         label equipartitionElectronicLevel
         (
@@ -448,14 +444,14 @@ public:
             const labelList& electronicDegeneracyList,
             const scalarList& electronicEnergyList
         );
-        
+
         // - Generate a LB post-collision rotational energy
         scalar postCollisionRotationalEnergy
         (
             const scalar rotationalDof,
             const scalar ChiB
         );
-        
+
         // - Generate a LB post-collision vibrational energy
         label postCollisionVibrationalEnergyLevel
         (
@@ -472,7 +468,7 @@ public:
             const label invZvFormulation = 2,
             const label cellI = 0
         );
-        
+
         // - Generate a LB post-collision electronic energy level
         label postCollisionElectronicEnergyLevel
         (
@@ -540,35 +536,35 @@ public:
 
         inline const dsmcControllers& controllers() const;
         inline dsmcControllers& controllers();
-        
+
         //- Return reference to coordinate system model
         inline const dsmcCoordinateSystem& coordSystem() const;
-        
+
         //- Return non-const reference to coordinate system model
         inline dsmcCoordinateSystem& coordSystem();
-        
+
         //- Return reference to porous measurements model
         inline const porousMeasurements& porousMeas() const;
-        
+
         //- Return non-const reference to porous measurements model
         inline porousMeasurements& porousMeas();
-        
+
         inline const dsmcDynamicLoadBalancing& dynamicLoadBalancing() const;
         inline dsmcDynamicLoadBalancing& dynamicLoadBalancing();
 
         inline const dsmcFaceTracker& tracker() const;
         inline dsmcFaceTracker& tracker();
-        
+
         inline const dsmcReactions& reactions() const;
         inline dsmcReactions& reactions();
 
-        
+
         inline const boundaryMeasurements& boundaryFluxMeasurements() const;
         inline boundaryMeasurements& boundaryFluxMeasurements();
-        
+
         inline const cellMeasurements& cellPropMeasurements() const;
         inline cellMeasurements& cellPropMeasurements();
-        
+
       // Check
 
             //- Calculate properties of system
@@ -576,10 +572,10 @@ public:
 
             //- Print cloud information
             void info();
-            
+
              //- Check if load balance is required
             void loadBalanceCheck();
-            
+
             //- Perform load balance
             void loadBalance(const int noRefinement = 0);
 
@@ -622,14 +618,48 @@ public:
                 const label classification,
                 const labelList& vibLevel
             );
-            
+
+            //- Add new stuck parcel
+            // used to clone stuck particles during evolution of coordinate
+            // system (axisymmetric, spherical)
+            void addNewStuckParcel
+            (
+                const vector& position,
+                const vector& U,
+                const scalar RWF,
+                const scalar ERot,
+                const label ELevel,
+                const label cellI,
+                const label tetFaceI,
+                const label tetPtI,
+                const label typeId,
+                const label newParcel,
+                const label classification,
+                const labelList& vibLevel,
+                // stuck properties of the parent parcel:
+                // wallTemperature:
+                //   [0]: Temperature
+                //   [1]: Patch index
+                //   [2]: Face index
+                //   [3]: Pre-interaction energy (note: this is split across all
+                //        splitted parcels)
+                const scalarField& wallTemperature,
+                // wallVectors:
+                //   [0]: Wall unit tangential vector 1
+                //   [1]: Wall unit tangential vector 2
+                //   [2]: Wall unit normal vector
+                //   [3]: Pre-interaction momentum (note: this is split across
+                //        all splitted parcels)
+                const vectorField& wallVectors
+            );
+
             //- redistribute vibrational energy after a reaction
             scalar energyRatio
             (
                 scalar ChiA,
                 scalar ChiB
             );
-            
+
             //- redistribute vibrational energy after a reaction
             scalar PSIm
             (
@@ -639,17 +669,17 @@ public:
 
             //- Evolve the cloud (move, collide, compute)
             void evolve();
-            
+
             //- Evolve the cloud (move, collide)
             void evolve_moveAndCollide();
-            
+
             //- Evolve the cloud (compute)
             void evolve_fields();
-            
+
             // Return how often to write to terminal
             // (used for the solver to access this)
             label nTerminalOutputs();
-            
+
             // NEW DANIEL
             /*void resetHybrid
             (
@@ -728,7 +758,7 @@ public:
                 word& typeOfReset,
                 wordList& zonesToReset
             );*/
-            
+
             void resetHybridWhenUpdated
             (
                 volVectorField& UInitial,
@@ -744,15 +774,15 @@ public:
                 word& typeOfReset,
                 word& zoneToReset
             );
-            
+
             //- Function to help with steady normal shock wave simulation
             void shockReset();
             // END NEW DANIEL
 
             //- Clear the Cloud
             void clear();
-            
-            
+
+
           // I-O
 
             //- Update properties from given dictionary

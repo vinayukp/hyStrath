@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -94,11 +94,11 @@ public:
 
             //-  Return source for enthalpy equation [kg/m/s3]
             virtual tmp<volScalarField> Sh() const;
-            
-            //-  Return chemistry-vibrational coupling source term 
+
+            //-  Return chemistry-vibrational coupling source term
             //  in the vibrational equation [kg/m/s3]
             virtual tmp<volScalarField> Scv(label i) const;
-            
+
             //- Return energy removed from free-electrons during impact
             //  ionisation reactions [kg/m/s3]
             virtual tmp<volScalarField> Seiir(label i) const;

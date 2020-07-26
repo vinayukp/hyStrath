@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -182,13 +182,13 @@ void Foam::nonEqPattersonJumpTFvPatchScalarField::updateCoeffs()
     const fvPatchScalarField& pmu =
         patch().lookupPatchField<volScalarField, scalar>(muName_);
     const fvPatchScalarField& pTt =
-        patch().lookupPatchField<volScalarField, scalar>(TtName_);    
+        patch().lookupPatchField<volScalarField, scalar>(TtName_);
     const fvPatchScalarField& palpha =
         patch().lookupPatchField<volScalarField, scalar>(alphaName_); // NEW VINCENT 03/03/2016
     const fvPatchScalarField& pgammatr =
-        patch().lookupPatchField<volScalarField, scalar>(gammatrName_); // NEW VINCENT 03/03/2016     
+        patch().lookupPatchField<volScalarField, scalar>(gammatrName_); // NEW VINCENT 03/03/2016
     const fvPatchScalarField& pmfp =
-        patch().lookupPatchField<volScalarField, scalar>(mfpName_); // NEW VINCENT 28/02/2016           
+        patch().lookupPatchField<volScalarField, scalar>(mfpName_); // NEW VINCENT 28/02/2016
     const fvPatchScalarField& prho =
         patch().lookupPatchField<volScalarField, scalar>(rhoName_);
     const fvPatchVectorField& pU =

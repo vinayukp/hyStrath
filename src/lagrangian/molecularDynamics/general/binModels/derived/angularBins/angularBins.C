@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     angularBins
@@ -83,7 +82,7 @@ angularBins::angularBins
     if(deltaR <= 0.0)
     {
         FatalErrorIn("angularBins::angularBins()")
-            << "Rout " << Rout_ << " needs to be greater than Rin: " << Rin_ 
+            << "Rout " << Rout_ << " needs to be greater than Rin: " << Rin_
             << nl << "in: "
             << "system/fieldPropertiesDict"
             << exit(FatalError);
@@ -92,13 +91,13 @@ angularBins::angularBins
     thetaStart_ *= constant::mathematical::pi/180.0;
     thetaEnd_ *= constant::mathematical::pi/180.0;
 
-    Info<< "thetaStart = " << thetaStart_ 
+    Info<< "thetaStart = " << thetaStart_
         << ", thetaEnd = " << thetaEnd_ << endl;
 
     if(thetaEnd_ <= thetaStart_)
     {
         FatalErrorIn("angularBins::angularBins()")
-            << "angleEnd has to be larger than angleStart - define clockwise from referenceVectorY." 
+            << "angleEnd has to be larger than angleStart - define clockwise from referenceVectorY."
             << nl << "in: "
             << "system/fieldPropertiesDict"
             << exit(FatalError);
@@ -165,15 +164,15 @@ label angularBins::isPointWithinBin
 
             label n = label((theta-thetaStart_)/binWidth_);
 
-//             Info << "n (test) " << n << endl;    
-    
-            if(n >= 0) 
+//             Info << "n (test) " << n << endl;
+
+            if(n >= 0)
             {
-                if(n == nBins_) 
+                if(n == nBins_)
                 {
                     n--;
                 }
-        
+
                 if(n < nBins_)
                 {
                     binNumber = n;

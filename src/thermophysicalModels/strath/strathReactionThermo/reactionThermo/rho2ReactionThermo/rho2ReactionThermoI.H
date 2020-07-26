@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -42,27 +42,27 @@ Foam::scalar Foam::rho2ReactionThermo::Temperature
     // The tolerance and maximum number of iterations are identical to the ones in multiThermo.C
     scalar tol_ = 1e-4;
     scalar maxIter_ = 100;
-    
+
     scalar Test = T0;
     scalar Tnew = T0;
     scalar Ttol = T0*tol_;
     int    iter = 0;
-    
+
     do
     {
         Test = Tnew;
-        
+
         scalar Fipt(0), dFipt(0);
         forAll(composition().species(), i)
         {
             Fipt  += (composition().*F)(i, p, Test)*YList[i];
             dFipt += (composition().*dFdT)(i, p, Test)*YList[i];
         }
-        
+
         Tnew =
             (this->*limit)
             (Test - (Fipt - f)/dFipt);
-        //Info << "iter no" << tab << iter << ", Tnew" << tab << Tnew << endl;    
+        //Info << "iter no" << tab << iter << ", Tnew" << tab << Tnew << endl;
 
         if (iter++ > maxIter_)
         {
@@ -72,7 +72,7 @@ Foam::scalar Foam::rho2ReactionThermo::Temperature
             Test = Tlow_;
             Foam::rho2ReactionThermo::hasCrashedButRecovered = true;
             /*Info<< "Initial cell temperature" << tab << T0 << " K" << nl
-                << "Last temperature guess before crash" << tab << Tnew 
+                << "Last temperature guess before crash" << tab << Tnew
                 << " K" << endl;
             FatalErrorIn
             (
@@ -108,7 +108,7 @@ Foam::scalar Foam::rho2ReactionThermo::Temperature
     // The tolerance and maximum number of iterations are identical to the ones in multiThermo.C
     scalar tol_ = 1e-4;
     scalar maxIter_ = 100;
-    
+
     scalar Test = T0;
     scalar Tnew = T0;
     scalar Ttol = T0*tol_;
@@ -117,10 +117,10 @@ Foam::scalar Foam::rho2ReactionThermo::Temperature
     do
     {
         Test = Tnew;
-        
-        scalar Fipt((composition().*F)(i, p, Test)), 
+
+        scalar Fipt((composition().*F)(i, p, Test)),
             dFipt((composition().*dFdT)(i, p, Test));
-        
+
         Tnew =
             (this->*limit)
             (Test - (Fipt - f)/dFipt);
@@ -134,7 +134,7 @@ Foam::scalar Foam::rho2ReactionThermo::Temperature
             Foam::rho2ReactionThermo::hasCrashedButRecovered = true;
             /*Info<< "Species " << composition().species()[i] << nl
                 << "Initial cell temperature" << tab << T0 << " K" << nl
-                << "Last temperature guess before crash" << tab << Tnew 
+                << "Last temperature guess before crash" << tab << Tnew
                 << " K" << endl;
             FatalErrorIn
             (
@@ -251,13 +251,13 @@ Foam::scalar Foam::rho2ReactionThermo::limit
         noCellsWithTemperatureFieldOutOfRange += 1;
         minMaxTemperatureFieldOutOfRange[0] = min(T, Tlow_);
         minMaxTemperatureFieldOutOfRange[1] = max(T, Thigh_);
-        
+
         return min(max(T, Tlow_), Thigh_);
     }
     else
     {
         return T;
     }
-}   
+}
 
 // ************************************************************************* //

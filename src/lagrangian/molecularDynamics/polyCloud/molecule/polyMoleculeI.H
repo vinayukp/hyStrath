@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2008-2009 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -126,13 +125,13 @@ inline Foam::polyMolecule::constantProperties::constantProperties
         if(sites_[s].pairPotentialSite())
         {
             pairPotSites_[counterI] = s;
-            counterI++; 
+            counterI++;
         }
 
         if(sites_[s].electrostaticSite())
         {
             electrostaticSites_[counterJ] = s;
-            counterJ++; 
+            counterJ++;
         }
     }
 
@@ -223,7 +222,7 @@ inline Foam::polyMolecule::constantProperties::constantProperties
         forAll(sites_, s)
         {
             const vector& p(sites_[s].siteReferencePosition());
-    
+
             momOfInertia += sites_[s].siteMass()
                 *diagTensor(0, p.x()*p.x(), p.x()*p.x());
         }
@@ -242,11 +241,11 @@ inline Foam::polyMolecule::constantProperties::constantProperties
         // Calculate the inertia tensor in the current orientation
 
         tensor momOfInertia(tensor::zero);
-    
+
         forAll(sites_, s)
         {
             const vector& p(sites_[s].siteReferencePosition());
-    
+
             momOfInertia += sites_[s].siteMass()*tensor
             (
                 p.y()*p.y() + p.z()*p.z(), -p.x()*p.y(), -p.x()*p.z(),
@@ -254,48 +253,48 @@ inline Foam::polyMolecule::constantProperties::constantProperties
                 -p.z()*p.x(), -p.z()*p.y(), p.x()*p.x() + p.y()*p.y()
             );
         }
-        
+
 //         Info << "Eigen values: x = " << eigenValues(momOfInertia).x()
 //             << " y = " << eigenValues(momOfInertia).y()
 //             << " z = " << eigenValues(momOfInertia).z()
 //             << endl;
         Info << "momOfInertia (full tensor) = " <<  momOfInertia << endl;
-        
+
         if (eigenValues(momOfInertia).x() < VSMALL)
         {
 //             FatalErrorIn("polyMolecule::constantProperties::constantProperties")
 //                 << "An eigenvalue of the inertia tensor is zero, the molecule "
 //                 << dict.name() << " is not a valid 6DOF shape."
 //                 << nl << abort(FatalError);
-            
+
             Info << "Warning no adjustment to be made to molecule" << endl;
-            
+
             momentOfInertia_ = diagTensor
             (
                 momOfInertia.xx(),
                 momOfInertia.yy(),
                 momOfInertia.zz()
-            ); 
+            );
         }
         else
         {
             Info << "Adjusting molecule" << endl;
-            
+
             // Normalise the inertia tensor magnitude to avoid SMALL numbers in the
             // components causing problems
-    
+
             momOfInertia /= eigenValues(momOfInertia).x();
-        
+
             tensor e = eigenVectors(momOfInertia);
-    
-        
+
+
             // Calculate the transformation between the principle axes to the
             // global axes
-        
+
             tensor Q = vector(1,0,0)*e.x() + vector(0,1,0)*e.y() + vector(0,0,1)*e.z();
-        
+
         //         Info << "Q: " << Q << endl;
-        
+
             // Transform the site positions
             forAll(sites_, s)
             {
@@ -303,34 +302,34 @@ inline Foam::polyMolecule::constantProperties::constantProperties
             }
 
             // Recalculating the moment of inertia with the new site positions
-        
+
             // The rotation was around the centre of mass but remove any
             // components that have crept in due to floating point errors
-        
+
             centreOfMass = vector::zero;
-        
+
             forAll(sites_, s)
             {
                 centreOfMass += sites_[s].siteReferencePosition()*sites_[s].siteMass();
             }
-        
+
             centreOfMass /= mass_;
-        
+
             forAll(sites_, s)
             {
                 sites_[s].siteReferencePosition() -= centreOfMass;
 
             }
-            
+
             // Calculate the moment of inertia in the principle component
             // reference frame
-        
+
             momOfInertia = tensor::zero;
-        
+
             forAll(sites_, s)
             {
                 const vector& p(sites_[s].siteReferencePosition());
-        
+
                 momOfInertia += sites_[s].siteMass()*tensor
                 (
                     p.y()*p.y() + p.z()*p.z(), -p.x()*p.y(), -p.x()*p.z(),
@@ -338,15 +337,15 @@ inline Foam::polyMolecule::constantProperties::constantProperties
                     -p.z()*p.x(), -p.z()*p.y(), p.x()*p.x() + p.y()*p.y()
                 );
             }
-        
+
             momentOfInertia_ = diagTensor
             (
                 momOfInertia.xx(),
                 momOfInertia.yy(),
                 momOfInertia.zz()
-            );            
+            );
         }
-        
+
         Info << "moment of inertia (diag tensor): " << momentOfInertia_ << endl;
     }
 }*/

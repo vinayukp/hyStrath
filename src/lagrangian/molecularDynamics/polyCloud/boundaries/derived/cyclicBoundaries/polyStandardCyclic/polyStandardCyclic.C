@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -89,7 +88,7 @@ void polyStandardCyclic::controlMol
     /*
     label& faceI = mol.face();
 //     Info << "Position: " << mol.position() << endl;
-//     Info<< "Before hit. faceI " << faceI 
+//     Info<< "Before hit. faceI " << faceI
 //         << ", fc: " << mesh_.faceCentres()[faceI]
 //         << ", cellI: " << mol.cell()
 //         << endl;
@@ -99,7 +98,7 @@ void polyStandardCyclic::controlMol
 
 //     label patchI = mesh_.boundaryMesh().whichPatch(faceI);
 //     Pout << "error1: patchi: " << patchi << endl;
-    
+
     // hit cyclic patch (serial)
     if(cyclic()->patchId() == patchi)
     {
@@ -113,7 +112,7 @@ void polyStandardCyclic::controlMol
 
         mol.cell() = mesh_.faceOwner()[faceI];
 
-//         Info<< "modify face " << faceI 
+//         Info<< "modify face " << faceI
 //             << ", fc: " <<  mesh_.faceCentres()[faceI]
 //             << ", cell: " << mol.cell()
 //             << endl;
@@ -131,14 +130,14 @@ void polyStandardCyclic::controlMol
         if( isA<processorPolyPatch>(patch))
         {
 //             Pout << "error3" << endl;
-            //belongs to this cylic 
+            //belongs to this cylic
             if(findIndex(cyclic()->controlPatch(), faceI) != -1)
             {
 //                 Pout <<"hit processor patch: " << mol.position() << endl;
-    
+
                 const vector& nF = mesh_.faceAreas()[faceI];
                 mol.position() -= nF/mag(nF)*mag(cyclic()->cyclicTranslationVector());
-    
+
 //                 Pout <<"new position: " << mol.position() << endl;
             }
         }
@@ -146,7 +145,7 @@ void polyStandardCyclic::controlMol
 //     Pout << "error2" << endl;
 
 //     Pout << "hit cyclic boundary (new model)! "<< mol.position() <<  endl;
-    
+
 
 
 //     Pout << "hit cyclic boundary (new model)! "<< mol.position() <<  endl;
@@ -154,11 +153,11 @@ void polyStandardCyclic::controlMol
 //     if(!isA<processorPolyPatch>(patch))
 //     {
 // //         Pout << "hit cyclic boundary (new model)! "<< mol.position() <<  endl;
-//     
+//
 //         const vector& nF = mesh_.faceAreas()[faceI];
-//     
+//
 //         mol.position() -= nF/mag(nF)*mag(cyclicTranslationVector_);
-//     
+//
 // //         Pout << "hit cyclic boundary (after new model)! "<< mol.position() <<  endl;
 //     }
 
@@ -170,13 +169,13 @@ void polyStandardCyclic::controlMol
 
 //     label patchi = mesh_.boundaryMesh().whichPatch(faceI);
 
-//     Info << "mol at pos: " << mol.position() 
-//         << ", new pos: " << mol.position() - nF/mag(nF)*mag(cyclicTranslationVector_) 
-//          << ", v = " << mol.v() 
+//     Info << "mol at pos: " << mol.position()
+//         << ", new pos: " << mol.position() - nF/mag(nF)*mag(cyclicTranslationVector_)
+//          << ", v = " << mol.v()
 //          << " hits patch name: " << mesh_.boundaryMesh().names()[patchi]
 //          << endl;
-    
-   
+
+
 //     const polyPatch& patch = mesh_.boundaryMesh()[patchi];
 
 //     const cyclicPolyPatch& cpp = static_cast<const cyclicPolyPatch&>(patch);
@@ -194,7 +193,7 @@ void polyStandardCyclic::controlMol
 //     if (!cpp.parallel())
 //     {
 //         const tensor& T = cpp.transformT(patchFacei_);
-// 
+//
 //         transformPosition(T);
 //         static_cast<ParticleType&>(*this).transformProperties(T);
 //     }
@@ -207,18 +206,18 @@ void polyStandardCyclic::controlMol
 //         );
 //     }
 
-// 
-// 
+//
+//
 //     label patchFacei_ = cpp.whichFace(facei_);
-// 
+//
 //     facei_ = cpp.transformGlobalFace(facei_);
-// 
+//
 //     celli_ = cloud_.polyMesh_.faceOwner()[facei_];
-// 
+//
 //     if (!cpp.parallel())
 //     {
 //         const tensor& T = cpp.transformT(patchFacei_);
-// 
+//
 //         transformPosition(T);
 //         static_cast<ParticleType&>(*this).transformProperties(T);
 //     }
@@ -240,7 +239,7 @@ void polyStandardCyclic::controlMol
 //     polyMolecule::trackData& td
 // )
 // {
-// 
+//
 // }
 
 

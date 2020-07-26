@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,15 +19,14 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     Foam::eVRelaxationModels::BourdonVervisch
 
 Description
     BourdonVervisch e-V Relaxation model.
-    
+
 SourceFiles
     BourdonVervisch.C
 
@@ -64,19 +63,19 @@ class BourdonVervisch
 
         // Labels of the species
         label species1_;
-        
+
         // Name of the species
         word name1_;
-        
+
         // Temperatures for the linear interpolation
         scalar Tlow_, Tmed_, Thigh_;
-        
+
         // Coefficients
         FixedList<scalar,2> BV1_, BV2_, BV3_;
-        
-        
+
+
     // Private member functions
-    
+
         FixedList<scalar,2> findTemperatureRange
         (
             const scalar T
@@ -92,14 +91,14 @@ class BourdonVervisch
                 tRange[1] = Thigh_;
             }
             return tRange;
-        } 
-        
+        }
+
         scalar boundedLinearInterpolation
         (
             const scalar xpt,
-            const scalar x1, 
+            const scalar x1,
             const scalar x2,
-            const scalar y1, 
+            const scalar y1,
             const scalar y2
         ) const
         {
@@ -115,8 +114,8 @@ class BourdonVervisch
             {
                 return y1 + (xpt-x1)*(y2-y1)/(x2-x1);
             }
-        }     
-        
+        }
+
 
 public:
 
@@ -148,7 +147,7 @@ public:
 
         //- V-T relaxation time [s]
         virtual tmp<volScalarField> taueV() const;
-         
+
         //- V-T relaxation time for patch [s]
         virtual tmp<scalarField> taueV
         (
@@ -156,7 +155,7 @@ public:
             const scalarField& p,
             const scalarField& Tv
         ) const;
-        
+
 };
 
 

@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ class referredCell
 
         // rotational tensor
         tensor R_;
-    
+
 
 
 
@@ -129,7 +129,7 @@ public:
 
 
     // Member Functions
-    
+
         void initialise
         (
             const polyMesh& mesh,
@@ -149,7 +149,7 @@ public:
             (
                 const bool& rotate,
                 const vector& rotationPt,
-//                 const vector& rotationAxis,   
+//                 const vector& rotationAxis,
 //                 const scalar& angle
                 const tensor& R
             );
@@ -171,8 +171,8 @@ public:
             const labelList& neighbouringCells() const;
 
             const vector& translation() const;
-            
-            const bool& rotate() const;            
+
+            const bool& rotate() const;
             //- Return non-const access to the stored points
 //             inline pointField& points();
 

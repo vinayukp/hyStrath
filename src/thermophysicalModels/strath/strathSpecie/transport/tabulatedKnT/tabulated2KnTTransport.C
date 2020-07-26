@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -32,9 +32,9 @@ License
 Foam::tabulated2KnTTransport<Thermo>::tabulated2KnTTransport(Istream& is)
 :
     Thermo(is)
-{    
+{
     is.check("tabulated2KnTTransport<Thermo>::tabulated2KnTTransport(Istream&)");
-    
+
     mu_ = interpolation2DTable<scalar>("constant/tabulatedKnTData/muTable");
     //mu_.outOfBounds(interpolation2DTable<scalar>::EXTRAPOLATE);
     kappa_ = interpolation2DTable<scalar>("constant/tabulatedKnTData/kappaTable");

@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ Group
     grpThermoBoundaryConditions
 
 Description
-    This boundary condition provides a mixed condition for the 
+    This boundary condition provides a mixed condition for the
     trnas-rotational mode of the internal energy
 
 SeeAlso
@@ -66,7 +66,7 @@ private:
 
         // Thermo package that contains species patch data
         const rho2ReactionThermo& thermo_; // NEW VINCENT 15/02/201
-        
+
 
 public:
 

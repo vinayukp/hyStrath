@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -82,7 +81,7 @@ void dsmcStickingWallPatch::setProperties()
 
         typeIds_[i] = typeId;
     }
-    
+
     adsorptionProbs_.clear();
 
     adsorptionProbs_.setSize(typeIds_.size(), 0.0);
@@ -95,11 +94,11 @@ void dsmcStickingWallPatch::setProperties()
                 .lookup(moleculesReduced[i])
         );
     }
-    
+
     residenceTimes_.clear();
 
     residenceTimes_.setSize(typeIds_.size(), 0.0);
-    
+
     forAll(residenceTimes_, i)
     {
         if (propsDict_.isDict("residenceTimes"))
@@ -115,55 +114,55 @@ void dsmcStickingWallPatch::setProperties()
             residenceTimes_[i] = VGREAT;
         }
     }
-    
+
     const scalar saturationLimitPerSquareMeters = propsDict_
         .lookupOrDefault<scalar>("saturationLimit", VGREAT);
-        
+
     const scalarList& facesArea = mesh_.magSf().boundaryField()[patchId()];
-    
+
     forAll(saturationLimit_, facei)
     {
-        saturationLimit_[facei] = 
-            saturationLimitPerSquareMeters*facesArea[facei]
-           /cloud_.nParticles(patchId(), facei);
+        saturationLimit_[facei] =
+            saturationLimitPerSquareMeters*facesArea[facei];
     }
 }
 
 
 void dsmcStickingWallPatch::readPatchField()
 {
-    tmp<volScalarField> tnStuckParcels
+    tmp<volScalarField> tnStuckParticles
     (
         new volScalarField
         (
             IOobject
             (
-                "nStuckParcels",
+                "nStuckParticles",
                 mesh_.time().timeName(),
                 mesh_,
                 IOobject::READ_IF_PRESENT,
                 IOobject::NO_WRITE
             ),
             mesh_,
-            dimensionedScalar("nStuckParcels", dimless, 0.0)
+            dimensionedScalar("nStuckParticles", dimless, 0.0)
         )
     );
-    
-    volScalarField& nStuckParcels = tnStuckParcels.ref();
-    
-    nStuckParcels_ = nStuckParcels.boundaryField()[patchId()];
 
-    cloud_.boundaryFluxMeasurements().setBoundarynStuckParcels(patchId(), nStuckParcels_);
+    volScalarField& nStuckParticles = tnStuckParticles.ref();
+
+    nStuckParticles_ = nStuckParticles.boundaryField()[patchId()];
+
+    cloud_.boundaryFluxMeasurements()
+        .setBoundarynStuckParticles(patchId(), nStuckParticles_);
 }
 
 
 bool dsmcStickingWallPatch::isNotSaturated(const label facei)
 {
-    if(saturationLimit(facei) - nStuckParcels(facei) > 1e-6)
+    if(saturationLimit(facei) - nStuckParticles(facei) > 1e-6)
     {
         return true;
     }
-    
+
     return false;
 }
 
@@ -178,65 +177,67 @@ void dsmcStickingWallPatch::adsorbParticle
     p.setStuck();
 
     scalarField& wallTemperature = p.stuck().wallTemperature();
-    
+
     vectorField& wallVectors = p.stuck().wallVectors();
-    
+
     vector& U = p.U();
 
     scalar& ERot = p.ERot();
-    
+
     //- Wall unit normal vector and wall unit tangential vectors
     vector nw, tw1, tw2 = vector::zero;
-    
+
     dsmcPatchBoundary::calculateWallUnitVectors(p, nw, tw1, tw2);
-    
-    scalar preIE = 0.0;
-    vector preIMom = vector::zero;
-    
+
     const label& typeId = p.typeId();
-    
+
     const scalar mass = cloud_.constProps(typeId).mass();
-    
+
     if (localTemperature == 0)
     {
         localTemperature = temperature_;
     }
-    
-    preIE = 0.5*mass*(U & U) + ERot 
+
+    // Since the parcel might be stuck to this wall over several time steps, we
+    // have to calculate the pre-interaction values with the current RWF as
+    // it might be updated in one or several intermediate coordinate system
+    // evolve step(s).
+    const scalar preIE = p.RWF()*(0.5*mass*(U & U) + ERot
         + cloud_.constProps(typeId).eVib_tot(p.vibLevel())
-        + cloud_.constProps(typeId).electronicEnergyList()[p.ELevel()];
-    
-    preIMom = mass*U;
-    
+        + cloud_.constProps(typeId).electronicEnergyList()[p.ELevel()]);
+
+    const vector preIMom = p.RWF()*mass*U;
+
     wallTemperature[3] = preIE;
     wallVectors[3] = preIMom;
-    
+
     const scalar& T = localTemperature;
-    
+
     U = vector::zero;
-    
+
     const label wppIndex = patchId();
     const polyPatch& wpp = mesh_.boundaryMesh()[wppIndex];
     const label wppLocalFace = wpp.whichFace(p.face());
-    
+
     wallTemperature[0] = T;
     wallTemperature[1] = wppIndex;
     wallTemperature[2] = wppLocalFace;
-    
+
     wallVectors[0] = tw1;
     wallVectors[1] = tw2;
     wallVectors[2] = nw;
-    
+
     //- Increment the number of stuck particles for this face
-    nStuckParcels_[wallTemperature[2]]++;
+    nStuckParticles_[wppLocalFace] += p.RWF() * cloud_.coordSystem().dtModel()
+        .nParticles(wppIndex, wppLocalFace);
 }
 
 
 void dsmcStickingWallPatch::testForDesorption(dsmcParcel& p)
-{ 
+{
     const label typeId = p.typeId();
     const label iD = findIndex(typeIds_, typeId);
-    
+
     if(iD != -1)
     {
         const scalar deltaT = cloud_.deltaTValue(p.cell());
@@ -247,9 +248,9 @@ void dsmcStickingWallPatch::testForDesorption(dsmcParcel& p)
         if(rndGen.sample01<scalar>() < deltaT/residenceTimes_[iD])
         {
             const scalar mass = cloud_.constProps(typeId).mass();
-            
+
             vector& U = p.U();
-            
+
             U = sqrt
                 (
                     physicoChemical::k.value()
@@ -262,12 +263,15 @@ void dsmcStickingWallPatch::testForDesorption(dsmcParcel& p)
                   - sqrt(-2.0*log(max(1 - rndGen.sample01<scalar>(), VSMALL)))
                         *p.stuck().wallVectors()[2]
                 );
-                
+
             //- Decrement the number of stuck particles for this face
-            nStuckParcels_[p.stuck().wallTemperature()[2]]--;
-    
+            const label& wppIndex = p.stuck().wallTemperature()[1];
+            const label& wppLocalFace = p.stuck().wallTemperature()[2];
+            nStuckParticles_[wppLocalFace] -= p.RWF() * cloud_.coordSystem()
+                .dtModel().nParticles(wppIndex, wppLocalFace);
+
             measurePropertiesAfterDesorption(p);
-            
+
             p.deleteStuck();
         }
     }
@@ -290,7 +294,7 @@ void dsmcStickingWallPatch::measurePropertiesAfterDesorption
 
         const scalar deltaT = cloud_.deltaTValue(p.cell());
 
-        const dsmcParcel::constantProperties& 
+        const dsmcParcel::constantProperties&
             constProps(cloud_.constProps(p.typeId()));
 
         const scalar m = constProps.mass();
@@ -302,79 +306,102 @@ void dsmcStickingWallPatch::measurePropertiesAfterDesorption
 
         const vector Ut = p.U() - U_dot_nw*nw;
 
-        const scalar invMagUnfA = 1/max(mag(U_dot_nw)*fA, SMALL);
+        const scalar rwfDivMagUnfADt =
+            p.RWF()/max(mag(U_dot_nw)*fA*deltaT, SMALL);
 
         cloud_.boundaryFluxMeasurements()
-            .rhoNBF()[p.typeId()][wppIndex][wppLocalFace] += invMagUnfA;
-            
+            .rhoNBF()[p.typeId()][wppIndex][wppLocalFace] += rwfDivMagUnfADt;
+
         if(constProps.rotationalDegreesOfFreedom() > 0)
         {
-           cloud_.boundaryFluxMeasurements()
-              .rhoNIntBF()[p.typeId()][wppIndex][wppLocalFace] += invMagUnfA; 
+            cloud_.boundaryFluxMeasurements()
+                .rhoNIntBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                    rwfDivMagUnfADt;
         }
-        
+
         if(constProps.nElectronicLevels() > 1)
         {
-           cloud_.boundaryFluxMeasurements()
-              .rhoNElecBF()[p.typeId()][wppIndex][wppLocalFace] += invMagUnfA;
+            cloud_.boundaryFluxMeasurements()
+                .rhoNElecBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                    rwfDivMagUnfADt;
         }
 
         cloud_.boundaryFluxMeasurements()
-            .rhoMBF()[p.typeId()][wppIndex][wppLocalFace] += m*invMagUnfA;
-        
+            .rhoMBF()[p.typeId()][wppIndex][wppLocalFace] += m*rwfDivMagUnfADt;
+
         cloud_.boundaryFluxMeasurements()
-            .linearKEBF()[p.typeId()][wppIndex][wppLocalFace] += 
-                0.5*m*(p.U() & p.U())*invMagUnfA;
-        
+            .linearKEBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                0.5*m*(p.U() & p.U())*rwfDivMagUnfADt;
+
         cloud_.boundaryFluxMeasurements()
-            .mccSpeciesBF()[p.typeId()][wppIndex][wppLocalFace] += 
-                m*(p.U() & p.U())*invMagUnfA;
-        
+            .mccSpeciesBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                m*(p.U() & p.U())*rwfDivMagUnfADt;
+
         cloud_.boundaryFluxMeasurements()
-            .momentumBF()[p.typeId()][wppIndex][wppLocalFace] += 
-                m*Ut*invMagUnfA;
-        
+            .momentumBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                m*Ut*rwfDivMagUnfADt;
+
         cloud_.boundaryFluxMeasurements()
-            .rotationalEBF()[p.typeId()][wppIndex][wppLocalFace] += 
-                p.ERot()*invMagUnfA;
-        
+            .rotationalEBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                p.ERot()*rwfDivMagUnfADt;
+
         cloud_.boundaryFluxMeasurements()
-            .rotationalDofBF()[p.typeId()][wppIndex][wppLocalFace] += 
-                constProps.rotationalDegreesOfFreedom()*invMagUnfA;
+            .rotationalDofBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                constProps.rotationalDegreesOfFreedom()*rwfDivMagUnfADt;
 
         const scalar EVibP_tot = constProps.eVib_tot(p.vibLevel());
-        
-        cloud_.boundaryFluxMeasurements()
-            .vibrationalEBF()[p.typeId()][wppIndex][wppLocalFace] += 
-                EVibP_tot*invMagUnfA;
 
         cloud_.boundaryFluxMeasurements()
-            .electronicEBF()[p.typeId()][wppIndex][wppLocalFace] += 
-                constProps.electronicEnergyList()[p.ELevel()]*invMagUnfA;
+            .vibrationalEBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                EVibP_tot*rwfDivMagUnfADt;
+
+        forAll(p.vibLevel(), mode)
+        {
+            cloud_.boundaryFluxMeasurements()
+                .evmsBF()[p.typeId()][mode][wppIndex][wppLocalFace] +=
+                    constProps.eVib_m(mode, p.vibLevel()[mode])
+                    * rwfDivMagUnfADt;
+        }
+
+        cloud_.boundaryFluxMeasurements()
+            .electronicEBF()[p.typeId()][wppIndex][wppLocalFace] +=
+                constProps.electronicEnergyList()[p.ELevel()]*rwfDivMagUnfADt;
 
         // post-interaction energy
-        scalar postIE = 0.5*m*(p.U() & p.U()) + p.ERot() + EVibP_tot
-            + constProps.electronicEnergyList()[p.ELevel()];
+        scalar postIE = p.RWF()*(0.5*m*(p.U() & p.U()) + p.ERot() + EVibP_tot
+            + constProps.electronicEnergyList()[p.ELevel()]);
 
         // post-interaction momentum
-        const vector postIMom = m*p.U();
+        const vector postIMom = p.RWF()*m*p.U();
 
+        // Note: these do include the p.RWF() of the parcel at the time it was
+        // adsorbed on the wall!
         const scalar preIE = p.stuck().wallTemperature()[3];
         const vector preIMom = p.stuck().wallVectors()[3];
-        
-        scalar nParticle = cloud_.nParticles(wppIndex, wppLocalFace);
-        
-        //nParticle *= cloud_.coordSystem().pRWF(wppIndex, wppLocalFace);
+
+        // Note: Do _not_ use the cloud._nParticles() command here because it
+        // assumes the wrong RWF. Because this calculation can happen at
+        // completely different time steps the parcel RWF might have been up-
+        // dated in the mean time. As the parcel might have been cloned in the
+        // mean time (note: the new parcel would then also be adsorbed), we
+        // have to use the RWF of the impinging parcel in the pre-interaction
+        // calculations and the RWF of the leaving parcel in the post-
+        // interaction parcels. The heat of reaction is calculated with the
+        // post-interaction RWFs.
+        const scalar nParticle = cloud_.coordSystem().dtModel()
+            .nParticles(wppIndex, wppLocalFace);
 
         const scalar deltaQ = nParticle
-            *(preIE - postIE  + (heatOfReaction*physicoChemical::k.value()))
+            *(preIE - postIE
+                + (p.RWF()*heatOfReaction*physicoChemical::k.value())
+            )
             /(deltaT*fA);
-            
+
         const vector deltaFD = nParticle*(preIMom - postIMom)/(deltaT*fA);
 
         cloud_.boundaryFluxMeasurements()
             .qBF()[p.typeId()][wppIndex][wppLocalFace] += deltaQ;
-            
+
         cloud_.boundaryFluxMeasurements()
             .fDBF()[p.typeId()][wppIndex][wppLocalFace] += deltaFD;
     }
@@ -397,15 +424,15 @@ dsmcStickingWallPatch::dsmcStickingWallPatch
     typeIds_(),
     adsorptionProbs_(),
     residenceTimes_(),
-    nStuckParcels_(mesh_.boundaryMesh()[patchId()].size(), 0.0),
+    nStuckParticles_(mesh_.boundaryMesh()[patchId()].size(), 0.0),
     saturationLimit_(mesh_.boundaryMesh()[patchId()].size(), 0.0)
 {
     writeInTimeDir_ = false;
     writeInCase_ = false;
     measurePropertiesAtWall_ = true;
-    
+
     setProperties();
-    
+
     readPatchField();
 }
 

@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -138,7 +138,7 @@ void Foam::Cloud<ParticleType>::initCloud(const bool checkClass)
     // them, otherwise, if some processors have no particles then
     // there is a comms mismatch.
     polyMesh_.tetBasePtIs();
-    
+
     scalar lostParticles = 0; // NEW VINCENT
     scalar totParticles = 0; // NEW VINCENT
 
@@ -156,10 +156,10 @@ void Foam::Cloud<ParticleType>::initCloud(const bool checkClass)
             deleteParticle(p);
         }
     }
-    
+
     if (lostParticles > 0) // NEW VINCENT
     {
-        Info<< "Lost particles deleted due to change in topology:" << tab 
+        Info<< "Lost particles deleted due to change in topology:" << tab
             << lostParticles << "/" << totParticles << endl;
     }
 }

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,15 +19,14 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     dsmcPatchBoundary
 
 Description
 
-    Used for applying instantaneous actions on dsmcParcels colliding with a 
+    Used for applying instantaneous actions on dsmcParcels colliding with a
     boundary patch.
 
 SourceFiles
@@ -72,9 +71,9 @@ protected:
         const fvMesh& mesh_;
 
         dsmcCloud& cloud_;
-        
+
         Time& time_;
-        
+
     // 		dictionary timeDict_;
 
     //         timeDataMeas time_;
@@ -102,7 +101,7 @@ protected:
         vector velocity_;
         scalar temperature_;
 
-        //- targeted fields 
+        //- targeted fields
         scalarField densities_;
         vectorField velocities_;
         scalarField temperatures_;
@@ -142,8 +141,8 @@ public:
             ),
             (t, mesh, molCloud, dict)
         );
-   
-   
+
+
     // Constructors
 
         //- Construct from components
@@ -177,17 +176,17 @@ public:
         //- Calculate the wall unit vectors
         void calculateWallUnitVectors
         (
-            dsmcParcel& p, 
-            vector& nw, 
-            vector& tw1, 
+            dsmcParcel& p,
+            vector& nw,
+            vector& tw1,
             vector& tw2
         );
-        
+
         void measurePropertiesBeforeControl(dsmcParcel& p);
-        
+
         void measurePropertiesAfterControl
         (
-            dsmcParcel& p, 
+            dsmcParcel& p,
             const scalar& heatOfReaction = 0
         );
 
@@ -237,7 +236,7 @@ public:
             const fileName& fixedPathName,
             const fileName& timePath
         ) = 0;
-    
+
 //         virtual void writeField
 //         (
 //         ) = 0;
@@ -258,11 +257,11 @@ public:
 
         //- return the name of the control patch
         const word& patchName() const;
-        
+
         //- return the ID of the control patch
         const label& patchId() const;
 
-        //- return the targeted fields 
+        //- return the targeted fields
         const scalar& density() const;
         scalar& density();
 
@@ -272,7 +271,7 @@ public:
         const scalar& temperature() const;
         scalar& temperature();
 
-        //- return the targeted fields 
+        //- return the targeted fields
         const scalarField& densityField() const;
         scalarField& densityField();
 

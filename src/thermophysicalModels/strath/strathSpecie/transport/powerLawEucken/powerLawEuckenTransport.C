@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ Foam::Ostream& Foam::operator<<
     const powerLawEuckenTransport<Thermo>& pet
 )
 {
-    os << static_cast<const Thermo&>(pet) << tab << pet.dref_ << tab 
+    os << static_cast<const Thermo&>(pet) << tab << pet.dref_ << tab
        << pet.omega_ << tab << pet.eta_s_;
 
     os.check

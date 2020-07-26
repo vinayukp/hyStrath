@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     polyHydroxylSiO2SurfaceBounded
@@ -64,49 +63,49 @@ private:
         //- subDictionary containing the properties
         dictionary propsDict_;
 
-        
+
         // bond radius
         scalar b_;
-        
+
         label SiId_;
         label OId_;
-        label HId_;       
-        
+        label HId_;
+
         boundBox box_;
-        
+
         vector hDirection_;
-        
+
         scalar temperature_;
         vector bulkVelocity_;
-        
+
         scalar radius_;
         vector startPoint_;
-        vector endPoint_; 
+        vector endPoint_;
         scalar deltaR_;
-        vector unitVector_;        
-        
+        vector unitVector_;
+
         DynamicList<label> siliconAtoms_;
-        DynamicList<label> oxygenAtoms_; 
-        
+        DynamicList<label> oxygenAtoms_;
+
         List<label> siliconToOxygenBonds_;
         List<label> oxygenToSiliconBonds_;
-        
+
     // Private Member Functions
         void readInCylinder();
-        
+
         void readInBoundBox();
-        
+
         void punchOutMolecules();
-        
+
         void checkBoundBox
         (
             boundBox& b,
             const vector& startPoint,
             const vector& endPoint
         );
-        
+
         void check();
-      
+
         bool testForPair
         (
             const label& idI,
@@ -114,17 +113,17 @@ private:
             label& tnI,
             label& tnJ
         );
-        
+
         void checkForMoleculesInBox();
         void checkForMoleculesInCylinder();
-        
+
         void deleteMoleculesInBox();
         void deleteMoleculesInCylinder();
-        
+
 //         void addMoleculesInBox();
-        
+
         void addMoleculesInBoxAndCylinder();
-        
+
 //         void insertMolecule
 //         (
 //             const point& position,
@@ -135,7 +134,7 @@ private:
 //             const scalar& temperature,
 //             const vector& bulkVelocity
 //         );
-        
+
         vector equipartitionLinearVelocity
         (
             scalar temperature,
@@ -169,7 +168,7 @@ public:
 
     // Member Functions
 
- 
+
 };
 
 

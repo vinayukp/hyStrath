@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -73,13 +73,9 @@ inline const Foam::volScalarField& Foam::dsmcCloud::nParticles() const
 }
 
 
-inline Foam::scalar Foam::dsmcCloud::nParticles
-(
-    const label celli,
-    const bool mixedRWMethod
-) const
+inline Foam::scalar Foam::dsmcCloud::nParticles(const label celli) const
 {
-    return coordSystem().nParticles(celli, mixedRWMethod);
+    return coordSystem().nParticles(celli);
 }
 
 
@@ -111,7 +107,7 @@ inline Foam::label Foam::dsmcCloud::nTerminalOutputs() const
 }
 
 
-inline const Foam::DynamicList<Foam::DynamicList<Foam::dsmcParcel*>>& 
+inline const Foam::DynamicList<Foam::DynamicList<Foam::dsmcParcel*>>&
 Foam::dsmcCloud::cellOccupancy() const
 {
     return cellOccupancy_;
@@ -130,7 +126,7 @@ inline Foam::scalarField& Foam::dsmcCloud::collisionSelectionRemainder()
 }
 
 
-inline const Foam::List<Foam::dsmcParcel::constantProperties>& 
+inline const Foam::List<Foam::dsmcParcel::constantProperties>&
 Foam::dsmcCloud::constProps() const
 {
     return constProps_;
@@ -276,9 +272,9 @@ inline Foam::scalarList Foam::dsmcCloud::infoMeasurements()
     forAllIter(dsmcCloud, *this, iter)
     {
         dsmcParcel& p = iter();
-        
+
         const dsmcParcel::constantProperties& cP = constProps(p.typeId());
-        
+
         const scalar nParticles = this->nParticles(p.cell());
 
         infoMeasurements[0] += cP.mass()*nParticles;
@@ -286,7 +282,7 @@ inline Foam::scalarList Foam::dsmcCloud::infoMeasurements()
         infoMeasurements[2] += p.ERot()*nParticles;
         infoMeasurements[3] += cP.eVib_tot(p.vibLevel())*nParticles;
         infoMeasurements[4] += cP.electronicEnergyList()[p.ELevel()]*nParticles;
-        
+
         if(p.isStuck())
         {
             infoMeasurements[5] += nParticles;
@@ -296,7 +292,7 @@ inline Foam::scalarList Foam::dsmcCloud::infoMeasurements()
             infoMeasurements[6] += nParticles;
         }
     }
-    
+
     return infoMeasurements;
 }
 
@@ -373,7 +369,7 @@ inline Foam::boundaryMeasurements& Foam::dsmcCloud::boundaryFluxMeasurements()
 }
 
 
-inline const Foam::boundaryMeasurements& 
+inline const Foam::boundaryMeasurements&
 Foam::dsmcCloud::boundaryFluxMeasurements() const
 {
     return boundaryMeas_;
@@ -386,7 +382,7 @@ inline Foam::cellMeasurements& Foam::dsmcCloud::cellPropMeasurements()
 }
 
 
-inline const Foam::cellMeasurements& 
+inline const Foam::cellMeasurements&
 Foam::dsmcCloud::cellPropMeasurements() const
 {
     return cellMeas_;

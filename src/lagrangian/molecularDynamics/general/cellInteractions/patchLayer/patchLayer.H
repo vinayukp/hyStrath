@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -26,17 +26,17 @@ Class
 
 Description
     Creates a layer of cells defined by an offset distance from a patch
-    
-    Assumes patch is a flat plane and rectangular
-    
-    Patch is therefore defined by 4 points 
 
-    Builds a boundedBox that starts from points on patch with an offset thickness 
-    
+    Assumes patch is a flat plane and rectangular
+
+    Patch is therefore defined by 4 points
+
+    Builds a boundedBox that starts from points on patch with an offset thickness
+
     Any cells just overlapping with the boundedBox are selected
 
     [note] - still need to test this for inclined planes
-    
+
 SourceFiles
     patchLayerI.H
     patchLayer.C
@@ -72,14 +72,14 @@ class patchLayer
         vector t1_;
         vector t2_;
         boundedBox bb_;
-        
+
         void createLayer();
         void createBox();
         void findCells();
         void transformPointToNewCS(vector& point);
         boundedBox cellToBoundBox(const label& cellI);
         pointField boundingCellPoints(const label& cellI);
-        
+
 public:
 
     // Constructors

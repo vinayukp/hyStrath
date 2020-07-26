@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ Description
 namespace Foam
 {
     // Chemistry models based on sensibleEnthalpy
-    
+
     // NEW VINCENT ************************************************************
     make2ChemistryModel
     (
@@ -55,28 +55,28 @@ namespace Foam
         rho2ChemistryModel,
         demGasHThermoPhysicsH2TGD
     );
-    
+
     make2ChemistryModel
     (
         chemistry2Model,
         rho2ChemistryModel,
         demBEGasHThermoPhysicsH2TGD
     );
-    
+
     make2ChemistryModel
     (
         chemistry2Model,
         rho2ChemistryModel,
         demPLEGasHThermoPhysicsH2TGD
     );
-    
+
     make2ChemistryModel
     (
         chemistry2Model,
         rho2ChemistryModel,
         demCEAGasHThermoPhysicsH2TGD
     );
-    
+
     // Chemistry moldels based on sensibleInternalEnergy
     make2ChemistryModel
     (
@@ -84,35 +84,35 @@ namespace Foam
         rho2ChemistryModel,
         demConstGasEThermoPhysicsH2TGD
     );
-    
+
     make2ChemistryModel
     (
         chemistry2Model,
         rho2ChemistryModel,
         demGasEThermoPhysicsH2TGD
     );
-    
+
     make2ChemistryModel
     (
         chemistry2Model,
         rho2ChemistryModel,
         demBEGasEThermoPhysicsH2TGD
     );
-    
+
     make2ChemistryModel
     (
         chemistry2Model,
         rho2ChemistryModel,
         demPLEGasEThermoPhysicsH2TGD
-    );  
-    
+    );
+
     make2ChemistryModel
     (
         chemistry2Model,
         rho2ChemistryModel,
         demCEAGasEThermoPhysicsH2TGD
-    );     
-          
+    );
+
 }
 
 // ************************************************************************* //

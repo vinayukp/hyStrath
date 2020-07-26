@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ License
 
 namespace Foam
 {
-    
+
 defineTypeNameAndDebug(gravitationalController, 0);
 
 addToRunTimeSelectionTable(dsmcStateController, gravitationalController, dictionary);
@@ -58,7 +58,7 @@ gravitationalController::gravitationalController
     writeInTimeDir_ = false;
     writeInCase_ = false;
     singleValueController() = true;
-    
+
     model_ = autoPtr<gravityForce>
     (
         gravityForce::New(t, propsDict_)
@@ -80,29 +80,29 @@ void gravitationalController::calculateProperties()
 {
     vector acc = acc_;
     scalar nParcels = nParcels_;
-    
+
     if(Pstream::parRun())
     {
         reduce(acc, sumOp<vector>());
-        reduce(nParcels, sumOp<scalar>());        
+        reduce(nParcels, sumOp<scalar>());
     }
 
     accCum_ += acc;
     nParcelsCum_ += nParcels;
     nTimeSteps_ += 1.0;
-    
+
     if(nParcels > 0)
-    {    
+    {
         Info << nl << "gravitationalController " << nl
             << "Instantaneous: total acc = " << acc
             << ", total parcels = " << nParcels
             << ", acc per parcel = " << acc/nParcels
-            << nl 
+            << nl
             << "Cumulative: acc per parcel = " <<  accCum_/nParcelsCum_
             << ", average acc per time-step = " << accCum_/nTimeSteps_
             << endl;
-    }    
-    
+    }
+
     acc_ = vector::zero;
     nParcels_ = 0.0;
 }
@@ -110,7 +110,7 @@ void gravitationalController::calculateProperties()
 void gravitationalController::controlParcelsBeforeMove()
 {
     model_->updateForce();
-        
+
     forAll(controlZone(), c)
     {
         const List<DynamicList<dsmcParcel*> >& cellOccupancy = cloud_.cellOccupancy();
@@ -122,9 +122,9 @@ void gravitationalController::controlParcelsBeforeMove()
             dsmcParcel* p = molsInCell[mIC];
 
             vector acceleration = model_->force(p->position());
-            
+
             p->U() += 0.5*acceleration*mesh_.time().deltaTValue();
-            
+
             if(mag(acceleration) > SMALL)
             {
                 acc_ += acceleration;
@@ -144,7 +144,7 @@ void gravitationalController::output
 }
 
 void gravitationalController::controlParcelsBeforeCollisions()
-{        
+{
     forAll(controlZone(), c)
     {
         const List<DynamicList<dsmcParcel*> >& cellOccupancy = cloud_.cellOccupancy();

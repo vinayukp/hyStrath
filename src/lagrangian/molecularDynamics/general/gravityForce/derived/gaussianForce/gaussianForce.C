@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     gaussianForce
@@ -93,36 +92,36 @@ gaussianForce::gaussianForce
             const word fieldName = propsDict_.lookup("fieldName");
             scalar nBins = readLabel(propsDict_.lookup("nBins"));
             scalar binWidth = mag(endPoint_ - startPoint_)/(nBins);
-        
+
             scalarField forces(nBins, 0.0);
             scalarField ys(nBins, 0.0);
-        
+
             forAll(forces, n)
             {
                 scalar y = binWidth*n;
                 ys[n] = y;
                 forces[n] = ((constantA_*stress_)/density_)*exp(-y*y/constantB_);
             }
-        
+
             // compute integral
             scalar forceIntegral = 0.0;
-        
+
             for (label n = 0; n < forces.size()-1; n++)
             {
-                const scalar& r1 = ys[n]; 
+                const scalar& r1 = ys[n];
                 const scalar& r2 = ys[n+1];
-        
-                const scalar& f1 = forces[n]; 
+
+                const scalar& f1 = forces[n];
                 const scalar& f2 = forces[n+1];
-        
+
                 forceIntegral += 0.5*(r2-r1)*(f1+f2);
             }
-        
+
             Info << "forceIntegral: " << forceIntegral << endl;
 
             // write out force
             fileName casePath(time.path());
-            
+
             writeTimeData
             (
                 casePath,
@@ -176,7 +175,7 @@ vector gaussianForce::force(const vector& position)
 //     scalar y = (position - startPoint_) & normalVector_;
 
 //     return ((constantA_*stress_)/density_)*exp(-y*y/constantB_)*forceDirection_;
-    
+
 
     return force;
 }
@@ -184,7 +183,7 @@ vector gaussianForce::force(const vector& position)
 vector gaussianForce::force(const scalar& time)
 {
     vector force = vector::zero;
-    
+
     return force;
 }
 

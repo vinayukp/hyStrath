@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -58,13 +58,13 @@ morse::morse
     morseCoeffs_(pairPotentialProperties.subDict(typeName + "Coeffs")),
     Kcr_(readScalar(morseCoeffs_.lookup("Kcr"))),
     gamma_(readScalar(morseCoeffs_.lookup("gamma"))),
-    rC_(readScalar(morseCoeffs_.lookup("rC")))    
+    rC_(readScalar(morseCoeffs_.lookup("rC")))
 {
 
     if(rU.runReducedUnits())
     {
         Kcr_ /= rU.refEnergy();
-        gamma_ *= rU.refLength();        
+        gamma_ *= rU.refLength();
         rC_ /= rU.refLength();
     }
 
@@ -78,7 +78,7 @@ scalar morse::unscaledEnergy(const scalar r) const
 {
     scalar exponent = -gamma_*(r-rC_);
     scalar exp = Foam::exp(exponent);
-    
+
     return Kcr_*(exp-1.0)*(exp-1.0);
 }
 
@@ -95,12 +95,12 @@ bool morse::read
 
     morseCoeffs_.lookup("Kcr") >> Kcr_;
     morseCoeffs_.lookup("gamma") >> gamma_;
-    morseCoeffs_.lookup("rC") >> rC_;    
+    morseCoeffs_.lookup("rC") >> rC_;
 
     if(rU.runReducedUnits())
     {
         Kcr_ /= rU.refEnergy();
-        gamma_ *= rU.refLength();        
+        gamma_ *= rU.refLength();
         rC_ /= rU.refLength();
     }
 

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -54,7 +53,7 @@ void dsmcReaction::setProperties()
             << "reaction rates to the terminal." << nl << endl;
             writeRatesToTerminal_ = false;
     }
-    
+
     forAll(reactantIds_, r)
     {
         reactantTypes_[r] = cloud_.constProps(reactantIds_[r]).type();
@@ -92,18 +91,18 @@ dsmcReaction::dsmcReaction
     const List<word> reactants(dict.lookup("reactants"));
     reactantIds_.setSize(reactants.size(), -1);
     reactantTypes_.setSize(reactantIds_.size(), -1);
-    
+
     forAll(reactantIds_, r)
     {
         reactantIds_[r] = findIndex(cloud_.typeIdList(), reactants[r]);
-        
-        //- Check that reactants belong to the typeIdList as defined in 
+
+        //- Check that reactants belong to the typeIdList as defined in
         //  constant/dsmcProperties
         if (reactantIds_[r] == -1)
         {
             FatalErrorIn("dsmcReaction::setProperties()")
                 << "For reaction named " << reactionName_ << nl
-                << "Cannot find type id: " << reactants[r] << nl 
+                << "Cannot find type id: " << reactants[r] << nl
                 << exit(FatalError);
         }
     }

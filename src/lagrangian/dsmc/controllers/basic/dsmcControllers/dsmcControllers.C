@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -32,7 +31,7 @@ Description
 
 namespace Foam
 {
-//- Null Constructor 
+//- Null Constructor
 dsmcControllers::dsmcControllers
 (
     Time& t,
@@ -95,7 +94,7 @@ dsmcControllers::dsmcControllers
     sCIds_(stateControllersList_.size()),
     sCFixedPathNames_(stateControllersList_.size()),
 	  stateControllers_(stateControllersList_.size()),
-  
+
     fluxControllersList_(dsmcControllersDict_.lookup("dsmcFluxControllers")),
     fCNames_(fluxControllersList_.size()),
     fCIds_(fluxControllersList_.size()),
@@ -113,15 +112,15 @@ dsmcControllers::dsmcControllers
         {
             const entry& dsmcControllersI = stateControllersList_[sC];
             const dictionary& dsmcControllersIDict = dsmcControllersI.dict();
-    
+
             stateControllers_[sC] = autoPtr<dsmcStateController>
             (
                 dsmcStateController::New(time_, cloud, dsmcControllersIDict)
             );
-    
+
             sCNames_[sC] = stateControllers_[sC]->type();
             sCIds_[sC] = sC;
-    
+
             nStateControllers_++;
         }
     }
@@ -133,17 +132,17 @@ dsmcControllers::dsmcControllers
         forAll(fluxControllers_, fC)
         {
             const entry& dsmcControllersI = fluxControllersList_[fC];
-    
+
             const dictionary& dsmcControllersIDict = dsmcControllersI.dict();
-    
+
             fluxControllers_[fC] = autoPtr<dsmcFluxController>
             (
                 dsmcFluxController::New(time_, cloud, dsmcControllersIDict)
             );
-    
+
             fCNames_[fC] = fluxControllers_[fC]->type();
             fCIds_[fC] = fC;
-    
+
             nFluxControllers_++;
         }
     }
@@ -169,10 +168,10 @@ dsmcControllers::dsmcControllers
 
         // directory: case/controllers/dsmc/stateControllers
         fileName stateControllersPath(dsmcControllersPath/"stateControllers");
-    
+
         if (!isDir(stateControllersPath))
         {
-            mkDir(stateControllersPath);    
+            mkDir(stateControllersPath);
         }
 
         forAll(stateControllers_, sC)
@@ -184,19 +183,19 @@ dsmcControllers::dsmcControllers
 
                 if (!isDir(stateControllerPath))
                 {
-                    mkDir(stateControllerPath);    
+                    mkDir(stateControllerPath);
                 }
-    
+
                 const word& regionName = stateControllers_[sC]->regionName();
 
-                // directory: case/controllers/dsmc/stateControllers/<stateControllerModel>/<cellZoneName>    
+                // directory: case/controllers/dsmc/stateControllers/<stateControllerModel>/<cellZoneName>
                 fileName zonePath(stateControllerPath/regionName);
-   
+
                 if (!isDir(zonePath))
                 {
-                    mkDir(zonePath);    
+                    mkDir(zonePath);
                 }
-    
+
                 sCFixedPathNames_[sC] = zonePath;
             }
         }
@@ -223,10 +222,10 @@ dsmcControllers::dsmcControllers
 
         // directory: case/controllers/dsmc/fluxControllers
         fileName fluxControllersPath(dsmcControllersPath/"fluxControllers");
-    
+
         if (!isDir(fluxControllersPath))
         {
-            mkDir(fluxControllersPath);    
+            mkDir(fluxControllersPath);
         }
 
         forAll(fluxControllers_, fC)
@@ -235,20 +234,20 @@ dsmcControllers::dsmcControllers
             {
                 // directory: case/controllers/dsmc/fluxControllers/<fluxControllerModel>
                 fileName fluxControllerPath(fluxControllersPath/fCNames_[fC]);
-    
+
                 if (!isDir(fluxControllerPath))
                 {
-                    mkDir(fluxControllerPath);    
+                    mkDir(fluxControllerPath);
                 }
 
                 const word& regionName = fluxControllers_[fC]->regionName();
-    
+
                 // directory: case/controllers/dsmc/fluxControllers/<fluxControllerModel>/<faceZoneName>
                 fileName zonePath(fluxControllerPath/regionName);
-    
+
                 if (!isDir(zonePath))
                 {
-                    mkDir(zonePath);    
+                    mkDir(zonePath);
                 }
 
                 fCFixedPathNames_[fC] = zonePath;
@@ -275,7 +274,7 @@ void dsmcControllers::initialConfig()
     }
 }
 
-        //- different control stages 
+        //- different control stages
 void dsmcControllers::controlBeforeMove()
 {
     forAll(stateControllers_, sC)
@@ -319,7 +318,7 @@ void dsmcControllers::calculateProps()
     }
 }
 
-//- this function is to be called at the beginning of the MD time-step. 
+//- this function is to be called at the beginning of the MD time-step.
 //  since we have placed a non-referenced time-data class in the state-controller class.
 void dsmcControllers::updateTimeInfo()
 {
@@ -335,7 +334,7 @@ void dsmcControllers::updateTimeInfo()
 }
 
 //- output -- call this function at the end of the MD time-step
-void dsmcControllers::outputResults() 
+void dsmcControllers::outputResults()
 {
     const Time& runTime = time_;
 
@@ -343,19 +342,19 @@ void dsmcControllers::outputResults()
     {
         // -- creating a set of directories in the current time directory
         {
-            List<fileName> timePathNames(sCFixedPathNames_.size()); 
-    
+            List<fileName> timePathNames(sCFixedPathNames_.size());
+
             if(nStateControllers_ > 0)
             {
                 // directory: case/<timeDir>/uniform
                 fileName uniformTimePath(runTime.path()/runTime.timeName()/"uniform");
-            
+
                 if (!isDir(uniformTimePath))
                 {
                     mkDir(uniformTimePath);
                 }
-    
-    
+
+
                 if(stateControllers_.size() > 0)
                 {
                     // directory: case/<timeDir>/uniform/controllers
@@ -368,18 +367,18 @@ void dsmcControllers::outputResults()
 
                     // directory: case/<timeDir>/uniform/controllers/dsmc
                     fileName dsmcTimePath(controllersTimePath/"dsmc");
-                
+
                     if (!isDir(dsmcTimePath))
                     {
-                        mkDir(dsmcTimePath);    
+                        mkDir(dsmcTimePath);
                     }
 
                     // directory: case/<timeDir>/uniform/controllers/dsmc/
                     fileName dsmcStateControllersTimePath(dsmcTimePath/"stateControllers");
-                
+
                     if (!isDir(dsmcStateControllersTimePath))
                     {
-                        mkDir(dsmcStateControllersTimePath);    
+                        mkDir(dsmcStateControllersTimePath);
                     }
 
                     forAll(stateControllers_, sC)
@@ -387,7 +386,7 @@ void dsmcControllers::outputResults()
                         if
                         (
                             stateControllers_[sC]->writeInTimeDir()
-                        ) 
+                        )
                         {
                             // directory: case/<timeDir>/uniform/controllers/dsmc/<stateControllerModel>
                             fileName sCTimePath(dsmcStateControllersTimePath/sCNames_[sC]);
@@ -413,7 +412,7 @@ void dsmcControllers::outputResults()
                     }
                 }
             }
-        
+
             // -- write out data (do not comment this out)
             forAll(stateControllers_, sC)
             {
@@ -423,17 +422,17 @@ void dsmcControllers::outputResults()
 
         {
             List<fileName> timePathNames(fCFixedPathNames_.size());
-    
+
             if(nFluxControllers_ > 0)
             {
                 // directory: case/<timeDir>/uniform
                 fileName uniformTimePath(runTime.path()/runTime.timeName()/"uniform");
-            
+
                 if (!isDir(uniformTimePath))
                 {
                     mkDir(uniformTimePath);
                 }
-    
+
                 if(fluxControllers_.size() > 0)
                 {
                    // directory: case/<timeDir>/uniform/controllers
@@ -446,18 +445,18 @@ void dsmcControllers::outputResults()
 
                     // directory: case/<timeDir>/uniform/controllers/dsmc
                     fileName dsmcTimePath(controllersTimePath/"dsmc");
-                
+
                     if (!isDir(dsmcTimePath))
                     {
-                        mkDir(dsmcTimePath);    
+                        mkDir(dsmcTimePath);
                     }
 
                     // directory: case/<timeDir>/uniform/fluxControllers
                     fileName dsmcControllersTimePath(dsmcTimePath/"fluxControllers");
-                
+
                     if (!isDir(dsmcControllersTimePath))
                     {
-                        mkDir(dsmcControllersTimePath);    
+                        mkDir(dsmcControllersTimePath);
                     }
 
                     forAll(fluxControllers_, fC)
@@ -469,20 +468,20 @@ void dsmcControllers::outputResults()
                         {
                             // directory: case/<timeDir>/uniform/controllers/dsmc/<fluxControllerModel>
                             fileName fCTimePath(dsmcControllersTimePath/fCNames_[fC]);
-        
+
                             if(!isDir(fCTimePath))
                             {
                                 mkDir(fCTimePath);
                             }
-        
+
                             const word& regionName = fluxControllers_[fC]->regionName();
 
-                            // directory: case/<timeDir>/uniform/controllers/dsmc/<fluxControllerModel>  <faceZoneName>      
+                            // directory: case/<timeDir>/uniform/controllers/dsmc/<fluxControllerModel>  <faceZoneName>
                             fileName zoneTimePath(fCTimePath/regionName);
-            
+
                             if (!isDir(zoneTimePath))
                             {
-                                mkDir(zoneTimePath);    
+                                mkDir(zoneTimePath);
                             }
 
                             timePathNames[fC] = zoneTimePath;
@@ -502,28 +501,28 @@ void dsmcControllers::outputResults()
 
         {
             stateControllersList_.clear();
-        
+
             stateControllersList_ = dsmcControllersDict_.lookup("dsmcStateControllers");
-        
+
             forAll(stateControllers_, sC)
             {
                 const entry& dsmcControllersI = stateControllersList_[sC];
                 const dictionary& dsmcControllersIDict = dsmcControllersI.dict();
-    
+
                 stateControllers_[sC]->updateProperties(dsmcControllersIDict);
             }
         }
 
         {
             fluxControllersList_.clear();
-        
+
             fluxControllersList_ = dsmcControllersDict_.lookup("dsmcFluxControllers");
-        
+
             forAll(fluxControllers_, fC)
             {
                 const entry& dsmcControllersI = fluxControllersList_[fC];
                 const dictionary& dsmcControllersIDict = dsmcControllersI.dict();
-    
+
                 fluxControllers_[fC]->updateProperties(dsmcControllersIDict);
             }
         }

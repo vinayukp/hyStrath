@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -33,13 +32,13 @@ Description
 namespace Foam
 {
 
-//- Null Constructor 
+//- Null Constructor
 polyBoundaries::polyBoundaries
 (
     Time& t,
     const polyMesh& mesh
 )
-:    
+:
     time_(t),
     polyBoundariesDict_
     (
@@ -134,12 +133,12 @@ polyBoundaries::polyBoundaries
         {
             const entry& boundaryI = patchBoundaryList_[p];
             const dictionary& boundaryIDict = boundaryI.dict();
-    
+
             patchBoundaryModels_[p] = autoPtr<polyPatchBoundary>
             (
                 polyPatchBoundary::New(t, mesh, molCloud, boundaryIDict)
             );
-    
+
             patchBoundaryNames_[p] = patchBoundaryModels_[p]->type();
             patchBoundaryIds_[p] = p;
             nPatchBoundaryModels_++;
@@ -147,44 +146,44 @@ polyBoundaries::polyBoundaries
     }
 
     checkPatchBoundaryModels(mesh);
-    
-    
+
+
     //- cyclic boundaries
-    
+
     if( cyclicBoundaryModels_.size() > 0 )
     {
         forAll(cyclicBoundaryModels_, c)
         {
             const entry& boundaryI = cyclicBoundaryList_[c];
             const dictionary& boundaryIDict = boundaryI.dict();
-    
+
             cyclicBoundaryModels_[c] = autoPtr<polyCyclicBoundary>
             (
                 polyCyclicBoundary::New(t, mesh, molCloud, boundaryIDict)
             );
-    
+
             cyclicBoundaryNames_[c] = cyclicBoundaryModels_[c]->type();
             cyclicBoundaryIds_[c] = c;
             nCyclicBoundaryModels_++;
         }
-    }    
-    
+    }
+
     checkCyclicBoundaryModels(mesh);
 
     //- general boundaries
- 
+
     if(generalBoundaryModels_.size() > 0 )
     {
         forAll(generalBoundaryModels_, g)
         {
             const entry& boundaryI = generalBoundaryList_[g];
             const dictionary& boundaryIDict = boundaryI.dict();
-    
+
             generalBoundaryModels_[g] = autoPtr<polyGeneralBoundary>
             (
                 polyGeneralBoundary::New(t, mesh, molCloud, boundaryIDict)
             );
-    
+
             generalBoundaryNames_[g] = generalBoundaryModels_[g]->type();
             generalBoundaryIds_[g] = g;
             nGeneralBoundaryModels_++;
@@ -192,7 +191,7 @@ polyBoundaries::polyBoundaries
     }
 
     //- creating directories
-    if(nPatchBoundaryModels_ > 0) 
+    if(nPatchBoundaryModels_ > 0)
     {
         // directory: case/boundaries
         fileName boundariesPath(time_.path()/"boundaries");
@@ -212,10 +211,10 @@ polyBoundaries::polyBoundaries
 
         // directory: case/boundaries/poly/patchBoundaryModels
         fileName patchBoundaryModelsPath(polyBoundariesPath/"patchBoundaryModels");
-    
+
         if (!isDir(patchBoundaryModelsPath))
         {
-            mkDir(patchBoundaryModelsPath);    
+            mkDir(patchBoundaryModelsPath);
         }
 
         forAll(patchBoundaryModels_, p)
@@ -227,26 +226,26 @@ polyBoundaries::polyBoundaries
 
                 if (!isDir(patchBoundaryModelPath))
                 {
-                    mkDir(patchBoundaryModelPath);    
+                    mkDir(patchBoundaryModelPath);
                 }
-    
+
                 const word& patchName = patchBoundaryModels_[p]->patchName();
 
-                // directory: case/controllers/poly/patchBoundaryModels/<patchBoundaryModel>/<patchName>    
+                // directory: case/controllers/poly/patchBoundaryModels/<patchBoundaryModel>/<patchName>
                 fileName patchPath(patchBoundaryModelPath/patchName);
-   
+
                 if (!isDir(patchPath))
                 {
-                    mkDir(patchPath);    
+                    mkDir(patchPath);
                 }
-    
+
                 pBFixedPathNames_[p] = patchPath;
             }
         }
     }
 
     //- creating directories
-    if(nCyclicBoundaryModels_ > 0) 
+    if(nCyclicBoundaryModels_ > 0)
     {
         // directory: case/boundaries
         fileName boundariesPath(time_.path()/"boundaries");
@@ -266,10 +265,10 @@ polyBoundaries::polyBoundaries
 
         // directory: case/boundaries/poly/cyclicBoundaryModels
         fileName cyclicBoundaryModelsPath(polyBoundariesPath/"cyclicBoundaryModels");
-    
+
         if (!isDir(cyclicBoundaryModelsPath))
         {
-            mkDir(cyclicBoundaryModelsPath);    
+            mkDir(cyclicBoundaryModelsPath);
         }
 
         forAll(cyclicBoundaryModels_, c)
@@ -281,26 +280,26 @@ polyBoundaries::polyBoundaries
 
                 if (!isDir(cyclicBoundaryModelPath))
                 {
-                    mkDir(cyclicBoundaryModelPath);    
+                    mkDir(cyclicBoundaryModelPath);
                 }
-                
-                const word& patchName = cyclicBoundaryModels_[c]->patchName();    
 
-                // directory: case/controllers/poly/cyclicBoundaryModels/<cyclicBoundaryModel>/<patchName>      
+                const word& patchName = cyclicBoundaryModels_[c]->patchName();
+
+                // directory: case/controllers/poly/cyclicBoundaryModels/<cyclicBoundaryModel>/<patchName>
                 fileName patchPath(cyclicBoundaryModelPath/patchName);
-   
+
                 if (!isDir(patchPath))
                 {
-                    mkDir(patchPath);    
+                    mkDir(patchPath);
                 }
-    
+
                 cMFixedPathNames_[c] = patchPath;
             }
         }
     }
 
     //- creating directories
-    if(nGeneralBoundaryModels_ > 0) 
+    if(nGeneralBoundaryModels_ > 0)
     {
         // directory: case/boundaries
         fileName boundariesPath(time_.path()/"boundaries");
@@ -320,10 +319,10 @@ polyBoundaries::polyBoundaries
 
         // directory: case/boundaries/poly/cyclicBoundaryModels
         fileName generalBoundaryModelsPath(polyBoundariesPath/"generalBoundaryModels");
-    
+
         if (!isDir(generalBoundaryModelsPath))
         {
-            mkDir(generalBoundaryModelsPath);    
+            mkDir(generalBoundaryModelsPath);
         }
 
         forAll(generalBoundaryModels_, g)
@@ -335,19 +334,19 @@ polyBoundaries::polyBoundaries
 
                 if (!isDir(generalBoundaryModelPath))
                 {
-                    mkDir(generalBoundaryModelPath);    
+                    mkDir(generalBoundaryModelPath);
                 }
-    
+
                 const word& patchName = generalBoundaryModels_[g]->patchName();
 
-                // directory: case/controllers/poly/generalBoundaryModels/<generalBoundaryModel>/<patchName>      
+                // directory: case/controllers/poly/generalBoundaryModels/<generalBoundaryModel>/<patchName>
                 fileName patchPath(generalBoundaryModelPath/patchName);
-   
+
                 if (!isDir(patchPath))
                 {
-                    mkDir(patchPath);    
+                    mkDir(patchPath);
                 }
-    
+
                 gMFixedPathNames_[g] = patchPath;
             }
         }
@@ -368,7 +367,7 @@ void polyBoundaries::checkCyclicBoundaryModels(const polyMesh& mesh)
     forAll(mesh.boundaryMesh(), patchi)
     {
         const polyPatch& patch = mesh.boundaryMesh()[patchi];
-    
+
         if(isA<cyclicPolyPatch>(patch))
         {
             label patchIndex = patch.index();
@@ -376,7 +375,7 @@ void polyBoundaries::checkCyclicBoundaryModels(const polyMesh& mesh)
             forAll(cyclicBoundaryModels_, c)
             {
                 const label& patchId = cyclicBoundaryModels_[c]->patchId();
- 
+
                 if(patchIndex == patchId)
                 {
                     nPolyPatches++;
@@ -390,8 +389,8 @@ void polyBoundaries::checkCyclicBoundaryModels(const polyMesh& mesh)
     {
         FatalErrorIn("polyBoundaries::checkBoundaryModels(const polyMesh& mesh)")
             << nl
-            << " Number of cyclic boundary models = "  << nCyclicBoundaryModels_ 
-            << " chosen in the boundaryiesDict are inconsistent." 
+            << " Number of cyclic boundary models = "  << nCyclicBoundaryModels_
+            << " chosen in the boundaryiesDict are inconsistent."
             << abort(FatalError);
     }
 }
@@ -407,7 +406,7 @@ void polyBoundaries::checkPatchBoundaryModels(const polyMesh& mesh)
     forAll(mesh.boundaryMesh(), patchi)
     {
         const polyPatch& patch = mesh.boundaryMesh()[patchi];
-    
+
         if
         (
             isA<polyPatch>(patch) &&
@@ -427,7 +426,7 @@ void polyBoundaries::checkPatchBoundaryModels(const polyMesh& mesh)
             forAll(patchBoundaryModels_, p)
             {
                 const label& patchId = patchBoundaryModels_[p]->patchId();
- 
+
                 if(patchIndex == patchId)
                 {
                     nPatches++;
@@ -441,8 +440,8 @@ void polyBoundaries::checkPatchBoundaryModels(const polyMesh& mesh)
                     << nl
                     << " Only one patch boundary model per poly-patch, [name: "
                     << patch.name()
-                    << "]. No of models chosen for this patch are: " 
-                    << nPatches  << ", in " 
+                    << "]. No of models chosen for this patch are: "
+                    << nPatches  << ", in "
                     << mesh.time().system()/"polyBoundariesDict"
                     << abort(FatalError);
             }
@@ -455,9 +454,9 @@ void polyBoundaries::checkPatchBoundaryModels(const polyMesh& mesh)
     {
         FatalErrorIn("polyBoundaries::checkPatchBoundaryModels(const polyMesh& mesh)")
             << nl
-            << " Number of poly-patches = "  << nPolyPatches 
-            << " in blockMeshDict, are not equal to the number of patch models = " 
-            << nPatchBoundaryModels_  << ", defined in " 
+            << " Number of poly-patches = "  << nPolyPatches
+            << " in blockMeshDict, are not equal to the number of patch models = "
+            << nPatchBoundaryModels_  << ", defined in "
             << mesh.time().system()/"polyBoundariesDict"
             << abort(FatalError);
     }
@@ -528,67 +527,67 @@ void polyBoundaries::outputResults()
     {
         //- PATCH BOUNDARY MODELS
         {
-            List<fileName> timePathNames(pBFixedPathNames_.size()); 
-    
+            List<fileName> timePathNames(pBFixedPathNames_.size());
+
             if(nPatchBoundaryModels_ > 0)
             {
                 if(Pstream::master())
                 {
                     // directory: case/<timeDir>/uniform
                     fileName uniformTimePath(runTime.path()/runTime.timeName()/"uniform");
-                
+
                     if (!isDir(uniformTimePath))
                     {
                         mkDir(uniformTimePath);
                     }
-    
+
                     // directory: case/<timeDir>/uniform/boundaries
                     fileName boundariesTimePath(uniformTimePath/"boundaries");
-    
+
                     if (!isDir(boundariesTimePath))
                     {
                         mkDir(boundariesTimePath);
                     }
-    
+
                     // directory: case/<timeDir>/uniform/boundaries/poly
                     fileName polyTimePath(boundariesTimePath/"poly");
-                
+
                     if (!isDir(polyTimePath))
                     {
-                        mkDir(polyTimePath);    
+                        mkDir(polyTimePath);
                     }
-    
+
                     // directory: case/<timeDir>/uniform/boundaries/poly/patchBoundaryModels
                     fileName polyPatchBoundaryModelsTimePath(polyTimePath/"patchBoundaryModels");
-                
+
                     if (!isDir(polyPatchBoundaryModelsTimePath))
                     {
-                        mkDir(polyPatchBoundaryModelsTimePath);    
+                        mkDir(polyPatchBoundaryModelsTimePath);
                     }
-    
+
                     forAll(patchBoundaryModels_, p)
                     {
                         if(patchBoundaryModels_[p]->writeInTimeDir())
                         {
                             // directory: case/<timeDir>/uniform/controllers/poly/patchBoundaryModels/<patchBoundaryModel>
                             fileName pBTimePath(polyPatchBoundaryModelsTimePath/pBFixedPathNames_[p]);
-    
+
                             if(!isDir(pBTimePath))
                             {
                                 mkDir(pBTimePath);
                             }
-    
+
                             //- creating directory for different zones but of the same model
                             const word& patchName = patchBoundaryModels_[p]->patchName();
-    
+
                             // directory: case/<timeDir>/uniform/controllers/poly/patchBoundaryModels/<patchBoundaryModel>/<patchName>
                             fileName patchTimePath(pBTimePath/patchName);
-    
+
                             if (!isDir(patchTimePath))
                             {
                                 mkDir(patchTimePath);
                             }
-    
+
                             timePathNames[p] = patchTimePath;
                         }
                     }
@@ -603,47 +602,47 @@ void polyBoundaries::outputResults()
 
         //- GENERAL BOUNDARY MODELS
         {
-            List<fileName> timePathNames(gMFixedPathNames_.size()); 
-    
+            List<fileName> timePathNames(gMFixedPathNames_.size());
+
             if(nGeneralBoundaryModels_ > 0)
             {
                 if(Pstream::master())
                 {
                     // directory: case/<timeDir>/uniform
                     fileName uniformTimePath(runTime.path()/runTime.timeName()/"uniform");
-                
+
                     if (!isDir(uniformTimePath))
                     {
                         mkDir(uniformTimePath);
                     }
-    
+
                     // directory: case/<timeDir>/uniform/boundaries
                     fileName boundariesTimePath(uniformTimePath/"boundaries");
-    
+
                     if (!isDir(boundariesTimePath))
                     {
                         mkDir(boundariesTimePath);
                     }
-    
+
                     // directory: case/<timeDir>/uniform/boundaries/poly
                     fileName polyTimePath(boundariesTimePath/"poly");
-                
+
                     if (!isDir(polyTimePath))
                     {
-                        mkDir(polyTimePath);    
+                        mkDir(polyTimePath);
                     }
-    
+
                     // directory: case/<timeDir>/uniform/boundaries/poly/patchBoundaryModels
                     fileName polyGeneralBoundaryModelsTimePath
                     (
                         polyTimePath/"generalBoundaryModels"
                     );
-                
+
                     if (!isDir(polyGeneralBoundaryModelsTimePath))
                     {
-                        mkDir(polyGeneralBoundaryModelsTimePath);    
+                        mkDir(polyGeneralBoundaryModelsTimePath);
                     }
-    
+
                     forAll(generalBoundaryModels_, g)
                     {
                         if
@@ -654,24 +653,24 @@ void polyBoundaries::outputResults()
                             /* directory: case/<timeDir>/uniform/controllers/poly/
                             patchBoundaryModels/<patchBoundaryModel>*/
                             fileName gBTimePath(polyGeneralBoundaryModelsTimePath/gMFixedPathNames_[g]);
-    
+
                             if(!isDir(gBTimePath))
                             {
                                 mkDir(gBTimePath);
                             }
-    
+
                             //- creating directory for different zones but of the same model
                             const word& patchName = generalBoundaryModels_[g]->patchName();
-    
+
                             /* directory: case/<timeDir>/uniform/controllers/poly/
                                 patchBoundaryModels/<patchBoundaryModel>/<patchName> */
                             fileName patchTimePath(gBTimePath/patchName);
-    
+
                             if (!isDir(patchTimePath))
                             {
                                 mkDir(patchTimePath);
                             }
-    
+
                             timePathNames[g] = patchTimePath;
                         }
                     }
@@ -690,42 +689,42 @@ void polyBoundaries::outputResults()
 
         {
             patchBoundaryList_.clear();
-        
+
             patchBoundaryList_ = polyBoundariesDict_.lookup("polyPatchBoundaries");
-        
+
             forAll(patchBoundaryModels_, p)
             {
                 const entry& boundaryI = patchBoundaryList_[p];
                 const dictionary& boundaryIDict = boundaryI.dict();
-    
+
                 patchBoundaryModels_[p]->updateProperties(boundaryIDict);
             }
         }
 /*
         {
             cyclicBoundaryList_.clear();
-        
+
             cyclicBoundaryList_ = polyBoundariesDict_.lookup("polyCyclicBoundaries");
-        
+
             forAll(cyclicBoundaryModels_, c)
             {
                 const entry& boundaryI = cyclicBoundaryList_[c];
                 const dictionary& boundaryIDict = boundaryI.dict();
-    
+
                 cyclicBoundaryModels_[c]->updateProperties(boundaryIDict);
             }
         }*/
 
         {
             generalBoundaryList_.clear();
-        
+
             generalBoundaryList_ = polyBoundariesDict_.lookup("polyGeneralBoundaries");
-        
+
             forAll(generalBoundaryModels_, g)
             {
                 const entry& boundaryI = generalBoundaryList_[g];
                 const dictionary& boundaryIDict = boundaryI.dict();
-    
+
                 generalBoundaryModels_[g]->updateProperties(boundaryIDict);
             }
         }

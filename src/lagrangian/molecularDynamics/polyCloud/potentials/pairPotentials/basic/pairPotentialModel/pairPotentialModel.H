@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     pairPotentialModel
@@ -72,51 +71,51 @@ protected:
         const polyMesh& mesh_;
 
         polyMoleculeCloud& molCloud_;
-        
+
         const reducedUnits& rU_;
-        
+
         dictionary  pairPotentialProperties_;
-       
-        // ids header of dictionary e.g. A-B 
+
+        // ids header of dictionary e.g. A-B
         word name_;
-        
+
         // split ids [0] = A; [1] = B
         List<word> idList_;
-        
+
         scalar rCut_;
         scalar rCutSqr_;
-        
+
         scalar rMin_;
-        
-        scalar dr_;        
-        
+
+        scalar dr_;
+
         bool useTables_;
-        
+
 //         word energyScalingFunction_;
 
 
         scalar fMin_;
-        scalar energyMin_;        
-       
+        scalar energyMin_;
+
         List<scalar> forceLookup_;
         List<scalar> energyLookup_;
-        
+
         mutable energyScalingFunction* esfPtr_;
 
-        bool writeTables_;        
+        bool writeTables_;
 
-        bool exclusions_;        
-        
+        bool exclusions_;
+
         autoPtr<exclusionModel> exclusionModel_;
-        
-        
+
+
     // Private Member Functions
-        
+
         void scaleEnergy
         (
             scalar& e,
             const scalar r
-        ) const;        
+        ) const;
 
 public:
 
@@ -138,7 +137,7 @@ public:
             ),
             (mesh, molCloud, redUnits, name, dict)
         );
-   
+
     // Constructors
 
         //- Construct from components
@@ -171,19 +170,19 @@ public:
 
 
     // Member Functions
-        
+
         void setLookupTables();
 
 
 
         scalar energyLookUpFromTable (const scalar r) const;
         scalar forceLookUpFromTable (const scalar r) const;
-        
+
         virtual scalar energy (const scalar r) const = 0;
         virtual scalar force (const scalar r) const = 0;
-//         virtual scalar interaction (const scalar r, scalar& force, scalar& energy) const = 0;        
-        
-        
+//         virtual scalar interaction (const scalar r, scalar& force, scalar& energy) const = 0;
+
+
         List<Pair<scalar> > energyTable() const;
         List<Pair<scalar> > forceTable() const;
 
@@ -206,7 +205,7 @@ public:
         const dictionary& pairPotentialProperties() const;
 
         void output(const fileName& pathName);
-        
+
         void writeEnergyAndForceTables(const fileName& pathName);
 
         //- Read pairPotential dictionary
@@ -216,17 +215,17 @@ public:
 //         ) = 0;
 
         virtual void write(const fileName& pathName) = 0;
-        
+
 
         inline const word& name() const;
         inline const List<word>& idList() const;
         inline scalar rMin() const;
         inline scalar dr() const;
         inline scalar rCut() const;
-        inline scalar rCutSqr() const;        
-        inline bool writeTables() const;        
-        inline bool exclusions() const;    
-        
+        inline scalar rCutSqr() const;
+        inline bool writeTables() const;
+        inline bool exclusions() const;
+
         inline autoPtr<exclusionModel>& excludeModel();
 };
 

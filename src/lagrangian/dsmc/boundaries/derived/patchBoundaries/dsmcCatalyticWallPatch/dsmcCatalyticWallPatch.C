@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -43,20 +42,20 @@ void dsmcCatalyticWallPatch::setProperties()
 {
     velocity_ = propsDict_.lookup("velocity");
     temperature_ = readScalar(propsDict_.lookup("temperature"));
-    
-    // set the molecules/atoms to be catalysed typeIds ------------    
-    const List<word> inputMolecules 
+
+    // set the molecules/atoms to be catalysed typeIds ------------
+    const List<word> inputMolecules
             (propsDict_.lookup("moleculesToBeCatalysed"));
-            
+
     if(inputMolecules.size() == 0)
     {
-        
+
         FatalErrorIn("dsmcCatalyticWallPatch::setProperties()")
             << "Cannot have zero typeIds being catalysed." << nl << "in: "
             << mesh_.time().system()/"boundariesDict"
             << exit(FatalError);
     }
-    
+
     DynamicList<word> inputMoleculesReduced(0);
 
     forAll(inputMolecules, i)
@@ -70,42 +69,42 @@ void dsmcCatalyticWallPatch::setProperties()
     }
 
     inputMoleculesReduced.shrink();
-    
+
     //  set the type ids
-    
-    catalysisTypeIds_.setSize(inputMoleculesReduced.size(), -1); 
-    
+
+    catalysisTypeIds_.setSize(inputMoleculesReduced.size(), -1);
+
     forAll(inputMoleculesReduced, i)
     {
         const word& moleculeName(inputMoleculesReduced[i]);
-        
+
         label typeId = findIndex(cloud_.typeIdList(), moleculeName);
-        
+
         // check that input molecules belong to the typeIdList
         if(typeId == -1)
         {
             FatalErrorIn("dsmcCatalyticWallPatch::setProperties()")
-                << "Cannot find type id: " << moleculeName << nl 
+                << "Cannot find type id: " << moleculeName << nl
                 << exit(FatalError);
         }
-        
+
         catalysisTypeIds_[i] = typeId;
     }
-    
-    // set the product molecules/atoms typeIds   
-    
+
+    // set the product molecules/atoms typeIds
+
     const List<word> outputMolecules (propsDict_.lookup("catalysedMolecules"));
-    
+
     if(outputMolecules.size() != inputMolecules.size())
     {
-        
+
         FatalErrorIn("dsmcCatalyticWallPatch::setProperties()")
             << "catalysedMolecules must be the same size as "
             << "moleculesToBeCatalysed." << nl << "in: "
             << mesh_.time().system()/"boundariesDict"
             << exit(FatalError);
     }
-    
+
     DynamicList<word> outputMoleculesReduced(0);
 
     forAll(outputMolecules, i)
@@ -119,34 +118,34 @@ void dsmcCatalyticWallPatch::setProperties()
     }
 
     outputMoleculesReduced.shrink();
-       
+
     catalysedTypeIds_.setSize(outputMoleculesReduced.size(), -1);
-    
+
     forAll(outputMoleculesReduced, i)
     {
         const word& moleculeName(outputMoleculesReduced[i]);
-        
+
         label typeId = findIndex(cloud_.typeIdList(), moleculeName);
-        
+
         // check that output molecules belong to the typeIdList
         if(typeId == -1)
         {
             FatalErrorIn("dsmcCatalyticWallPatch::setProperties()")
-                << "Cannot find type id: " << moleculeName << nl 
+                << "Cannot find type id: " << moleculeName << nl
                 << exit(FatalError);
         }
-        
+
         catalysedTypeIds_[i] = typeId;
     }
-    
+
     heatOfReaction_.clear();
-    
+
     heatOfReaction_.setSize(catalysisTypeIds_.size(), 0.0);
-    
+
     if(heatOfReaction_.size() == inputMolecules.size())
     {
         // set the heat of reactions
-       
+
         forAll(heatOfReaction_, i)
         {
             heatOfReaction_[i] = readScalar
@@ -159,10 +158,10 @@ void dsmcCatalyticWallPatch::setProperties()
     {
         FatalErrorIn("dsmcCatalyticWallPatch::setProperties()")
                 << "heatOfReaction list must be same size as "
-                << "moleculesToBeCatalysed." << nl 
+                << "moleculesToBeCatalysed." << nl
                 << exit(FatalError);
     }
-    
+
 }
 
 

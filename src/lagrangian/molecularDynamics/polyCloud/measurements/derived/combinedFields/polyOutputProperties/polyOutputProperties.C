@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -69,9 +68,9 @@ polyOutputProperties::polyOutputProperties
     nAvTimeSteps_(0.0)
 {
     const scalarField& cellVols = mesh_.cellVolumes();
-    
+
     meshVolume_ = sum(cellVols);
-    
+
     if (Pstream::parRun())
     {
         reduce(meshVolume_, sumOp<scalar>());
@@ -93,7 +92,7 @@ void polyOutputProperties::createField()
 void polyOutputProperties::calculateField()
 {
     nAvTimeSteps_ += 1.0;
-    
+
     vector singleStepTotalLinearMomentum(vector::zero);
     vector singleStepTotalAngularMomentum(vector::zero);
     scalar singleStepMaxVelocityMag = 0.0;
@@ -108,7 +107,7 @@ void polyOutputProperties::calculateField()
 
     {
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
-    
+
         for
         (
             mol = molCloud_.begin();
@@ -120,7 +119,7 @@ void polyOutputProperties::calculateField()
             scalar molMass(molCloud_.cP().mass(molId));
             singleStepTotalMass += molMass;
         }
-    
+
         for
         (
             mol = molCloud_.begin();
@@ -129,7 +128,7 @@ void polyOutputProperties::calculateField()
         )
         {
             label molId = mol().id();
-    
+
             scalar molMass(molCloud_.cP().mass(molId));
 
             const vector& molV(mol().v());
@@ -151,7 +150,7 @@ void polyOutputProperties::calculateField()
             {
                 singleStepMaxVelocityMag = mag(molV);
             }
-    
+
             singleStepTotalLinearKE += 0.5*molMass*magSqr(molV);
             singleStepTotalAngularKE += 0.5*(molOmega & molMoI & molOmega);
             singleStepTotalPE += mol().potentialEnergy();
@@ -228,12 +227,12 @@ void polyOutputProperties::writeField()
 
     if (runTime.outputTime())
     {
-    	const scalar& nAvTimeSteps = nAvTimeSteps_; 
+    	const scalar& nAvTimeSteps = nAvTimeSteps_;
 
         if (accumulatedNMols_)
         {
             Info << "calculating averages" << endl;
-    
+
             averageTemperature_ =
             (
                 2.0/(molCloud_.redUnits().kB() * accumulatedDOFs_)
@@ -244,7 +243,7 @@ void polyOutputProperties::writeField()
                     0.5*magSqr(accumulatedTotalLinearMomentum_)/accumulatedTotalMass_
                 )
             );
-    
+
             averagePressure_ =
             (
                 (
@@ -257,7 +256,7 @@ void polyOutputProperties::writeField()
                 /
                 meshVolume_
             );
-    
+
             Info << "----------------------------------------" << nl
                 << "Averaged properties" << nl
                 << "Average |velocity| = "

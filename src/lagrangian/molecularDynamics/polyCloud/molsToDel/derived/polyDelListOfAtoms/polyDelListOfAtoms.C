@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -55,7 +54,7 @@ polyDelListOfAtoms::polyDelListOfAtoms
     propsDict_(dict.subDict(typeName + "Properties")),
     molIds_()
 {
-    
+
     molIds_.clear();
 
     selectIds ids
@@ -65,13 +64,13 @@ polyDelListOfAtoms::polyDelListOfAtoms
     );
 
     molIds_ = ids.molIds();
-    
 
-    molPoints_ = List<vector>(propsDict_.lookup("molPoints"));  
-    
-    
+
+    molPoints_ = List<vector>(propsDict_.lookup("molPoints"));
+
+
     findMolsToDel();
-  
+
 }
 
 
@@ -88,20 +87,20 @@ void polyDelListOfAtoms::findMolsToDel()
 
     label initialSize = molCloud_.size();
     label deletedMols = 0;
-    
+
     Info << nl << "Deleting the following molecules... " << nl << endl;
 
     DynamicList<vector> positions;
-    DynamicList<scalar> rMinCollect;    
-    
+    DynamicList<scalar> rMinCollect;
+
     forAll(molPoints_, i)
-    {    
+    {
         DynamicList<polyMolecule*> molsToDel;
 
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
-       
+
         scalar rMin = GREAT;
-        
+
         for
         (
             mol = molCloud_.begin();
@@ -113,7 +112,7 @@ void polyDelListOfAtoms::findMolsToDel()
             {
                 vector rT = molPoints_[i];
                 scalar magRIJ = mag(rT-mol().position());
-                
+
                 if(magRIJ < rMin)
                 {
                     molsToDel.clear();
@@ -123,26 +122,26 @@ void polyDelListOfAtoms::findMolsToDel()
                 }
             }
         }
-        
-       
+
+
 
         forAll(molsToDel, m)
         {
             positions.append(molsToDel[m]->position());
-            rMinCollect.append(rMin);     
-            
+            rMinCollect.append(rMin);
+
             Info << molsToDel[m]->position()
-                << endl;            
+                << endl;
 
 
-                
+
             deletedMols++;
             deleteMolFromMoleculeCloud(*molsToDel[m]);
         }
     }
-    
+
     Info << nl << "more details ... " << nl << endl;
-    
+
     forAll(molPoints_, i)
     {
 
@@ -150,14 +149,14 @@ void polyDelListOfAtoms::findMolsToDel()
                 << positions[i]
                 << ", requested position = " << molPoints_[i]
                 << ", residual = " << rMinCollect[i]
-                << endl;        
-        
+                << endl;
+
     }
-    
+
 
     label molsKept = initialSize - deletedMols;
 
-    Info<< tab << " initial polyMolecules: " <<  initialSize 
+    Info<< tab << " initial polyMolecules: " <<  initialSize
         << ", polyMolecules kept: " <<  molsKept
         << ", polyMolecules removed: " << deletedMols
         << endl;

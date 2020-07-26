@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -79,30 +78,30 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
     (
         readScalar(dsmcInitialiseDict_.lookup("translationalTemperature"))
     );
-    
+
     const scalar rotationalTemperature
     (
         readScalar(dsmcInitialiseDict_.lookup("rotationalTemperature"))
     );
-    
+
     const scalar vibrationalTemperature
     (
         readScalar(dsmcInitialiseDict_.lookup("vibrationalTemperature"))
     );
-    
+
     const scalar electronicTemperature
     (
         readScalar(dsmcInitialiseDict_.lookup("electronicTemperature"))
     );
 
     const vector velocity(dsmcInitialiseDict_.lookup("velocity"));
-    
+
     startPosition_ = (dsmcInitialiseDict_.lookup("startPosition"));
-    
+
     endPosition_ = (dsmcInitialiseDict_.lookup("endPosition"));
-    
+
     scalar lineLength = mag(endPosition_ - startPosition_);
-    
+
     vector unitVector = (endPosition_ - startPosition_)/mag(endPosition_ - startPosition_);
 
     const dictionary& numberDensitiesDict
@@ -125,7 +124,7 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
     forAll(molecules, i)
     {
         label nParticlesToInsert = label(numberDensities[i]);
-        
+
         const word& moleculeName(molecules[i]);
 
         label typeId(findIndex(cloud_.typeIdList(), moleculeName));
@@ -136,17 +135,17 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
                 << "typeId " << moleculeName << "not defined." << nl
                 << abort(FatalError);
         }
-            
+
         const dsmcParcel::constantProperties& cP = cloud_.constProps(typeId);
-        
+
         for (label pI = 0; pI < nParticlesToInsert; pI++)
         {
             point p = startPosition_ + (rndGen_.sample01<scalar>()*lineLength*unitVector);
-            
+
             vector& findCellIndex = p;
-            
+
             label cellI = mesh_.findCell(findCellIndex);
-            
+
             vector U = cloud_.equipartitionLinearVelocity
             (
                 translationalTemperature,
@@ -158,14 +157,14 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
                 rotationalTemperature,
                 cP.rotationalDegreesOfFreedom()
             );
-    
+
             labelList vibLevel = cloud_.equipartitionVibrationalEnergyLevel
             (
                 vibrationalTemperature,
                 cP.nVibrationalModes(),
                 typeId
             );
-            
+
             label ELevel = cloud_.equipartitionElectronicLevel
             (
                 electronicTemperature,
@@ -174,11 +173,11 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
             );
 
             U += velocity;
-            
+
             label newParcel = -1;
-            
+
             label classification = 0;
-            
+
             label tetFace = -1;
             label tetPt = -1;
 
@@ -189,8 +188,8 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
                 tetFace,
                 tetPt
             );
-            
-            const scalar& RWF = cloud_.coordSystem().recalculateRWF(cellI);
+
+            const scalar& RWF = cloud_.coordSystem().RWF(cellI);
 
             cloud_.addNewParcel
             (
@@ -214,38 +213,38 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
 //             mesh_,
 //             cellI
 //         );
-// 
+//
 //         forAll(cellTets, tetI)
 //         {
 //             const tetIndices& cellTetIs = cellTets[tetI];
-// 
+//
 //             tetPointRef tet = cellTetIs.tet(mesh_);
-// 
+//
 //             scalar tetVolume = tet.mag();
-// 
+//
 //             forAll(molecules, i)
 //             {
 //                 const word& moleculeName(molecules[i]);
-// 
+//
 //                 label typeId(findIndex(cloud_.typeIdList(), moleculeName));
-// 
+//
 //                 if (typeId == -1)
 //                 {
 //                     FatalErrorIn("Foam::dsmcCloud<dsmcParcel>::initialise")
 //                         << "typeId " << moleculeName << "not defined." << nl
 //                         << abort(FatalError);
 //                 }
-// 
+//
 //                 const dsmcParcel::constantProperties& cP = cloud_.constProps(typeId);
-// 
+//
 //                 scalar numberDensity = numberDensities[i];
-// 
+//
 //                 // Calculate the number of particles required
 //                 scalar particlesRequired = numberDensity*tetVolume;
-// 
+//
 //                 // Only integer numbers of particles can be inserted
 //                 label nParticlesToInsert = label(particlesRequired);
-// 
+//
 //                 // Add another particle with a probability proportional to the
 //                 // remainder of taking the integer part of particlesRequired
 //                 if
@@ -256,36 +255,36 @@ void dsmcInitialiseOnLine::setInitialConfiguration()
 //                 {
 //                     nParticlesToInsert++;
 //                 }
-// 
+//
 //                 for (label pI = 0; pI < nParticlesToInsert; pI++)
 //                 {
 //                     point p = tet.randomPoint(rndGen_);
-// 
+//
 //                     vector U = cloud_.equipartitionLinearVelocity
 //                     (
 //                         translationalTemperature,
 //                         cP.mass()
 //                     );
-// 
+//
 //                     scalar ERot = cloud_.equipartitionRotationalEnergy
 //                     (
 //                         rotationalTemperature,
 //                         cP.rotationalDegreesOfFreedom()
 //                     );
-//             
+//
 //                     scalar EVib = cloud_.equipartitionVibrationalEnergy
 //                     (
 //                         vibrationalTemperature,
 //                         cP.nVibrationalModes(),
 //                         typeId
 //                     );
-// 
+//
 //                     U += velocity;
-//                     
+//
 //                     label newParcel = -1;
-//                     
+//
 //                     label classification = 0;
-// 
+//
 //                     cloud_.addNewParcel
 //                     (
 //                         p,

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -84,7 +83,7 @@ void polySimpleLatticeZone::setInitialConfiguration()
 
     const scalar minSpacing(readScalar(mdInitialiseDict_.lookup("minSpacing")));
 
-    const word molIdName(mdInitialiseDict_.lookup("molId")); 
+    const word molIdName(mdInitialiseDict_.lookup("molId"));
     const List<word>& idList(molCloud_.cP().molIds());
 
     label molId = findIndex(idList, molIdName);
@@ -237,7 +236,7 @@ void polySimpleLatticeZone::setInitialConfiguration()
                 }
             }
         }
-    
+
         //- receiving
         for (int p = 0; p < Pstream::nProcs(); p++)
         {
@@ -365,7 +364,7 @@ void polySimpleLatticeZone::setInitialConfiguration()
         );
         scalar m = molCloud_.redUnits().refMass();
         scalar l = molCloud_.redUnits().refLength();
-        
+
         numberDensity = massDensity*l*l*l / (m*mass);
 
         if (massDensity < VSMALL)
@@ -375,7 +374,7 @@ void polySimpleLatticeZone::setInitialConfiguration()
                 << regionName
                 << abort(FatalError);
         }
-    }    
+    }
     else
     {
         FatalErrorIn("Foam::polyMoleculeCloud::initialiseMolecules")
@@ -418,9 +417,9 @@ void polySimpleLatticeZone::setInitialConfiguration()
         spacingY = (bb.span().y()/nMolsY);
         spacingZ = (bb.span().z()/nMolsZ);
 
-        Info<< "distributing spacing to: " 
+        Info<< "distributing spacing to: "
             << " spacingX: " << spacingX
-            << ", spacingY: " << spacingY 
+            << ", spacingY: " << spacingY
             << ", spacingZ: " << spacingZ
             << endl;
     }
@@ -429,8 +428,8 @@ void polySimpleLatticeZone::setInitialConfiguration()
     scalar y = 0.0;
     scalar z = 0.0;
 
-    Info << "nMolsX: " << nMolsX << ", nMolsY: " <<  nMolsY 
-         << ", nMolsZ: " <<  nMolsZ << endl; 
+    Info << "nMolsX: " << nMolsX << ", nMolsY: " <<  nMolsY
+         << ", nMolsZ: " <<  nMolsZ << endl;
 
     vector globalPosition = vector::zero;
 
@@ -447,7 +446,7 @@ void polySimpleLatticeZone::setInitialConfiguration()
                 z = (0.5 + k)*spacingZ + spacingResZ*0.5;
 
                 globalPosition = bb.min() + vector(x, y, z) + displacement;
-            
+
                 label cell = -1;
                 label tetFace = -1;
                 label tetPt = -1;

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     simplifiedBernoulliTrials
@@ -98,7 +97,7 @@ void simplifiedBernoulliTrials::collide()
     label collisionCandidates = 0;
 
     label collisions = 0;
-	
+
     const List<DynamicList<dsmcParcel*> > cellOccupancy = cloud_.cellOccupancy();
 
     const polyMesh& mesh = cloud_.mesh();
@@ -106,39 +105,39 @@ void simplifiedBernoulliTrials::collide()
     forAll(cellOccupancy, cellI)
     {
         const scalar deltaT = cloud_.deltaTValue(cellI);
-        
-        const scalar nParticle = cloud_.nParticles(cellI, true);
-        
+
+        const scalar nParticle = cloud_.nParticles(cellI);
+
         const DynamicList<dsmcParcel*>& cellParcels(cellOccupancy[cellI]);
 
         label nC(cellParcels.size());
 
         if (nC > 1)
-        {   
+        {
             scalar prob1 = (nParticle*deltaT)/(mesh.cellVolumes()[cellI]);
             label k = -1;
             label candidateP = -1;
             label candidateQ = -1;
-                
+
             for(label p = 0 ; p < nC-1 ; p++)
-            {                
+            {
                 // Select the first collision candidate
                 candidateP = p;
-            
+
                 k = nC-1 - p;
                 //label random = rndGen_.position<label>(1, k); OLD
                 label random = cloud_.randomLabel(1, k);
                 candidateQ = p + random;
-                
+
                 dsmcParcel& parcelP = *cellParcels[candidateP];
-                dsmcParcel& parcelQ = *cellParcels[candidateQ];  
+                dsmcParcel& parcelQ = *cellParcels[candidateQ];
 
                 scalar sigmaTcR = cloud_.binaryCollision().sigmaTcR
                 (
                     parcelP,
                     parcelQ
                 );
-            
+
                 scalar Probability = k*prob1*sigmaTcR;
 
                 if (Probability > rndGen_.sample01<scalar>())
@@ -161,7 +160,7 @@ void simplifiedBernoulliTrials::collide()
                             (
                                 parcelP,
                                 parcelQ
-                            );                                    
+                            );
                         }
                         // if reaction unsuccessful use conventional collision model
                         if(cloud_.reactions().reactions()[rMId]->relax())
@@ -183,7 +182,7 @@ void simplifiedBernoulliTrials::collide()
                             cellI
                         );
                     }
-                    
+
                     collisions++;
                 }
             }

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -84,17 +83,17 @@ temperatureController::temperatureController
             {
                 X_ = true;
             }
-    
+
             if (propsDict_.found("Y"))
             {
                 Y_ = true;
             }
-    
+
             if (propsDict_.found("Z"))
             {
                 Z_ = true;
             }
-            
+
             Info << "X_ = " << X_ << ", Y_ = " << Y_ << ", Z = " << Z_ << endl;
 
             if(!X_ && !Y_ && !Z_)
@@ -110,8 +109,8 @@ temperatureController::temperatureController
     setProperties();
 
     measuredTranslationalTemperature_ = temperature_;
-    
-    // standard to reading typeIds ------------ 
+
+    // standard to reading typeIds ------------
     const List<word> molecules (propsDict_.lookup("typeIds"));
 
     DynamicList<word> moleculesReduced(0);
@@ -159,7 +158,7 @@ temperatureController::~temperatureController()
 
 void temperatureController::initialConfiguration()
 {
-	
+
 }
 
 void temperatureController::calculateProperties()
@@ -177,17 +176,17 @@ void temperatureController::calculateProperties()
         {
             const label& cellI = cells[c];
             const List<dsmcParcel*>& molsInCell = cellOccupancy[cellI];
-    
+
             forAll(molsInCell, mIC)
             {
                 dsmcParcel* p = molsInCell[mIC];
-                
+
                 if(findIndex(typeIds_, p->typeId()) != -1)
                 {
                     const scalar nParticle = cloud_.nParticles(cellI);
-                    
+
                     const scalar mass = cloud_.constProps(p->typeId()).mass()*nParticle;
-                    
+
                     massV_[c] += mass;
                     momV_[c] += p->U()*mass;
                 }
@@ -207,34 +206,34 @@ void temperatureController::calculateProperties()
             }
         }
 
-        //- reset 
+        //- reset
         if(time_.resetFieldsAtOutput())
         {
             massV_ = 0.0;
             momV_ = vector::zero;
         }
     }
-    
+
     if(time_.samplingTime())
     {
         const List< DynamicList<dsmcParcel*> >& cellOccupancy
             = cloud_.cellOccupancy();
-    
+
         forAll(controlZone(), c)
         {
             const label& cell = cells[c];
             const List<dsmcParcel*>& molsInCell = cellOccupancy[cell];
-    
+
             forAll(molsInCell, mIC)
             {
                 dsmcParcel* p = molsInCell[mIC];
-                
+
                 if(findIndex(typeIds_, p->typeId()) != -1)
                 {
                     const scalar nParticle = cloud_.nParticles(cell);
-                    
+
                     const scalar mass = cloud_.constProps(p->typeId()).mass()*nParticle;
-                    
+
                     mcc_[c] += mass*mag(p->U())*mag(p->U());
                     m_[c] += mass;
                     nParcels_[c] += nParticle;
@@ -246,8 +245,8 @@ void temperatureController::calculateProperties()
     if(time_.averagingTime())
     {
         measuredTranslationalTemperature_ = scalar(0.0);
-            
-            const scalar& deltaTDSMC = mesh_.time().deltaTValue(); // time step 
+
+            const scalar& deltaTDSMC = mesh_.time().deltaTValue(); // time step
 
         forAll(measuredTranslationalTemperature_, c)
         {
@@ -260,9 +259,9 @@ void temperatureController::calculateProperties()
                         );
 
                 chi_[c] = sqrt(1.0 + (deltaTDSMC/tauT_)*((temperature_/measuredTranslationalTemperature_[c]) - 1.0) );
-                
-                Info<< "target temperature: " << temperature_ 
-                    << " UMean_ : " << UMean_[c] 
+
+                Info<< "target temperature: " << temperature_
+                    << " UMean_ : " << UMean_[c]
                     << " measured T: " << measuredTranslationalTemperature_[c]
                     << " chi: " << chi_[c]
                     << endl;
@@ -284,7 +283,7 @@ void temperatureController::controlParcelsBeforeMove()
     if(control_ && time_.controlTime())
     {
         Info << "temperatureController: control" << endl;
-            
+
         const labelList& cells = mesh_.cellZones()[regionId_];
 
         const List< DynamicList<dsmcParcel*> >& cellOccupancy
@@ -294,11 +293,11 @@ void temperatureController::controlParcelsBeforeMove()
         {
             const label& cell = cells[c];
             const List<dsmcParcel*>& molsInCell = cellOccupancy[cell];
-    
+
             forAll(molsInCell, mIC)
             {
                 dsmcParcel* p = molsInCell[mIC];
-                
+
                 if(findIndex(typeIds_, p->typeId()) != -1)
                 {
                     if(componentControl_)
@@ -349,7 +348,7 @@ void temperatureController::output
 
 void temperatureController::controlParcelsBeforeCollisions()
 {
-    
+
 }
 
 void temperatureController::controlParcelsAfterCollisions()

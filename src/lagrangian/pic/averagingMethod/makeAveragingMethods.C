@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -72,8 +72,8 @@ defineNamedTemplateTypeNameAndDebug
 Foam::AveragingMethod<Foam::vector>::
 adddictionaryConstructorToTable<Foam::AveragingMethods::Basic<Foam::vector>>
     addBasicvectorConstructorToTable_;
-    
-    
+
+
 // Linear interpolation
 defineNamedTemplateTypeNameAndDebug
 (
@@ -91,8 +91,8 @@ defineNamedTemplateTypeNameAndDebug
 );
 Foam::AveragingMethod<Foam::vector>::
 adddictionaryConstructorToTable<Foam::AveragingMethods::Linear<Foam::vector>>
-    addLinearvectorConstructorToTable_;    
-    
+    addLinearvectorConstructorToTable_;
+
 
 /*namespace Foam
 {
@@ -109,7 +109,7 @@ adddictionaryConstructorToTable<Foam::AveragingMethods::Linear<Foam::vector>>
             adddictionaryConstructorToTable<Basic<vector> >
             addBasicvectorConstructorToTable_;
 
-        // Dual interpolation // Chris note: not working 
+        // Dual interpolation // Chris note: not working
         //defineNamedTemplateTypeNameAndDebug(Dual<scalar>, 0);
         //AveragingMethod<scalar>::
         //    adddictionaryConstructorToTable<Dual<scalar> >
@@ -119,7 +119,7 @@ adddictionaryConstructorToTable<Foam::AveragingMethods::Linear<Foam::vector>>
         //AveragingMethod<vector>::
         //    adddictionaryConstructorToTable<Dual<vector> >
         //    addDualvectorConstructorToTable_;
-        
+
         // Linear interpolation
         defineNamedTemplateTypeNameAndDebug(Linear<scalar>, 0);
         AveragingMethod<scalar>::
@@ -130,7 +130,7 @@ adddictionaryConstructorToTable<Foam::AveragingMethods::Linear<Foam::vector>>
         AveragingMethod<vector>::
             adddictionaryConstructorToTable<Linear<vector> >
             addLinearvectorConstructorToTable_;
-    
+
 }*/
 
 

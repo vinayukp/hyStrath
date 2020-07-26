@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     collisionDistribution
@@ -71,7 +70,7 @@ collisionDistribution::collisionDistribution(const word& name)
 {}
 
 
-// Construct from binWidth, rMax and name 
+// Construct from binWidth, rMax and name
 collisionDistribution::collisionDistribution
 (
     const scalar& binWidth,
@@ -147,9 +146,9 @@ void collisionDistribution::setDistribution()
         if(k < p_.size())
         {
             label key = keys[k];
-    
+
             scalar nMols = scalar((*this)[key]);
-    
+
             if( nMols > maxValue)
             {
                 maxValue = nMols;
@@ -189,7 +188,7 @@ void collisionDistribution::setDistribution()
 // scalar collisionDistribution::gBin(const scalar& r) const
 // {
 //     label key = label(r/binWidth());
-// 
+//
 //     if(r < 0.0)
 //     {
 //         return 0.0;
@@ -212,7 +211,7 @@ void collisionDistribution::setDistribution()
 // scalar collisionDistribution::gLinear(const scalar& r) const
 // {
 //     label key = label(r/binWidth());
-// 
+//
 //     if(r < 0.0)
 //     {
 //         return 0.0;
@@ -224,9 +223,9 @@ void collisionDistribution::setDistribution()
 //     )
 //     {
 //         scalar deltaR = radius_[key] - r;
-// 
+//
 //         label key2 = key;
-// 
+//
 //         if(deltaR < 0.0)
 //         {
 //             key2++;
@@ -235,12 +234,12 @@ void collisionDistribution::setDistribution()
 //         {
 //             key2--;
 //         }
-// 
+//
 //         const scalar& g1 = g_[key];
 //         const scalar& g2 = g_[key2];
-// 
+//
 //         scalar gNew = ( ((g2 - g2)/binWidth()) * (mag(deltaR)) ) + g1;
-// 
+//
 //         return gNew;
 //     }
 //     else
@@ -319,9 +318,9 @@ void collisionDistribution::writeDistribution
 // )
 // {
 //     fileName writeFile(pathName/nameFile);
-// 
+//
 //     graph outputGraph("title", "x", "y", xData, yData);
-// 
+//
 //     outputGraph.write(writeFile, "raw");
 // }
 
@@ -337,9 +336,9 @@ void collisionDistribution::writeDistribution
 //             << "Attempted assignment to self"
 //             << abort(FatalError);
 //     }
-// 
+//
 //     Map<label>::operator=(rhs);
-// 
+//
 //     binWidth_ = rhs.binWidth();
 // }
 
@@ -353,14 +352,14 @@ void collisionDistribution::writeDistribution
 // {
 //     os  << d.binWidth_
 //         << static_cast<const Map<label>&>(d);
-// 
+//
 //     // Check state of Ostream
 //     os.check
 //     (
 //         "Ostream& operator<<(Ostream&, "
 //         "const collisionDistribution&)"
 //     );
-// 
+//
 //     return os;
 // }
 

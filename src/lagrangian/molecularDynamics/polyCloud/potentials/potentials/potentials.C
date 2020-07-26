@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -85,20 +85,20 @@ void potentials::readPotentialDict()
         }
 
         removalOrder_.transfer(removalOrder);
-        
+
         Info << "setup removalOrder = " << removalOrder_ << endl;
     }
     else
     {
         FatalErrorIn("potentials::readPotentialDict()")
             << "removalOrder list not found in system/potentialDict"
-            << abort(FatalError);        
-        
+            << abort(FatalError);
+
     }
-    
+
     if (potentialsDict.found("checkOverlaps"))
     {
-        checkPotentialOverlaps_ = Switch(potentialsDict.lookup("checkOverlaps"));  
+        checkPotentialOverlaps_ = Switch(potentialsDict.lookup("checkOverlaps"));
     }
 }
 
@@ -125,9 +125,9 @@ potentials::potentials
     checkPotentialOverlaps_(true)
 {
     readPotentialDict();
-    
+
     // set exclusions
-    
+
 }
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -143,7 +143,7 @@ potentials::~potentials()
 //     {
 //         return false;
 //     }
-//    
+//
 //     if()
 // }
 //     if(!molI->frozen() || !molJ->frozen())

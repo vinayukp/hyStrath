@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -81,15 +80,15 @@ polyForceZone::polyForceZone
 	forceField_(1, vector::zero),
 
     nAvTimeSteps_(0.0),
-    resetAtOutput_(true)    
+    resetAtOutput_(true)
 {
     bool readFromStore = true;
-    
+
     if (propsDict_.found("readFromStorage"))
     {
         readFromStore = Switch(propsDict_.lookup("readFromStorage"));
-    }        
-    
+    }
+
     resetAtOutput_ = Switch(propsDict_.lookup("resetAtOutput"));
 
     if (!resetAtOutput_ && readFromStore)
@@ -119,13 +118,13 @@ polyForceZone::polyForceZone
         }
         else
         {
-            Info << "Reading from storage, e.g. noAvTimeSteps = " << nAvTimeSteps_ << endl;              
+            Info << "Reading from storage, e.g. noAvTimeSteps = " << nAvTimeSteps_ << endl;
 //             Pout<< "Properties read-in are: mols = " << mols_ << ", mass = " << mass_
 //                 << ", averagingTime = " << nAvTimeSteps_
 //                 << endl;
         }
     }
-    
+
     // build bound boxes
 
     setBoundBoxes();
@@ -164,9 +163,9 @@ void polyForceZone::createField()
 void polyForceZone::calculateField()
 {
     nAvTimeSteps_ += 1.0;
-    
+
 //     vector force = vector::zero;
-    
+
     {
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
 
@@ -183,7 +182,7 @@ void polyForceZone::calculateField()
                         forAll(mol().siteForces(), i)
                         {
                             force_ += mol().siteForces()[i];
-                            
+
 //                             Pout << "force = " << mol().siteForces()[i] << endl;
                         }
                     }
@@ -215,7 +214,7 @@ void polyForceZone::calculateField()
             nAvTimeSteps_ = 0.0;
             force_ = vector::zero;
         }
-        else 
+        else
         {
             writeToStorage();
         }
@@ -257,7 +256,7 @@ bool polyForceZone::readFromStorage()
         force_ = force;
     }
 
-    return goodFile;    
+    return goodFile;
 }
 
 void polyForceZone::writeField()
@@ -269,7 +268,7 @@ void polyForceZone::writeField()
         if(Pstream::master())
         {
             scalarField timeField(1, runTime.timeOutputValue());
-            
+
             writeTimeData
             (
                 casePath_,
@@ -280,7 +279,7 @@ void polyForceZone::writeField()
             );
 
             const reducedUnits& rU = molCloud_.redUnits();
-    
+
             if(rU.outputSIUnits())
             {
                 writeTimeData

@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class nonEqSmoluchowskiJumpTvFvPatchScalarField
 
         //- Name of the species
         word specieName_;
-        
+
         //- Velocity field name, default = "U"
         word UName_;
 
@@ -64,13 +64,13 @@ class nonEqSmoluchowskiJumpTvFvPatchScalarField
 
         //- Dynamic viscosity field name, default = "mu"
         word muName_;
-        
+
         //- Thermal diffusivity field name, default = "alphave_speciei"
         word alphaName_; // NEW VINCENT 03/03/2016
-        
+
         //- Ratio of specific heat capacities field name, default = "gammatr"
         word gammatrName_; // NEW VINCENT 03/03/2016
-        
+
         //- Mean free path field name, default = "mfp"
         word mfpName_; // NEW VINCENT 28/02/2016
 

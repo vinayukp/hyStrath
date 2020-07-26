@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     associativeIonisationQK
@@ -63,26 +62,26 @@ protected:
 
         //- Sub-dictionary containing the reaction properties
         dictionary propsDict_;
-        
+
         //- Id of the intermediate molecule
         label intermediateMoleculeId_;
-        
+
         //- Ids of the products
         labelList productIdsAssociativeIonisation_;
-        
-        //- Switch to determine whether or not the reaction is a forward or 
+
+        //- Switch to determine whether or not the reaction is a forward or
         //  reverse associative ionisation reaction
         bool forwardAssociativeIonisation_;
-        
+
         //- Position of the ionised molecule in the reactant or product list
         label posIonisedMol_;
-        
+
         //- String to print for the associative ionisation reaction
         word associativeIonisationStr_;
-        
+
         label nTotAssociativeIonisationReactions_;
         label nAssociativeIonisationReactionsPerTimeStep_;
-       
+
         scalarList heatOfReactionAssociativeIonisationJoules_;
 
         //- Total volume of the numerical domain (NB: should not be there)
@@ -92,7 +91,7 @@ protected:
     // Protected Member Functions
 
         virtual void setProperties();
-        
+
         void testForwardAssociativeIonisation
         (
             const dsmcParcel& p,
@@ -102,7 +101,7 @@ protected:
             scalar& totalReactionProbability,
             scalar& reactionProbability
         );
-        
+
         void testReverseAssociativeIonisation
         (
             const dsmcParcel& p,
@@ -112,14 +111,14 @@ protected:
             scalar& totalReactionProbability,
             scalar& reactionProbability
         );
-        
+
         void forwardAssociativeIonisation
         (
             dsmcParcel& p,
             dsmcParcel& q,
             scalar collisionEnergy
         );
-        
+
         void reverseAssociativeIonisation
         (
             dsmcParcel& p,
@@ -142,13 +141,13 @@ public:
             dsmcCloud& cloud,
             const dictionary& dict
         );
-    
-    
+
+
     // Destructor
-    
+
         ~associativeIonisationQK();
-    
-    
+
+
     // Member Functions
 
         //- initial configuration - read in properties from chemReactDict
@@ -170,10 +169,10 @@ public:
         //- Return true if both particles belong to this reaction model
         virtual bool tryReactMolecules
         (
-            const label& typeIdP, 
+            const label& typeIdP,
             const label& typeIdQ
         );
-        
+
 
       // Access
 

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     distribution
@@ -150,7 +149,7 @@ scalar distribution::median()
 
     if(normDist.size())
     {
-        if 
+        if
         (
             normDist.size() == 1
         )
@@ -167,13 +166,13 @@ scalar distribution::median()
             scalar xkm1 = normDist[0].first();
             scalar Sk = (normDist[0].second() + normDist[1].second())*binWidth_;
             scalar Skm1 = normDist[0].second()*binWidth_;
-                    
+
             median = (0.5 - Skm1)*(xk - xkm1)/(Sk - Skm1) + xkm1;
         }
         else
         {
             label lastNonZeroIndex = 0;
-        
+
             forAll(normDist,nD)
             {
                 if
@@ -185,15 +184,15 @@ scalar distribution::median()
                     scalar xkm1 = normDist[lastNonZeroIndex].first();
                     scalar Sk = runningSum + (normDist[nD].second()*binWidth_);
                     scalar Skm1 = runningSum;
-                    
+
                     median = (0.5 - Skm1)*(xk - xkm1)/(Sk - Skm1) + xkm1;
-                    
+
                     break;
                 }
                 else if (normDist[nD].second() > 0.0)
                 {
                     runningSum += normDist[nD].second()*binWidth_;
-                    
+
                     lastNonZeroIndex = nD;
                 }
             }
@@ -447,7 +446,7 @@ List< Pair<scalar> > distribution::normalisedShifted(const scalar& shiftValue)
     {
         oldDist[u].first() -= shiftValue;
     }
-    
+
     scalar lowestOldBin = oldDist[0].first()/binWidth_ - 0.5;
 
     label lowestNewKey = label
@@ -459,7 +458,7 @@ List< Pair<scalar> > distribution::normalisedShifted(const scalar& shiftValue)
 
     label newKey = lowestNewKey;
 
-//     Info << shiftValue 
+//     Info << shiftValue
 //         << nl << lowestOldBin
 //         << nl << lowestNewKey
 //         << nl << interpolationStartDirection
@@ -544,7 +543,7 @@ List< Pair<scalar> > distribution::normalisedShifted(const scalar& shiftValue)
 //     }
 
 //     Info << "Shifted normalisation = " << checkNormalisation << endl;
-    
+
     return newDist;
 }
 

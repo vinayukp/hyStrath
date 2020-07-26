@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -31,12 +30,12 @@ License
 
 template<class ThermoType>
 void Foam::noVTEnergyTransfer<ThermoType>::updateCoefficients()
-{     
+{
     forAll(species(), i)
     {
         tauVT_[i] = dimensionedScalar("GREAT", dimTime, Foam::GREAT);
     }
-    
+
     /*forAll(species(), i) // TODO ONGOING WORK
     {
         forAll(tauVTmode_[i], m)
@@ -44,7 +43,7 @@ void Foam::noVTEnergyTransfer<ThermoType>::updateCoefficients()
             tauVTmode_[i][m] = dimensionedScalar("GREAT", dimTime, Foam::GREAT);
         }
     }*/
-} 
+}
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -57,21 +56,21 @@ Foam::noVTEnergyTransfer<ThermoType>::noVTEnergyTransfer
 )
 :
     relaxationTimeModel(thermo, turbulence),
-    
+
     speciesThermo_
     (
         dynamic_cast<const multi2ComponentMixture<ThermoType>&>
             (this->thermo_).speciesData()
     )
-{    
+{
     tauVT_.setSize(solvedVibEqSpecies().size());
     //tauVTmode_.setSize(species().size()); // TODO ONGOING WORK
-    
+
     forAll(tauVT_, speciei)
     {
         tauVT_.set
         (
-            speciei, 
+            speciei,
             new volScalarField
             (
                 IOobject
@@ -86,8 +85,8 @@ Foam::noVTEnergyTransfer<ThermoType>::noVTEnergyTransfer
                 dimensionedScalar("tauVT", dimTime, 0.0)
             )
         );
-    } 
-    
+    }
+
     /*forAll(tauVTmode_, speciei) // TODO ONGOING WORK
     {
         tauVTmode_.set
@@ -96,14 +95,14 @@ Foam::noVTEnergyTransfer<ThermoType>::noVTEnergyTransfer
             new PtrList<volScalarField>(thermo_.composition().noVibrationalTemp(speciei))
         );
     }
-    
+
     forAll(tauVTmode_, speciei)
     {
       forAll(tauVTmode_[speciei], vibMode)
       {
         tauVTmode_[speciei].set
         (
-            vibMode, 
+            vibMode,
             new volScalarField
             (
                 IOobject
@@ -127,8 +126,8 @@ Foam::noVTEnergyTransfer<ThermoType>::noVTEnergyTransfer
 
 template<class ThermoType>
 void Foam::noVTEnergyTransfer<ThermoType>::correct()
-{}  
-    
+{}
+
 
 template<class ThermoType>
 bool Foam::noVTEnergyTransfer<ThermoType>::read()
@@ -142,6 +141,6 @@ bool Foam::noVTEnergyTransfer<ThermoType>::read()
         return false;
     }
 }
-   
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

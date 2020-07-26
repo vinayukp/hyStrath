@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     pdBinsMethod
@@ -73,13 +72,13 @@ private:
         word regionName_;
         label regionId_;
         word fieldName_;
-        
+
         labelList typeIds_;
-        
+
 //         label nBins_;
 
-        scalar averagingCounter_;        
-        
+        scalar averagingCounter_;
+
         scalarField volumeOfCellsInBin_;
         scalarField mols_;
         scalarField molsInt_;
@@ -89,9 +88,9 @@ private:
         vectorField UCollected_;
         scalarField rotationalEMean_;
         scalarField rotationalDofMean_;
-        
+
         // pressure measurements
-        
+
         scalarField muu_;
         scalarField muv_;
         scalarField muw_;
@@ -107,12 +106,12 @@ private:
         scalarField ev_;
         scalarField ew_;
         scalarField e_;
-        
+
         List<scalarField> speciesMols_;
         List<scalarField> vibrationalETotal_;
         List<scalarField> vDof_;
         List<scalarField> mfp_;
-        
+
         scalarField binVolume_;
         scalarField N_;
         scalarField M_;
@@ -120,7 +119,7 @@ private:
         scalarField rhoM_;
         scalarField averageMass_;
         vectorField UMean_;
-        vectorField UCAM_;     
+        vectorField UCAM_;
         scalarField scalarUMean_;
         scalarField translationalTemperature_;
         scalarField rotationalTemperature_;
@@ -129,30 +128,30 @@ private:
         tensorField pField_;
         tensorField tauField_;
         vectorField qField_;
-        vectorField qInternalField_;  
-        vectorField qTranslationalField_;  
+        vectorField qInternalField_;
+        vectorField qTranslationalField_;
         scalarField meanFreePath_;
         scalarField Ma_;
-       
+
         List<bool> outputField_;
-        
+
 //         scalar deltaT_;
 //         scalar measuringTime_;
 //         scalar runningTime_;
-        
+
         bool averagingAcrossManyRuns_;
         bool permeabilityMeasurements_;
         bool rotationalMeasurements_;
         scalar wallVelocity_;
         scalar wallRadius_;
-        
-        
+
+
     // Private Member Functions
 
         void readIn();
 
         void writeOut();
-        
+
 //         void averageProperties();
 
 public:

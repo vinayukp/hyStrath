@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -37,7 +36,7 @@ namespace Foam
         addToRunTimeSelectionTable
         (
             eVRelaxationModel,
-            BourdonVervisch, 
+            BourdonVervisch,
             dictionary
         );
     }
@@ -57,32 +56,32 @@ Foam::eVRelaxationModels::BourdonVervisch::BourdonVervisch
 )
 :
     eVRelaxationModel(name1, lname1, dict2T, dictThermoPhy, p, Tv)
-{   
+{
     species1_ = lname1; name1_ = name1;
-    
+
     Tlow_ = readScalar(dict2T.subDict("BourdonVervischCoefficients").lookup("Tlow"));
     Tmed_ = readScalar(dict2T.subDict("BourdonVervischCoefficients").lookup("Tmed"));
     Thigh_ = readScalar(dict2T.subDict("BourdonVervischCoefficients").lookup("Thigh"));
-    
+
     word subDictName = word::null;
-    
+
     if (not eVOverwriteDefault_)
     {
         BV1_[0]  = 5.019; BV1_[1] = 2.448;
         BV2_[0]  = -38.025; BV2_[1] = -18.704;
         BV3_[0]  = 64.219; BV3_[1] = 25.635;
     }
-    else 
+    else
     {
         if (eVSpeciesDependent_ and dict2T.subDict("BourdonVervischCoefficients").isDict(name1))
-        {        
-            subDictName = name1; 
-        }    
+        {
+            subDictName = name1;
+        }
         else
         {
             subDictName = "allSpecies";
-        }    
-        
+        }
+
         FixedList<scalar, 2> defaultList;
         defaultList[0] = Foam::SMALL; // small value
         defaultList[1] = Foam::SMALL; // small value
@@ -118,7 +117,7 @@ Foam::eVRelaxationModels::BourdonVervisch::taueV() const
     );
 
     volScalarField& taueV = ttaueV.ref();
-    
+
     forAll(this->Tv_, celli)
     {
         //partial pressure of electrons greater than a given value = electrons in the cell
@@ -132,12 +131,12 @@ Foam::eVRelaxationModels::BourdonVervisch::taueV() const
             scalar BV1 = boundedLinearInterpolation(this->Tv_[celli], tempRange[0], tempRange[1], BV1_[0], BV1_[1]);
             scalar BV2 = boundedLinearInterpolation(this->Tv_[celli], tempRange[0], tempRange[1], BV2_[0], BV2_[1]);
             scalar BV3 = boundedLinearInterpolation(this->Tv_[celli], tempRange[0], tempRange[1], BV3_[0], BV3_[1]);
-            
+
             //Info << log10(this->Tv_[celli]) << tab << BV1 << tab << BV2 << tab << BV3 << tab << BV1*sqr(log10(this->Tv_[celli])) + BV2*log10(this->Tv_[celli]) + BV3 << endl;
             taueV[celli] = 1.01325e5 / this->p_[celli] * pow(10, BV1*sqr(log10(this->Tv_[celli])) + BV2*log10(this->Tv_[celli]) + BV3);
         }
     }
-    
+
 
     forAll(this->Tv_.boundaryField(), patchi)
     {
@@ -157,7 +156,7 @@ Foam::eVRelaxationModels::BourdonVervisch::taueV() const
                 scalar pBV1 = boundedLinearInterpolation(pTv[facei], tempRange[0], tempRange[1], BV1_[0], BV1_[1]);
                 scalar pBV2 = boundedLinearInterpolation(pTv[facei], tempRange[0], tempRange[1], BV2_[0], BV2_[1]);
                 scalar pBV3 = boundedLinearInterpolation(pTv[facei], tempRange[0], tempRange[1], BV3_[0], BV3_[1]);
-                
+
                 ptaueV[facei] = 1.01325e5 / pp[facei] * pow(10, pBV1*sqr(log10(pTv[facei])) + pBV2*log10(pTv[facei]) + pBV3);
             }
         }
@@ -176,7 +175,7 @@ Foam::tmp<Foam::scalarField> Foam::eVRelaxationModels::BourdonVervisch::taueV
 {
     tmp<scalarField> ttaueV(new scalarField(Tv.size()));
     scalarField& taueV = ttaueV.ref();
-    
+
     forAll(Tv, facei)
     {
         if(p[facei] < 1e-2)
@@ -189,7 +188,7 @@ Foam::tmp<Foam::scalarField> Foam::eVRelaxationModels::BourdonVervisch::taueV
             scalar pBV1 = boundedLinearInterpolation(Tv[facei], tempRange[0], tempRange[1], BV1_[0], BV1_[1]);
             scalar pBV2 = boundedLinearInterpolation(Tv[facei], tempRange[0], tempRange[1], BV2_[0], BV2_[1]);
             scalar pBV3 = boundedLinearInterpolation(Tv[facei], tempRange[0], tempRange[1], BV3_[0], BV3_[1]);
-            
+
             taueV[facei] = 1.01325e5 / p[facei]* pow(10, pBV1*sqr(log10(Tv[facei])) + pBV2*log10(Tv[facei]) + pBV3);
         }
     }

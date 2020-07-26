@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     forceDistribution
@@ -238,7 +237,7 @@ void forceDistribution::setMagForceDistr()
 
 void forceDistribution::addToDistribution
 (
-    const vector& r, 
+    const vector& r,
     const vector& force,
     const scalar& energy
 )
@@ -250,7 +249,7 @@ void forceDistribution::addToDistribution
     if(binWidth_ > 0.0)
     {
         label n = label(rNormal/binWidth_);
-    
+
         if((n < magRadii_.size()) && (n >= 0))
         {
             forces_[n] += force;
@@ -262,7 +261,7 @@ void forceDistribution::addToDistribution
 
 void forceDistribution::addToDistribution
 (
-    const vector& r, 
+    const vector& r,
     const vector& force,
     const scalar& energy,
     const scalar& virial
@@ -275,7 +274,7 @@ void forceDistribution::addToDistribution
     if(binWidth_ > 0.0)
     {
         label n = label(rNormal/binWidth_);
-    
+
         if((n < magRadii_.size()) && (n >= 0))
         {
             forces_[n] += force;
@@ -297,7 +296,7 @@ bool forceDistribution::isWithinDistributionRange(const vector& r)
     if(binWidth_ > 0.0)
     {
         label n = label(rNormal/binWidth_);
-    
+
         if((n < magRadii_.size()) && (n >= 0))
         {
             inRange = true;
@@ -326,7 +325,7 @@ void forceDistribution::scaleForceDistribution
     const scalarField& values
 )
 {
-    //check 
+    //check
     if(forces_.size() == values.size())
     {
         forAll(forces_, f)
@@ -549,10 +548,10 @@ void forceDistribution::writeTimeData
     {
         forAll(yData, n)
         {
-            file 
-                << xData[n] << "\t" 
-                << yData[n].x() << "\t" << yData[n].y() 
-                << "\t" << yData[n].z() 
+            file
+                << xData[n] << "\t"
+                << yData[n].x() << "\t" << yData[n].y()
+                << "\t" << yData[n].z()
                 << endl;
         }
     }
@@ -577,7 +576,7 @@ void forceDistribution::read
         mkDir(timePath);
 
         FatalErrorIn("void forceDistribution::read()")
-            << "Cannot open file " << timePath 
+            << "Cannot open file " << timePath
             << abort(FatalError);
     }
 
@@ -623,7 +622,7 @@ void forceDistribution::read
 
     setPEDistribution(energies);
 
-    //-read virial 
+    //-read virial
 
     IFstream virialDistrFile(timePath/name_+"_virial.raw");
 
@@ -670,8 +669,8 @@ void forceDistribution::setPEDistribution
     if(energies.size() != energies_.size())
     {
         FatalErrorIn("void forceDistribution::setPEDistribution()")
-            << "Energy distribution size : "<< energies.size() 
-            << " not equal to the force distribution list: " 
+            << "Energy distribution size : "<< energies.size()
+            << " not equal to the force distribution list: "
             << energies_.size()
             << abort(FatalError);
     }
@@ -690,8 +689,8 @@ void forceDistribution::setVirialDistribution
     if(virials.size() != virials_.size())
     {
         FatalErrorIn("void forceDistribution::setPEDistribution()")
-            << "Virial distribution size : "<< virials.size() 
-            << " not equal to the force distribution list: " 
+            << "Virial distribution size : "<< virials.size()
+            << " not equal to the force distribution list: "
             << virials_.size()
             << abort(FatalError);
     }
@@ -717,7 +716,7 @@ scalar forceDistribution::binValue(const scalar& rD) const
     {
         return magForces_[key];
     }
-    else 
+    else
     {
         return 0.0;
     }
@@ -736,7 +735,7 @@ scalar forceDistribution::binValuePE(const scalar& rD) const
     {
         return energies_[key];
     }
-    else 
+    else
     {
         return 0.0;
     }
@@ -754,7 +753,7 @@ scalar forceDistribution::binValueVirial(const scalar& rD) const
     {
         return virials_[key];
     }
-    else 
+    else
     {
         return 0.0;
     }
@@ -892,7 +891,7 @@ scalar forceDistribution::readBinWidth()
     {
         FatalErrorIn("forceDistribution")
             << "Size of forceDistribution:  " << name_
-            << " is zero" 
+            << " is zero"
             << abort(FatalError);
     }
 
@@ -945,9 +944,9 @@ scalar forceDistribution::readBinWidth()
 //             << "Attempted assignment to self"
 //             << abort(FatalError);
 //     }
-// 
+//
 //     Map<label>::operator=(rhs);
-// 
+//
 //     binWidth_ = rhs.binWidth();
 // }
 
@@ -961,14 +960,14 @@ scalar forceDistribution::readBinWidth()
 // {
 //     os  << d.binWidth_
 //         << static_cast<const Map<label>&>(d);
-// 
+//
 //     // Check state of Ostream
 //     os.check
 //     (
 //         "Ostream& operator<<(Ostream&, "
 //         "const forceDistribution&)"
 //     );
-// 
+//
 //     return os;
 // }
 

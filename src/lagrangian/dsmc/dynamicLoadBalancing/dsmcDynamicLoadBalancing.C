@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     dsmcDynamicLoadBalancing
@@ -71,8 +70,23 @@ dsmcDynamicLoadBalancing::dsmcDynamicLoadBalancing
     performBalance_(false),
     enableBalancing_(Switch(dsmcLoadBalanceDict_.lookup("enableBalancing"))),
     originalEndTime_(time_.time().endTime().value()),
-    maxImbalance_(readScalar(dsmcLoadBalanceDict_.lookup("maximumAllowableImbalance")))
-    //nProcs_(readLabel(dsmcLoadBalanceDict_.lookup("numberOfSubdomains")))
+    maxImbalance_(readScalar
+    (
+        dsmcLoadBalanceDict_.lookup("maximumAllowableImbalance")
+    )),
+    // allow specifying a limit for the number of time directories that will be
+    // backuped up in the resultFolders directory.
+    //  - -1 (default): backup all time directories
+    //  - N >= 0: backup the N most recent time directories and delete oldest
+    //            directories in case the limit is exceeded.
+    limitTimeDirBackups_
+    (
+        dsmcLoadBalanceDict_.lookupOrDefault<label>
+        (
+            "limitTimeDirBackups",
+            -1
+        )
+    )
 {}
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -86,168 +100,166 @@ void dsmcDynamicLoadBalancing::update()
 {
     if(time_.time().outputTime())
     {
-        //- Checking for modifications in the IOdictionary
-        //  this allows for run-time tuning of any parameters.  
-        // DLETED VINCENT: not useful
-        
-        /*IOdictionary newDict
-        (
-            IOobject
-            (
-                "loadBalanceDict",
-                time_.system(),
-                mesh_,
-                IOobject::MUST_READ,
-                IOobject::NO_WRITE
-            )
-        );*/
+        updateProperties();
 
-        updateProperties(/*newDict*/);
-        
         //- Load Balancing
         if (Pstream::parRun())
         {
             const scalar& allowableImbalance = maxImbalance_;
-                
+
             // First determine current level of imbalance - do this for all
             // parallel runs, even if balancing is disabled
             scalar nGlobalParticles = cloud_.size();
             Foam::reduce(nGlobalParticles, sumOp<scalar>());
-            
-            scalar idealNParticles = scalar(nGlobalParticles)/scalar(Pstream::nProcs());
-            
+
+            scalar idealNParticles =
+                scalar(nGlobalParticles)/scalar(Pstream::nProcs());
+
             scalar nParticles = cloud_.size();
             scalar localImbalance = mag(nParticles - idealNParticles);
             Foam::reduce(localImbalance, maxOp<scalar>());
             scalar maxImbalance = localImbalance/idealNParticles;
-            
-            Info << "    Maximum imbalance = " << 100*maxImbalance << "%" << endl;
-            
+
+            Info<< "    Maximum imbalance = " << 100*maxImbalance << "%"
+                << endl;
+
             if( maxImbalance > allowableImbalance && enableBalancing_)
-            {   
+            {
                 performBalance_ = true;
-                
+
                 originalEndTime_ = time_.time().endTime().value();
-                
+
                 scalar currentTime = time_.time().value();
-                
+
                 time_.setEndTime(currentTime);
             }
         }
     }
 }
-    
-    
+
+
 void dsmcDynamicLoadBalancing::copyPolyMeshToLatestTimeFolder() const
 {
     const fileName constantInProcessor0 = "processor0/constant";
-    
+
     if (not isDir(constantInProcessor0))
     {
         for (label i=0; i<Pstream::nProcs(); i++)
         {
-            const word findStartTime = 
-                "starting=`foamListTimes -processor -withZero -startTime`; ";
-                
+            const word findStartTime =
+                "starting=$(foamListTimes -processor -withZero -startTime);";
+
             if (findStartTime != "0")
-            {    
-                const word findLatestTime = 
-                    "latest=`foamListTimes -processor -withZero -latestTime`; ";
+            {
+                const word findLatestTime =
+                    "latest=$(foamListTimes -processor -withZero -latestTime);";
                 const word findTimes = findStartTime + findLatestTime;
                 const word processorName = "processor" + name(i) + "/";
-                const word copyPolyMesh = findTimes + "cp -r " 
-                    + processorName + "$starting" + "/polyMesh " 
+                const word copyPolyMesh = findTimes + "cp -r "
+                    + processorName + "$starting" + "/polyMesh "
                     + processorName + "$latest/";
-                
+
                 Foam::system(copyPolyMesh);
             }
         }
     }
-    /*else
-    {
-        const word findLatestTime = 
-                    "latest=`foamListTimes -processor -withZero -latestTime`; ";
-                    
-        const fileName polyMeshInTimeFolder = "processor0/" + findLatestTime + "/polyMesh";
-        
-        if (isDir(polyMeshInTimeFolder))
-        {
-            const fileName constantInProcessor0 = "processor0/constant";
-        }
-    }*/
 }
 
 
 void dsmcDynamicLoadBalancing::perform(const int noRefinement)
-{    
+{
     if(performBalance_)
-    {      
+    {
         if (Pstream::master())
-        {   
+        {
             if (noRefinement == 0)
             {
                 copyPolyMeshToLatestTimeFolder();
             }
-            
-            //string redistributeCommand("mpirun -np " + word(nProcs_) + " redistributeParDSMCLoadBalance -parallel");
-            //system("redistributeCommand");
-
-            /*const char reconstructParMeshCommand[] =  
-                "reconstructParMesh -latestTime";
-                
-            const word reconstructParCommand = 
-                "reconstructPar -latestTime -parallel"; 
-                
-            const word decomposeDSMCLoadBalanceParCommand = 
-                "decomposeDSMCLoadBalancePar -force -latestTime -copyUniform -parallel";       
-            
-            const word decomposeDSMCCommand = word("var=`foamListTimes -noZero`; ")
-                + word("if [ -z ${var+x} ]; then echo 'error'; else ") 
-                + decomposeDSMCLoadBalanceParCommand + word("; fi");*/
-                
-            // Open MPI does not support recursive calls of mpirun
-            // MPI_Comm_spawn must be used instead
-            //int threading_level_required = MPI_THREAD_MULTIPLE;
-            //int threading_level_provided;
-            //MPI_Init_thread(0, 0, threading_level_required, &threading_level_provided);
-            /*MPI_Comm comm_to_workers;
-            char worker_program[100];
-            strcpy(worker_program, "hhh");*/
-            
-            /*MPI_Comm_spawn(worker_program, MPI_ARGV_NULL, Pstream::nProcs(),
-                MPI_INFO_NULL, 0, MPI_COMM_SELF, &comm_to_workers, MPI_ERRCODES_IGNORE);*/
-                
-            //system(reconstructParMeshCommand);
-            //system(reconstructParCommand);
-            //system("rm -r processor*");
-            //system(decomposeDSMCCommand);
-            
             Foam::system("reconstructParMesh -latestTime");
             Foam::system("reconstructPar -latestTime");
             Foam::system("rm -r processor*");
-            
-            Foam::system("var=`foamListTimes -noZero`; if [ -z ${var+x} ]; then echo 'error'; else decomposeDSMCLoadBalancePar -force -latestTime -copyUniform; fi");
-            
-            // Backup folders must be stored in resultFolders and moved back
-            // as the simulation finishes
-            //system("foamListTimes -rm"); // no backup alternative but risky
+
+            const word decomposePar =
+                word("timeDirs=$(foamListTimes -noZero);")
+                // check if there are any time dirs, if not this indicates a
+                // fatal error
+                + word("if [ -z ${timeDirs+x} ];")
+                + word("then echo \"error\";")
+                // decompose the latest time dir
+                + word("else decomposeDSMCLoadBalancePar ")
+                + word("-force -latestTime -copyUniform;")
+                + word("fi");
+            Foam::system(decomposePar);
+
+            // backup time dirs must be stored in resultFolders to prevent them
+            // from being cleared. They can be moved back when the simulation
+            // has finished.
             mkDir("resultFolders");
-            Foam::system("var2=`foamListTimes`; mv $var2 resultFolders");
-            
+
+            // respect the specified limit of max. concurrent time dir backups
+            if (limitTimeDirBackups_ >= 0)
+            {
+                // impose the limit by moving back the time dirs that are
+                // currently already backuped up and then only keeping the
+                // most recent time dirs <= the imposed limit.
+                const word backupTimeDirsWithLimit =
+                    // move the time dirs currently backed up to the case dir
+                    // so the foamListTimes utility can be used
+                    // make sure directory is not empty to prevent mv from
+                    // printing a warning
+                    word("if [ \"$(ls -A resultFolders)\" ];")
+                    + word("then mv resultFolders/* .; fi;")
+                    // total number of time directories
+                    + word("timeDirs=$(foamListTimes);")
+                    + word("nTimeDirs=$(echo $timeDirs | tr -cd ' ' | wc -c);")
+                    + word("nTimeDirs=$((nTimeDirs+1));")
+                    // convert OpenFOAM label to shell variable for limit
+                    + word("limitNTimeDirs=")
+                    + name(limitTimeDirBackups_)
+                    + word(";")
+                    // if the total number of time directories is larger than
+                    // limit remove the oldest time directories first
+                    + word("diffNTimeDirs=$((nTimeDirs-limitNTimeDirs));")
+                    + word("if [ $diffNTimeDirs -gt 0 ];")
+                    + word("then timeDirs=$(echo $timeDirs | ")
+                    + word("cut -d ' ' -f$((diffNTimeDirs+1))-$nTimeDirs);")
+                    + word("fi;")
+                    // move the time dirs that were chosen to be eligible for
+                    // backup to the backup dir
+                    + word("mv $timeDirs resultFolders/;")
+                    // clear all other time dirs
+                    + word("foamListTimes -rm");
+                Foam::system(backupTimeDirsWithLimit);
+            }
+            else
+            {
+                // keep all time dirs in the backup dir
+                Foam::system
+                (
+                    "timeDirs=$(foamListTimes); mv $timeDirs resultFolders/"
+                );
+            }
+
             performBalance_ = false;
         }
-            
+
         time_.setEndTime(originalEndTime_);
     }
 }
 
-void dsmcDynamicLoadBalancing::updateProperties
-(
-    /*const IOdictionary& newDict*/
-)
+void dsmcDynamicLoadBalancing::updateProperties()
 {
     enableBalancing_ = Switch(dsmcLoadBalanceDict_.lookup("enableBalancing"));
-    maxImbalance_ = readScalar(dsmcLoadBalanceDict_.lookup("maximumAllowableImbalance"));
+    maxImbalance_ = readScalar
+    (
+        dsmcLoadBalanceDict_.lookup("maximumAllowableImbalance")
+    );
+    limitTimeDirBackups_ = dsmcLoadBalanceDict_.lookupOrDefault<label>
+    (
+        "limitTimeDirBackups",
+        -1
+    );
 }
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //

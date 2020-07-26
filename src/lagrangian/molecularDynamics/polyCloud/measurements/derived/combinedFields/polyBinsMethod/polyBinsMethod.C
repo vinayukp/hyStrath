@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -89,10 +88,10 @@ polyBinsMethod::polyBinsMethod
     nAvTimeSteps_(0.0),
     resetAtOutput_(true)
 {
- 
-    
+
+
     const cellZoneMesh& cellZones = mesh_.cellZones();
-    
+
     regionId_ = cellZones.findZoneID(regionName_);
 
     if(regionId_ == -1)
@@ -102,7 +101,7 @@ polyBinsMethod::polyBinsMethod
             << time_.time().system()/"fieldPropertiesDict"
             << exit(FatalError);
     }
-    
+
     // choose molecule ids to sample
 
     molIds_.clear();
@@ -115,7 +114,7 @@ polyBinsMethod::polyBinsMethod
 
     molIds_ = ids.molIds();
 
-    
+
     // create bin model
     binModel_ = autoPtr<binModel>
     (
@@ -153,17 +152,17 @@ polyBinsMethod::polyBinsMethod
     pKin_.setSize(nBins, 0.0);
 
 
-  
+
     {
         Info << nl << "Storage..." << endl;
-        
+
         bool resetStorage = false;
-        
+
         if (propsDict_.found("resetStorage"))
         {
             resetStorage = Switch(propsDict_.lookup("resetStorage"));
-        }    
-        
+        }
+
         if(resetStorage)
         {
             Info<< "WARNING: storage will be reset."
@@ -177,13 +176,13 @@ polyBinsMethod::polyBinsMethod
                 << " This is NOT good if you have been testing your simulation a number of times "
                 << " Delete your storage directory before moving to important runs"
                 << " or type resetStorage = yes, for just the first simulation run."
-                << endl;            
+                << endl;
         }
-        
-        resetAtOutput_ = Switch(propsDict_.lookup("resetAtOutput"));    
-        
-        
-        // stored data activation in dictionary        
+
+        resetAtOutput_ = Switch(propsDict_.lookup("resetAtOutput"));
+
+
+        // stored data activation in dictionary
 
         pathName_ = time_.time().path()/"storage";
         nameFile_ = "binsData_"+fieldName_;
@@ -204,7 +203,7 @@ polyBinsMethod::polyBinsMethod
         IFstream file(pathName_/nameFile_);
 
         bool foundFile = file.good();
-        
+
         if(!foundFile)
         {
             Info << nl << "File not found: " << nameFile_ << nl << endl;
@@ -231,7 +230,7 @@ polyBinsMethod::polyBinsMethod
         forAll(measurements, i)
         {
             const word& propertyName(measurements[i]);
-    
+
             if(findIndex(propertyNames, propertyName) == -1)
             {
                 propertyNames.append(propertyName);
@@ -272,12 +271,12 @@ polyBinsMethod::polyBinsMethod
                 (propertyName != "temperature") &&
                 (propertyName != "pressure")
             )
-            {    
+            {
                 FatalErrorIn("polyBinsMethod::polyBinsMethod()")
                     << "Cannot find measurement property: " << propertyName
                     << nl << "in: "
                     << time_.time().system()/"fieldPropertiesDict"
-                    << exit(FatalError);            
+                    << exit(FatalError);
             }
         }
     }
@@ -322,20 +321,20 @@ void polyBinsMethod::createField()
             {
                 if(findIndex(molIds_, molI->id()) != -1)
                 {
-//                     const polyMolecule::constantProperties& constProp 
+//                     const polyMolecule::constantProperties& constProp
 //                                 = molCloud_.constProps(molI->id());
 
                     mols[n] += 1.0;
 
                     const scalar& massI = molCloud_.cP().mass(molI->id());
-                    
+
                     mass[n] += massI;
 
                     mom[n] += massI*molI->v();
 
                     const diagTensor& molMoI(molCloud_.cP().momentOfInertia(molI->id()));
 
-                    // angular speed 
+                    // angular speed
                     const vector& molOmega(inv(molMoI) & molI->pi());
 
                     angularSpeed[n] += molOmega;
@@ -360,7 +359,7 @@ void polyBinsMethod::createField()
                 }
             }
         }
-    
+
         //- receiving
         for (int p = 0; p < Pstream::nProcs(); p++)
         {
@@ -399,7 +398,7 @@ void polyBinsMethod::createField()
 void polyBinsMethod::calculateField()
 {
     nAvTimeSteps_ += 1.0;
-    
+
     forAll(mesh_.cellZones()[regionId_], c)
     {
         const label& cellI = mesh_.cellZones()[regionId_][c];
@@ -418,16 +417,16 @@ void polyBinsMethod::calculateField()
                 if(findIndex(molIds_, molI->id()) != -1)
                 {
                     molsV_[n] += 1.0;
-                    
+
                     const scalar& massI = molCloud_.cP().mass(molI->id());
-                    
+
                     massV_[n] += massI;
 
                     momV_[n] += massI*molI->v();
 
                     const diagTensor& molMoI(molCloud_.cP().momentOfInertia(molI->id()));
 
-                    // angular speed 
+                    // angular speed
                     const vector& molOmega(inv(molMoI) & molI->pi());
 
                     angularSpeed_[n] += molOmega;
@@ -436,7 +435,7 @@ void polyBinsMethod::calculateField()
         }
     }
 
-    if(time_.outputTime()) 
+    if(time_.outputTime())
     {
         scalarField mols = molsV_;
         scalarField mass = massV_;
@@ -458,7 +457,7 @@ void polyBinsMethod::calculateField()
                     }
                 }
             }
-        
+
             //- receiving
             for (int p = 0; p < Pstream::nProcs(); p++)
             {
@@ -468,13 +467,13 @@ void polyBinsMethod::calculateField()
                     scalarField massProc;
                     vectorField momProc;
                     vectorField angularSpeedProc;
-    
+
                     const int proc = p;
                     {
                         IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
                         fromNeighbour >> molsProc >> massProc >> momProc >> angularSpeedProc;
                     }
-    
+
                     mols += molsProc;
                     mass += massProc;
                     mom += momProc;
@@ -500,7 +499,7 @@ void polyBinsMethod::calculateField()
     scalarField mass(mass_.size(), 0.0);
     vectorField mom(mom_.size(), vector::zero);
 
-    forAll(mesh_.cellZones()[regionId_], c) 
+    forAll(mesh_.cellZones()[regionId_], c)
     {
         const label& cellI = mesh_.cellZones()[regionId_][c];
         const List<polyMolecule*>& molsInCell = molCloud_.cellOccupancy()[cellI];
@@ -517,7 +516,7 @@ void polyBinsMethod::calculateField()
             {
                 if(findIndex(molIds_, molI->id()) != -1)
                 {
-//                     const polyMolecule::constantProperties& constProp 
+//                     const polyMolecule::constantProperties& constProp
 //                                             = molCloud_.constProps(molI->id());
 
                     const scalar& massI = molCloud_.cP().mass(molI->id());
@@ -533,14 +532,14 @@ void polyBinsMethod::calculateField()
 
                     const diagTensor& molMoI(molCloud_.cP().momentOfInertia(molI->id()));
 
-                    // angular speed 
+                    // angular speed
                     const vector& molOmega(inv(molMoI) & molI->pi());
 
                     angularKeSum_[n] += 0.5*(molOmega & molMoI & molOmega);
 
-                    kineticTensor_[n] += ( massI*(molI->v() - velocity_[n])*(molI->v() - velocity_[n]) ) 
+                    kineticTensor_[n] += ( massI*(molI->v() - velocity_[n])*(molI->v() - velocity_[n]) )
                                             + ( ((molOmega - angularVelocity_[n]) & molMoI)
-                                            *(molOmega-angularVelocity_[n]) 
+                                            *(molOmega-angularVelocity_[n])
                                             );
 
                     virialTensor_[n] += 0.5*molI->rf();
@@ -566,7 +565,7 @@ void polyBinsMethod::calculateField()
                 }
             }
         }
-    
+
         //- receiving
         for (int p = 0; p < Pstream::nProcs(); p++)
         {
@@ -580,7 +579,7 @@ void polyBinsMethod::calculateField()
                     IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
                     fromNeighbour  >> massProc >> momProc;
                 }
-    
+
                 mass += massProc;
                 mom += momProc;
             }
@@ -594,7 +593,7 @@ void polyBinsMethod::calculateField()
             velocityB_[n] += mom[n]/mass[n];
         }
     }
- 
+
     if(time_.outputTime())
     {
         scalarField mass = mass_;
@@ -618,13 +617,13 @@ void polyBinsMethod::calculateField()
                     {
                         OPstream toNeighbour(Pstream::commsTypes::blocking, proc);
 
-                        toNeighbour << mols << mass << mom 
-                                    << kE << angularKeSum << dof << kineticTensor 
+                        toNeighbour << mols << mass << mom
+                                    << kE << angularKeSum << dof << kineticTensor
                                     << virialTensor;
                     }
                 }
             }
-        
+
             //- receiving
             for (int p = 0; p < Pstream::nProcs(); p++)
             {
@@ -642,11 +641,11 @@ void polyBinsMethod::calculateField()
                     const int proc = p;
                     {
                         IPstream fromNeighbour(Pstream::commsTypes::blocking, proc);
-                        fromNeighbour  >> molsProc >> massProc >> momProc 
+                        fromNeighbour  >> molsProc >> massProc >> momProc
                                     >> kEProc >> angularKeSumProc >> dofProc >> kineticTensorProc
                                     >> virialTensorProc;
                     }
-        
+
                     mols += molsProc;
                     mass += massProc;
                     mom += momProc;
@@ -662,7 +661,7 @@ void polyBinsMethod::calculateField()
         const scalar& kB = molCloud_.redUnits().kB();
 
         const scalar& nAvTimeSteps = nAvTimeSteps_;
-        
+
         forAll(mols, n)
         {
             scalar volume = binModel_->binVolume(n);
@@ -730,7 +729,7 @@ void polyBinsMethod::writeToStorage()
         file << nAvTimeSteps_ << endl;
         file << mols_ << endl;
         file << mass_ << endl;
-        file << mom_ << endl; 
+        file << mom_ << endl;
         file << velocityB_ << endl;
         file << kE_ << endl;
         file << angularKeSum_ << endl;
@@ -812,7 +811,7 @@ void polyBinsMethod::writeField()
                     bins,
                     N_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
@@ -820,7 +819,7 @@ void polyBinsMethod::writeField()
                     vectorBins,
                     N_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
@@ -828,7 +827,7 @@ void polyBinsMethod::writeField()
                     bins,
                     rhoN_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
@@ -836,7 +835,7 @@ void polyBinsMethod::writeField()
                     vectorBins,
                     rhoN_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
@@ -844,7 +843,7 @@ void polyBinsMethod::writeField()
                     bins,
                     rhoM_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
@@ -864,16 +863,16 @@ void polyBinsMethod::writeField()
                     bins,
                     USAM_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
                     "bins_OneDim_"+regionName_+"_"+fieldName_+"_U_SAM_3D_pos.xyz",
                     vectorBins,
                     USAM_
-                );    
-    
-    
+                );
+
+
                 writeTimeData
                 (
                     timePath_,
@@ -881,14 +880,14 @@ void polyBinsMethod::writeField()
                     bins,
                     UCAM_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
                     "bins_OneDim_"+regionName_+"_"+fieldName_+"_U_CAM_3D_pos.xyz",
                     vectorBins,
                     UCAM_
-                );   
+                );
             }
 
             // output temperature
@@ -901,14 +900,14 @@ void polyBinsMethod::writeField()
                     bins,
                     T_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
                     "bins_OneDim_"+regionName_+"_"+fieldName_+"_T_3D_pos.xy",
                     vectorBins,
                     T_
-                );  
+                );
             }
 
             // output pressure
@@ -921,15 +920,15 @@ void polyBinsMethod::writeField()
                     bins,
                     stress_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
                     "bins_OneDim_"+regionName_+"_"+fieldName_+"_stress_3D_pos.xyz",
                     vectorBins,
                     stress_
-                );  
-    
+                );
+
                 writeTimeData
                 (
                     timePath_,
@@ -937,7 +936,7 @@ void polyBinsMethod::writeField()
                     bins,
                     p_
                 );
-    
+
                 writeTimeData
                 (
                     timePath_,
@@ -960,11 +959,11 @@ void polyBinsMethod::writeField()
                     "bins_OneDim_"+regionName_+"_"+fieldName_+"_p_3D_pos.xy",
                     vectorBins,
                     p_
-                ); 
+                );
             }
 
             const reducedUnits& rU = molCloud_.redUnits();
-    
+
             if(rU.outputSIUnits())
             {
 
@@ -978,7 +977,7 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         N_
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
@@ -986,7 +985,7 @@ void polyBinsMethod::writeField()
                         vectorBins*rU.refLength(),
                         N_
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
@@ -994,7 +993,7 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         rhoN_*rU.refNumberDensity()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
@@ -1002,7 +1001,7 @@ void polyBinsMethod::writeField()
                         vectorBins*rU.refLength(),
                         rhoN_*rU.refNumberDensity()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
@@ -1010,7 +1009,7 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         rhoM_*rU.refMassDensity()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
@@ -1029,16 +1028,16 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         USAM_*rU.refVelocity()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
                         "bins_OneDim_"+regionName_+"_"+fieldName_+"_U_SAM_3D_pos_SI.xyz",
                         vectorBins*rU.refLength(),
                         USAM_*rU.refVelocity()
-                    );    
-        
-        
+                    );
+
+
                     writeTimeData
                     (
                         timePath_,
@@ -1046,14 +1045,14 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         UCAM_*rU.refVelocity()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
                         "bins_OneDim_"+regionName_+"_"+fieldName_+"_U_CAM_3D_pos_SI.xyz",
                         vectorBins*rU.refLength(),
                         UCAM_*rU.refVelocity()
-                    );   
+                    );
                 }
                 // output temperature
                 if(outputField_[2])
@@ -1065,14 +1064,14 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         T_*rU.refTemp()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
                         "bins_OneDim_"+regionName_+"_"+fieldName_+"_T_3D_pos_SI.xy",
                         vectorBins*rU.refLength(),
                         T_*rU.refTemp()
-                    );  
+                    );
                 }
                 // output pressure
                 if(outputField_[3])
@@ -1084,15 +1083,15 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         stress_*rU.refPressure()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,
                         "bins_OneDim_"+regionName_+"_"+fieldName_+"_stress_3D_pos_SI.xyz",
                         vectorBins*rU.refLength(),
                         stress_*rU.refPressure()
-                    );  
-        
+                    );
+
                     writeTimeData
                     (
                         timePath_,
@@ -1100,7 +1099,7 @@ void polyBinsMethod::writeField()
                         bins*rU.refLength(),
                         p_*rU.refPressure()
                     );
-        
+
                     writeTimeData
                     (
                         timePath_,

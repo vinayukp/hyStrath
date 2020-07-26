@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     polyDensityRadialNew
@@ -72,38 +71,38 @@ private:
         dictionary propsDict_;
 
         propertyField fields_;
-        
+
         fileName pathName_;
         fileName nameFile_;
-        
+
         word fieldName_;
 
         vector startPoint_; // only y component is important here
 //         vector endPoint_;
-        
+
         vector unitVectorX_;
         vector unitVectorY_; // height
-        vector unitVectorZ_;        
-        
-        label nBinsX_;
-        label nBinsY_; // height 
+        vector unitVectorZ_;
 
-        
+        label nBinsX_;
+        label nBinsY_; // height
+
+
         scalar lengthX_; // radius
-        scalar lengthY_; 
-        
-        
+        scalar lengthY_;
+
+
 //         scalar binWidthX_; // radius
         scalar binWidthY_; // height
-        
-        
+
+
         List<scalar> radii_;
         List<scalar> binWidthsX_;
-        
+
         scalar minBinWidth_;
-        
+
         labelField n_;
-        
+
         List<label> molIds_;
 
         vector centreOfMass_;
@@ -112,7 +111,7 @@ private:
         scalarField binsY_;
 
         List<scalarField> volumes_;
-        
+
         List<scalarField> mass_;
         List<vectorField> mom_;
 
@@ -121,24 +120,24 @@ private:
         List<vectorField> UCAM_;
 
         scalar nAvTimeSteps_;
-        
-        bool resetAtOutput_;        
-        
-        
-        
+
+        bool resetAtOutput_;
+
+
+
     // Private Member Functions
 
         bool readFromStorage();
-        
+
         void writeToStorage();
-        
+
         List<label> isPointWithinBin
         (
             const vector& rI
         );
-        
+
         void centreOfMass();
-        
+
 public:
 
     //- Runtime type information
@@ -186,7 +185,7 @@ public:
 
         //- write field
         void writeField();
-}; 		
+};
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

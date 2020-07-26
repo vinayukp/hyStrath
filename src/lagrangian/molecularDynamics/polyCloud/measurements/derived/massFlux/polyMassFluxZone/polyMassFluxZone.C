@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -47,11 +46,11 @@ void polyMassFluxZone::setBoundBox
 (
     const dictionary& propsDict,
     boundedBox& bb,
-    const word& name 
+    const word& name
 )
 {
     const dictionary& dict(propsDict.subDict(name));
-    
+
     vector startPoint = dict.lookup("startPoint");
     vector endPoint = dict.lookup("endPoint");
     bb.resetBoundedBox(startPoint, endPoint);
@@ -122,16 +121,16 @@ polyMassFluxZone::polyMassFluxZone
     {
         reduce(totalVolume_, sumOp<scalar>());
     }
-    
+
     if (propsDict_.found("useBoundBox"))
     {
         useBoundBox_ = Switch(propsDict_.lookup("useBoundBox"));
-        
+
         if(useBoundBox_)
         {
             setBoundBox(propsDict_, bb_, "samplingRegion");
         }
-    }    
+    }
 }
 
 
@@ -147,27 +146,27 @@ void polyMassFluxZone::createField()
 
 void polyMassFluxZone::calculateField()
 {
-    
+
     const List< DynamicList<polyMolecule*> >& cellOccupancy
             = molCloud_.cellOccupancy();
-    
+
     const labelList& cells = mesh_.cellZones()[regionId_];
-    
+
     vector mom = vector::zero;
-    
+
     forAll(cells, c)
     {
         const label& cellI = cells[c];
         const List<polyMolecule*>& molsInCell = cellOccupancy[cellI];
-        
+
         forAll(molsInCell, mIC)
         {
             polyMolecule* molI = molsInCell[mIC];
-            
+
             if(findIndex(molIds_, molI->id()) != -1)
             {
                 const scalar& massI = molCloud_.cP().mass(molI->id());
-                
+
                 if(useBoundBox_)
                 {
                     if(bb_.contains(molI->position()))
@@ -182,7 +181,7 @@ void polyMassFluxZone::calculateField()
             }
         }
     }
-    
+
     if(Pstream::parRun())
     {
         reduce(mom, sumOp<vector>());
@@ -207,17 +206,17 @@ void polyMassFluxZone::writeField()
             massFlux_.shrink();
             scalarField timeField (massFlux_.size(), 0.0);
             scalarField massFlux (massFlux_.size(), 0.0);
-            
+
             massFlux.transfer(massFlux_);
             massFlux_.clear();
-            
+
             const scalar& deltaT = time_.time().deltaT().value();
-            
+
             forAll(timeField, i)
             {
                 timeField[timeField.size()-i-1]=runTime.timeOutputValue()-(deltaT*i);
             }
-            
+
             writeTimeData
             (
                 casePath_,
@@ -229,7 +228,7 @@ void polyMassFluxZone::writeField()
 
 
             const reducedUnits& rU = molCloud_.redUnits();
-    
+
             if(rU.outputSIUnits())
             {
                 writeTimeData

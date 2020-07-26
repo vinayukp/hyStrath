@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -102,34 +102,34 @@ void Foam::fixed2VELMixEnergyFvPatchScalarField::updateCoeffs()
         return;
     }
 
-    //Info << "fixed2VELMixEnergy is used for patch called " << patch().name() << endl; 
-    
+    //Info << "fixed2VELMixEnergy is used for patch called " << patch().name() << endl;
+
     const multi2Thermo& multiThermo = multi2Thermo::lookup2Thermo(*this);
     const label patchi = patch().index();
 
     const scalarField& pw = multiThermo.p().boundaryField()[patchi];
-    
+
     fvPatchScalarField& Tvw =
         const_cast<fvPatchScalarField&>(multiThermo.Tv().boundaryField()[patchi]);
     Tvw.evaluate();
-    
+
     // NEW VINCENT 15/02/2017 *************************************************
     tmp<Field<scalar>> thevel(new Field<scalar>(pw.size()));
     Field<scalar>& hevel = thevel.ref();
-    
+
     hevel = 0.0;
     for(label speciei=0 ; speciei<thermo_.composition().Y().size() ; speciei++)
     {
         fvPatchScalarField& spYw =
             const_cast<fvPatchScalarField&>(thermo_.composition().Y(speciei).boundaryField()[patchi]);
         spYw.evaluate();
-        
+
         hevel += spYw*thermo_.composition().hevel(speciei, pw, Tvw, patchi);
     }
-    
+
     operator==(thevel); // Force an assignment, overriding fixedValue status
     // END NEW VINCENT 15/02/2017 *********************************************
-    
+
     // DELETED VINCENT 15/02/2017 OLD FORMULATION
     //operator==(thermo.hevel(pw, Tvw, patchi)); // Force an assignment, overriding fixedValue status
 

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -58,7 +57,7 @@ timeFluxData::timeFluxData
 {}
 
 
-//- Construct from Time and timeDict 
+//- Construct from Time and timeDict
 timeFluxData::timeFluxData
 (
     Time& t,
@@ -108,15 +107,15 @@ void timeFluxData::setInitialData()
     Info << nl << endl;
 
 //     controlTimes_.setSize(totalNContSteps_+1, 0.0);
-// 
+//
 //     averagingTimes_.setSize(totalNAvSteps_+1, 0.0);
-// 
-// 
+//
+//
 //     forAll(controlTimes_, tT)
 //     {
 //         controlTimes_[tT] = startTime + tT*controlTime_.deltaT();
 //     }
-// 
+//
 //     forAll(averagingTimes_, tT)
 //     {
 //         averagingTimes_[tT] = startTime + tT*averagingTime_.deltaT();
@@ -127,7 +126,7 @@ void timeFluxData::setInitialData()
     nControlSteps_ = averagingTime_.deltaT()/controlTime_.deltaT();
 
 
-   //-- offsetting the controlling time index so that the time-interval finishes 
+   //-- offsetting the controlling time index so that the time-interval finishes
     //   one time-step ahead of the calcProp time.
 
     averagingTime_.timeIndex() = averagingTime_.nSteps();
@@ -137,13 +136,13 @@ void timeFluxData::setInitialData()
 
 void timeFluxData::checkAndModifyTimeProperties()
 {
-    //- checking 
+    //- checking
 
     bool changedProperties = false;
     const scalar& deltaTMD = mdTime_.deltaT();
 
     // - 1. averaging time
-    //   for now we ensure that the averaging interval is equal 
+    //   for now we ensure that the averaging interval is equal
     //   to the writing interval
 
     label& nAverages = averagingTime_.nSteps();
@@ -224,8 +223,8 @@ void timeFluxData::checkAndModifyTimeProperties()
     {
         FatalErrorIn("timeFluxData::timeFluxData()")
             << "Time data members have been changed."
-            << " Check and change them appropriately from the time dictionary" 
-            << nl 
+            << " Check and change them appropriately from the time dictionary"
+            << nl
             << exit(FatalError);
     }
 }
@@ -243,7 +242,7 @@ void timeFluxData::setTimeData(const dictionary& timeDict)
 {
     const label nAverages(readLabel(timeDict.lookup("nAverages")));
     const label nControls(readLabel(timeDict.lookup("nControls")));
- 
+
     averagingTime_.nSteps() = nAverages;
     controlTime_.nSteps() = nControls;
 
@@ -341,7 +340,7 @@ const label& timeFluxData::writeTimeIndex() const
 // {
 //     return controlTimes_;
 // }
-// 
+//
 // const scalarField& timeFluxData::averagingTimes() const
 // {
 //     return averagingTimes_;

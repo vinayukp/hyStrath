@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ void Foam::SutherlandEuckenTransport<Thermo>::write(Ostream& os) const
     dictTransport.subDict("SutherlandEucken").add("As", As_);
     dictTransport.subDict("SutherlandEucken").add("Ts", Ts_);
     os  << indent << dictTransport.dictName() << dictTransport;
-    
+
     dictionary dictSpecies("specie");
     dictSpecies.add("eta_s", eta_s_);
     os  << indent << dictSpecies.dictName() << dictSpecies;

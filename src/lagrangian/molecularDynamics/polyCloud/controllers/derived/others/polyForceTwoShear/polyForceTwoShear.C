@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -60,9 +59,9 @@ polyForceTwoShear::polyForceTwoShear
     writeInCase_ = true;
 
 //     singleValueController() = true;
-    
+
     setBoundBox(propsDict_, bb_liquid_A_, "liquidA");
-    setBoundBox(propsDict_, bb_liquid_B_, "liquidB");    
+    setBoundBox(propsDict_, bb_liquid_B_, "liquidB");
     setBoundBox(propsDict_, bb_gas_A_, "gasA");
     setBoundBox(propsDict_, bb_gas_B_, "gasB");
 
@@ -109,11 +108,11 @@ void polyForceTwoShear::controlDuringForces
 void polyForceTwoShear::controlAfterForces()
 {
     scalar molsLiquid = 0.0;
-    scalar molsGas = 0.0;     
-    
+    scalar molsGas = 0.0;
+
     // measurements of instantaneous density
     {
-    
+
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
 
         for (mol = molCloud_.begin(); mol != molCloud_.end(); ++mol)
@@ -125,18 +124,18 @@ void polyForceTwoShear::controlAfterForces()
                     molsLiquid += 1.0;
                 }
             }
-            
+
             if(bb_gas_A_.contains(mol().position()) || bb_gas_B_.contains(mol().position()))
             {
                 if(findIndex(molIds_, mol().id()) != -1)
                 {
                     molsGas += 1.0;
                 }
-            }            
+            }
         }
-        
+
         // parallel processing
-        
+
         if(Pstream::parRun())
         {
             reduce(molsLiquid, sumOp<scalar>());
@@ -145,8 +144,8 @@ void polyForceTwoShear::controlAfterForces()
     }
 
     forceMagGas_ = forceMagLiquid_*molsLiquid/molsGas;
-    
-    Info << "polyForceTwoShear: control - force liquid = "  << forceMagLiquid_ 
+
+    Info << "polyForceTwoShear: control - force liquid = "  << forceMagLiquid_
          << " , force gas = " << forceMagGas_
          << endl;
 
@@ -154,7 +153,7 @@ void polyForceTwoShear::controlAfterForces()
 
     vector totalForceLiquid = vector::zero;
     vector totalForceGas = vector::zero;
-    
+
     for (mol = molCloud_.begin(); mol != molCloud_.end(); ++mol)
     {
         if(bb_liquid_A_.contains(mol().position()) || bb_liquid_B_.contains(mol().position()))
@@ -164,39 +163,39 @@ void polyForceTwoShear::controlAfterForces()
                 const scalar& massI = molCloud_.cP().mass(mol().id());
 
                 vector force = forceMagLiquid_;
-                
+
                 mol().a() += force/massI;
 
                 totalForceLiquid += force;
             }
         }
-        
+
         if(bb_gas_A_.contains(mol().position()) || bb_gas_B_.contains(mol().position()))
         {
             if(findIndex(molIds_, mol().id()) != -1)
             {
                 const scalar& massI = molCloud_.cP().mass(mol().id());
-                
+
                 vector force = -forceMagGas_;
-                
+
                 mol().a() += force/massI;
-                
+
                 totalForceGas += force;
             }
-        }        
-        
+        }
+
     }
-    
+
     if(Pstream::parRun())
     {
         reduce(totalForceLiquid, sumOp<vector>());
         reduce(totalForceGas, sumOp<vector>());
-    }    
-	
-    
-    Info << "polyForceTwoShear: Conservation- total force liquid = "  << totalForceLiquid 
+    }
+
+
+    Info << "polyForceTwoShear: Conservation- total force liquid = "  << totalForceLiquid
          << " , total force gas = " << totalForceGas
-         << " , diff = " << totalForceLiquid + totalForceGas 
+         << " , diff = " << totalForceLiquid + totalForceGas
          << endl;
 }
 
@@ -230,11 +229,11 @@ void polyForceTwoShear::setBoundBox
 (
     const dictionary& propsDict,
     boundedBox& bb,
-    const word& name 
+    const word& name
 )
 {
     const dictionary& dict(propsDict.subDict(name));
-    
+
     vector startPoint = dict.lookup("startPoint");
     vector endPoint = dict.lookup("endPoint");
 

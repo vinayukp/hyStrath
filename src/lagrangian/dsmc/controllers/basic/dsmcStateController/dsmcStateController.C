@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -151,7 +150,7 @@ void dsmcStateController::updateTime()
     time_++;
 
     const scalar& t = time_.time().timeOutputValue();
-    
+
     if((t - initialTime_) < timePeriod_)
     {
         time_.controlTimeInterval().endTime() = false;
@@ -213,10 +212,10 @@ void dsmcStateController::writeTimeData
     {
         forAll(yData, n)
         {
-            file 
-                << xData[n] << "\t" 
-                << yData[n].x() << "\t" << yData[n].y() 
-                << "\t" << yData[n].z() 
+            file
+                << xData[n] << "\t"
+                << yData[n].x() << "\t" << yData[n].y()
+                << "\t" << yData[n].z()
                 << endl;
         }
     }
@@ -235,7 +234,7 @@ void dsmcStateController::writeTimeData
     const scalarField& xData,
     const tensorField& yData
 )
-{ 
+{
     OFstream file(pathName/nameFile + ".xyz");
 
     if(file.good())
@@ -436,25 +435,25 @@ scalar dsmcStateController::avReqDensity()
 {
     scalar totalDensity = 0.0;
 
-    if(singleValueController_) 
+    if(singleValueController_)
     {
         totalDensity = density_;
     }
     else if(fieldController_)
     {
         label controlCells = controlZone().size();
-    
+
         forAll(densities_, c)
         {
             totalDensity += densities_[c];
         }
-    
+
         if (Pstream::parRun())
         {
             reduce(totalDensity, sumOp<scalar>());
             reduce(controlCells, sumOp<label>());
         }
-    
+
         if(controlCells > 0)
         {
             totalDensity /= scalar(controlCells);
@@ -468,25 +467,25 @@ vector dsmcStateController::avReqVelocity()
 {
     vector totalVel = vector::zero;
 
-    if(singleValueController_) 
+    if(singleValueController_)
     {
         totalVel = velocity_;
     }
     else if(fieldController_)
     {
         label controlCells = controlZone().size();
-    
+
         forAll(velocities_, c)
         {
             totalVel += velocities_[c];
         }
-    
+
         if (Pstream::parRun())
         {
             reduce(totalVel, sumOp<vector>());
             reduce(controlCells, sumOp<label>());
         }
-    
+
         if(controlCells > 0)
         {
             totalVel /= scalar(controlCells);
@@ -501,25 +500,25 @@ scalar dsmcStateController::avReqTemperature()
 {
     scalar totalTemp = 0.0;
 
-    if(singleValueController_) 
+    if(singleValueController_)
     {
         totalTemp = temperature_;
     }
     else if(fieldController_)
     {
         label controlCells = controlZone().size();
-    
+
         forAll(temperatures_, c)
         {
             totalTemp += temperatures_[c];
         }
-    
+
         if (Pstream::parRun())
         {
             reduce(totalTemp, sumOp<scalar>());
             reduce(controlCells, sumOp<label>());
         }
-    
+
         if(controlCells > 0)
         {
             totalTemp /= scalar(controlCells);
@@ -532,25 +531,25 @@ scalar dsmcStateController::avReqPressure()
 {
     scalar totalPressure = 0.0;
 
-    if(singleValueController_) 
+    if(singleValueController_)
     {
         totalPressure = pressure_;
     }
     else if(fieldController_)
     {
         label controlCells = controlZone().size();
-    
+
         forAll(pressures_, c)
         {
             totalPressure += pressures_[c];
         }
-    
+
         if (Pstream::parRun())
         {
             reduce(totalPressure, sumOp<scalar>());
             reduce(controlCells, sumOp<label>());
         }
-    
+
         if(controlCells > 0)
         {
             totalPressure /= scalar(controlCells);

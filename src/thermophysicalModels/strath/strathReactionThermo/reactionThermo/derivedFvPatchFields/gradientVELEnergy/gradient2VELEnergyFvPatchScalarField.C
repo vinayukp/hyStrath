@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -115,25 +115,25 @@ void Foam::gradient2VELEnergyFvPatchScalarField::updateCoeffs()
     {
         return;
     }
-    
+
     //Info << "gradient2VELEnergy is used for patch called " << patch().name() << ", species " << specieName_ << endl;
 
     const multi2Thermo& multiThermo = multi2Thermo::lookup2Thermo(*this);
     const label patchi = patch().index();
 
     const scalarField& pw = multiThermo.p().boundaryField()[patchi];
-    
+
     fvPatchScalarField& spTvw =
         const_cast<fvPatchScalarField&>(thermo_.composition().Tv(specieName_).boundaryField()[patchi]);
     spTvw.evaluate();
-    
+
     gradient() = thermo_.composition().Cv_vel(specieName_, pw, spTvw, patchi)*spTvw.snGrad()
       + patch().deltaCoeffs()*
         (
             thermo_.composition().hevel(specieName_, pw, spTvw, patchi)
           - thermo_.composition().hevel(specieName_, pw, spTvw, patch().faceCells())
         );
-        
+
     fixedGradientFvPatchScalarField::updateCoeffs();
 }
 

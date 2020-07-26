@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,15 +19,14 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     dsmcCyclicBoundary
 
 Description
 
-    Used for applying instantaneous actions on molecules colliding with a cyclic 
+    Used for applying instantaneous actions on molecules colliding with a cyclic
     boundary.
 
 SourceFiles
@@ -81,7 +80,7 @@ protected:
         word patchName_;
         label patchId_;
 
-        //- corresponding/neighbouring coupled patch 
+        //- corresponding/neighbouring coupled patch
         word neighbPatchName_;
         label neighbPatchId_;
 
@@ -103,7 +102,7 @@ protected:
         vectorField velocities_;
         scalarField temperatures_;
         tensor strainRate_;
-        
+
         //- writing out properties
         bool writeInTimeDir_;
         bool writeInCase_;
@@ -132,7 +131,7 @@ public:
             ),
             (t, mesh, cloud, dict)
         );
-   
+
     // Constructors
 
         //- Construct from components
@@ -198,7 +197,7 @@ public:
             const scalarField& xData,
             const scalarField& yData
         );
-        
+
         void setNewBoundaryFields();
 
         //- vector field
@@ -220,27 +219,27 @@ public:
             const labelList& controlZone() const;
 
             const labelList& allFaces() const;
-                
+
             //- return the name of the control patch
             const word& patchName() const;
             const label& patchId() const;
 
-            //- return the targeted fields 
+            //- return the targeted fields
             const scalarField& densityField() const;
             scalarField& densityField();
-    
+
             const vectorField& velocityField() const;
             vectorField& velocityField();
-    
+
             const scalarField& temperatureField() const;
             scalarField& temperatureField();
-            
+
             const tensor& strainRate() const;
             tensor& strainRate();
 
             const bool& writeInTimeDir() const;
             const bool& writeInCase() const;
-    
+
 };
 
 

@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -65,7 +64,7 @@ polyVelocityBounded::polyVelocityBounded
     bb_(),
 //     avMass_(0.0),
     lambda_(readScalar(propsDict_.lookup("lambda"))),
-    deltaT_(t.deltaT().value()), 
+    deltaT_(t.deltaT().value()),
     accumulatedTime_(0.0),
     startTime_(0.0),
     endTime_(GREAT),
@@ -79,7 +78,7 @@ polyVelocityBounded::polyVelocityBounded
 //     singleValueController() = true;
 
     setBoundBox();
-    
+
     molIds_.clear();
 
     selectIds ids
@@ -102,12 +101,12 @@ polyVelocityBounded::polyVelocityBounded
             {
                 X_ = Switch(propsDict_.lookup("X"));
             }
-    
+
             if (propsDict_.found("Y"))
             {
                 Y_ = Switch(propsDict_.lookup("Y"));
             }
-    
+
             if (propsDict_.found("Z"))
             {
                 Z_ = Switch(propsDict_.lookup("Z"));
@@ -122,16 +121,16 @@ polyVelocityBounded::polyVelocityBounded
             }
         }
     }
-    
+
     if (propsDict_.found("startAtTime"))
-    {    
+    {
         startTime_ = readScalar(propsDict_.lookup("startAtTime"));
     }
-    
+
     if (propsDict_.found("endAtTime"))
     {
         endTime_ = readScalar(propsDict_.lookup("endAtTime"));
-    }    
+    }
 }
 
 
@@ -154,7 +153,7 @@ void polyVelocityBounded::controlBeforeVelocityI()
     scalar mass = 0.0;
     scalar mols = 0.0;
     vector mom = vector::zero;
-    
+
     {
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
 
@@ -176,13 +175,13 @@ void polyVelocityBounded::controlBeforeVelocityI()
 
     if (Pstream::parRun())
     {
-        reduce(mols, sumOp<scalar>());        
+        reduce(mols, sumOp<scalar>());
         reduce(mass, sumOp<scalar>());
         reduce(mom, sumOp<vector>());
     }
-    
+
     vector velocityMeasured = vector::zero;
-    
+
     if(mass > 0)
     {
         velocityMeasured = mom/mass;
@@ -191,9 +190,9 @@ void polyVelocityBounded::controlBeforeVelocityI()
     vector deltaU = (velocity_ - velocityMeasured)*lambda_;
 
     accumulatedTime_ += deltaT_;
-    
+
     if((accumulatedTime_ >= startTime_) && (accumulatedTime_ <= endTime_))
-    {    
+    {
         IDLList<polyMolecule>::iterator mol(molCloud_.begin());
 
         for (mol = molCloud_.begin(); mol != molCloud_.end(); ++mol)
@@ -224,9 +223,9 @@ void polyVelocityBounded::controlBeforeVelocityI()
                 }
             }
         }
-    
-        Info << "polyVelocityBounded - controlling: " << " target velocity = " << velocity_ 
-                << ", vel Meas = " << velocityMeasured  
+
+        Info << "polyVelocityBounded - controlling: " << " target velocity = " << velocity_
+                << ", vel Meas = " << velocityMeasured
                 << ", DeltaU = " << deltaU
                 << endl;
     }

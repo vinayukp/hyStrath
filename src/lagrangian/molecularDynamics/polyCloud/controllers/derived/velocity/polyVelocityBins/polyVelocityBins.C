@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -76,12 +75,12 @@ polyVelocityBins::polyVelocityBins
             {
                 X_ = Switch(propsDict_.lookup("X"));
             }
-    
+
             if (propsDict_.found("Y"))
             {
                 Y_ = Switch(propsDict_.lookup("Y"));
             }
-    
+
             if (propsDict_.found("Z"))
             {
                 Z_ = Switch(propsDict_.lookup("Z"));
@@ -96,7 +95,7 @@ polyVelocityBins::polyVelocityBins
             }
         }
     }
-    
+
 
     molIds_.clear();
 
@@ -135,9 +134,9 @@ void polyVelocityBins::controlBeforeVelocityI()
         = molCloud_.cellOccupancy();
 
     const labelList& cells = mesh_.cellZones()[regionId_];
-    
+
     const label& nBins = binModel_->nBins();
-    
+
     scalarField mass(nBins, 0.0);
     vectorField momentum(nBins, vector::zero);
 
@@ -178,19 +177,19 @@ void polyVelocityBins::controlBeforeVelocityI()
 
     vectorField velMeasured(nBins, vector::zero);
     vectorField deltaU(nBins, vector::zero);
-    
+
     forAll(velMeasured, n)
     {
         if(mass[n] > 0.0)
         {
             velMeasured[n] = momentum[n]/mass[n];
-            deltaU[n] = (velocity_ - velMeasured[n])*lambda_;    
+            deltaU[n] = (velocity_ - velMeasured[n])*lambda_;
 //             Info << "vel = " << velMeasured[n] << endl;
         }
     }
-    
-    // control 
-    
+
+    // control
+
     forAll(cells, c)
     {
         const label& cell = cells[c];
@@ -226,12 +225,12 @@ void polyVelocityBins::controlBeforeVelocityI()
                     else
                     {
                         molI->v() += deltaU[n];
-                    } 
+                    }
                 }
             }
         }
-    }    
-   
+    }
+
 }
 
 void polyVelocityBins::controlBeforeMove()
@@ -260,7 +259,7 @@ void polyVelocityBins::calculateProperties()
 
 void polyVelocityBins::output
 (
-    const fileName& fixedPathName, 
+    const fileName& fixedPathName,
     const fileName& timePath
 )
 {

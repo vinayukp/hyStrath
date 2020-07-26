@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     polyMassFluxSurface
@@ -30,7 +29,7 @@ Description
 
 
 NOTES
-    To understand this measurement model, one needs to look at how the cloudTracker works, 
+    To understand this measurement model, one needs to look at how the cloudTracker works,
     as well as how processor patches are defined on the mesh.
 
     - cloud tracker fields are generated every time-step (used by measurement models)
@@ -42,9 +41,9 @@ NOTES
       right. For example note how the surface area of the total face zone is calculated.
       Faces on processor patches are given a weighting of 0.5 so that when communication
       occurs the correct zonal surface area is computed. The same is said for polyMolecule
-      crossings. In the cloudTracker class only one face on the processor patch gets 
-      gets assigned the flux. Thereby synchronisation between processors gives the 
-      correct total flux.        
+      crossings. In the cloudTracker class only one face on the processor patch gets
+      gets assigned the flux. Thereby synchronisation between processors gives the
+      correct total flux.
 
 SourceFiles
     polyMassFluxSurface.C
@@ -81,7 +80,7 @@ private:
 
         //- subDictionary containing the properties
         dictionary propsDict_;
-    
+
         word fieldName_;
 
         fileName pathName_;
@@ -165,7 +164,7 @@ private:
             polyMolecule* molI,
             polyMolecule* molJ
         );
-        
+
         void measureDuringForceComputationSite
         (
             polyMolecule* molI,

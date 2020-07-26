@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -49,7 +48,7 @@ inline bool Foam::pointData::update
         v_ = w2.v();
 
         return true;
-    }       
+    }
 
 
     scalar diff = distSqr_ - dist2;
@@ -77,7 +76,7 @@ inline bool Foam::pointData::update
     }
 }
 
-    
+
 // Update this with w2 (information on same point)
 inline bool Foam::pointData::update
 (
@@ -93,7 +92,7 @@ inline bool Foam::pointData::update
         s_ = w2.s();
         v_ = w2.v();
         return true;
-    }        
+    }
 
     scalar diff = distSqr_ - w2.distSqr();
 
@@ -136,7 +135,7 @@ inline Foam::pointData::pointData()
 // Construct from origin, distance
 inline Foam::pointData::pointData
 (
-    const point& origin, 
+    const point& origin,
     const scalar distSqr,
     const scalar s,
     const vector& v
@@ -259,14 +258,14 @@ inline bool Foam::pointData::updatePoint
     const scalar tol
 )
 {
-    return 
+    return
         update
         (
             mesh.points()[pointI],
             edgeInfo,
             tol
         );
-    }    
+    }
 
 
 // Update this with new information on same point
@@ -285,7 +284,7 @@ inline bool Foam::pointData::updatePoint
             newPointInfo,
             tol
         );
-}    
+}
 
 
 // Update this with new information on same point. No extra information.
@@ -296,7 +295,7 @@ inline bool Foam::pointData::updatePoint
 )
 {
     return update(newPointInfo, tol);
-}    
+}
 
 
 // Update this with information from connected point
@@ -322,7 +321,7 @@ inline bool Foam::pointData::updateEdge
             pointInfo,
             tol
         );
-}    
+}
 
 
 // * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //

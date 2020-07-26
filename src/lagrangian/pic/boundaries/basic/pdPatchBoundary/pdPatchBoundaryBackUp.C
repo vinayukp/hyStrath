@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -101,7 +100,7 @@ pdPatchBoundary::pdPatchBoundary
     if (isA<cyclicPolyPatch>(patch))
     {
         FatalErrorIn("pdCyclicBoundary::pdCyclicBoundary()")
-            << "Patch: " << patchName_ << " is a cyclic boundary. It should be a patch." 
+            << "Patch: " << patchName_ << " is a cyclic boundary. It should be a patch."
             << nl << "in: "
             << t.system()/"boundariesDict"
             << exit(FatalError);
@@ -116,13 +115,13 @@ pdPatchBoundary::pdPatchBoundary
         nFaces_++;
         patchSurfaceArea_ += mag(mesh_.faceAreas()[globalFaceI]);
     }
-    
+
 //     totalPatchSurfaceArea_ = patchSurfaceArea_;
-// 
+//
 //     if(Pstream::parRun())
 //     {
 // 	reduce(totalPatchSurfaceArea_, sumOp<scalar>);
-//            
+//
 //     }
 //     Pout << "faces: " << faces_ << endl;
 
@@ -192,32 +191,32 @@ void pdPatchBoundary::measurePropertiesBeforeControl(pdParcel& p)
         label wppIndex = patchId_;
         const polyPatch& wpp = mesh_.boundaryMesh()[wppIndex];
         label wppLocalFace = wpp.whichFace(p.face());
-    
+
         const scalar fA = mag(wpp.faceAreas()[wppLocalFace]);
-    
+
         const pdParcel::constantProperties& constProps(cloud_.constProps(p.typeId()));
-    
+
         scalar m = constProps.mass();
-    
+
         vector nw = wpp.faceAreas()[wppLocalFace];
         nw /= mag(nw);
-    
+
         scalar U_dot_nw = p.U() & nw;
-    
+
         vector Ut = p.U() - U_dot_nw*nw;
-    
+
         scalar invMagUnfA = 1/max(mag(U_dot_nw)*fA, VSMALL);
-    
+
         cloud_.stdFields().rhoNBF()[wppIndex][wppLocalFace] += invMagUnfA;
         cloud_.stdFields().rhoMBF()[wppIndex][wppLocalFace] += m*invMagUnfA;
         cloud_.stdFields().linearKEBF()[wppIndex][wppLocalFace] += 0.5*m*(p.U() & p.U())*invMagUnfA;
         cloud_.stdFields().rotationalEBF()[wppIndex][wppLocalFace] += p.ERot()*invMagUnfA;
         cloud_.stdFields().rotationalDofBF()[wppIndex][wppLocalFace] += constProps.rotationalDegreesOfFreedom()*invMagUnfA;
         cloud_.stdFields().momentumBF()[wppIndex][wppLocalFace] += m*Ut*invMagUnfA;
-    
+
         // pre-interaction energy
         preIE_ = 0.5*m*(p.U() & p.U()) + p.ERot() + p.EVib();
-    
+
         // pre-interaction momentum
         preIMom_ = m*p.U();
     }
@@ -230,40 +229,40 @@ void pdPatchBoundary::measurePropertiesAfterControl(pdParcel& p)
         label wppIndex = patchId_;
         const polyPatch& wpp = mesh_.boundaryMesh()[wppIndex];
         label wppLocalFace = wpp.whichFace(p.face());
-    
+
         const scalar fA = mag(wpp.faceAreas()[wppLocalFace]);
-    
+
         const scalar deltaT = mesh_.time().deltaTValue();
-    
+
         const pdParcel::constantProperties& constProps(cloud_.constProps(p.typeId()));
-    
+
         scalar m = constProps.mass();
-    
+
         vector nw = wpp.faceAreas()[wppLocalFace];
         nw /= mag(nw);
-    
+
         scalar U_dot_nw = p.U() & nw;
-    
+
         vector Ut = p.U() - U_dot_nw*nw;
-    
+
         scalar invMagUnfA = 1/max(mag(U_dot_nw)*fA, VSMALL);
-    
+
         cloud_.stdFields().rhoNBF()[wppIndex][wppLocalFace] += invMagUnfA;
         cloud_.stdFields().rhoMBF()[wppIndex][wppLocalFace] += m*invMagUnfA;
         cloud_.stdFields().linearKEBF()[wppIndex][wppLocalFace] += 0.5*m*(p.U() & p.U())*invMagUnfA;
         cloud_.stdFields().rotationalEBF()[wppIndex][wppLocalFace] += p.ERot()*invMagUnfA;
         cloud_.stdFields().rotationalDofBF()[wppIndex][wppLocalFace] += constProps.rotationalDegreesOfFreedom()*invMagUnfA;
         cloud_.stdFields().momentumBF()[wppIndex][wppLocalFace] += m*Ut*invMagUnfA;
-    
+
         // post-interaction energy
         scalar postIE = 0.5*m*(p.U() & p.U()) + p.ERot() + p.EVib();
-    
+
         // post-interaction momentum
         vector postIMom = m*p.U();
-    
+
         scalar deltaQ = cloud_.nParticle()*(preIE_ - postIE)/(deltaT*fA);
         vector deltaFD = cloud_.nParticle()*(preIMom_ - postIMom)/(deltaT*fA);
-    
+
         cloud_.stdFields().qBF()[wppIndex][wppLocalFace] += deltaQ;
         cloud_.stdFields().fDBF()[wppIndex][wppLocalFace] += deltaFD;
     }
@@ -319,10 +318,10 @@ void pdPatchBoundary::writeTimeData
     {
         forAll(yData, n)
         {
-            file 
-                << xData[n] << "\t" 
-                << yData[n].x() << "\t" << yData[n].y() 
-                << "\t" << yData[n].z() 
+            file
+                << xData[n] << "\t"
+                << yData[n].x() << "\t" << yData[n].y()
+                << "\t" << yData[n].z()
                 << endl;
         }
     }

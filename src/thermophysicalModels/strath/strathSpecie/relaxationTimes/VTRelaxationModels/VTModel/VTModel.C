@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright held by original author
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
 
@@ -58,7 +57,7 @@ Foam::VTModel::VTModel
             IOobject::NO_WRITE
         )
     ),
-    
+
     dictThermoPhy_
     (
         IOobject
@@ -72,22 +71,22 @@ Foam::VTModel::VTModel
     ),
 
     solvedVibEqSpecies_(solvedVibEqSpecies),
-    species_(species), 
-    p_(p),    
+    species_(species),
+    p_(p),
     Tt_(Tt),
     Tv_(Tv),
     nD_(nD)
-   
+
 {
     tauVTijModels_.setSize(species.size()*species.size());
     tauVTij_.setSize(tauVTijModels_.size());
-    
+
     forAll(solvedVibEqSpecies_, i)
     {
         forAll(species_, j)
         {
             label k = solvedVibEqSpecies_.size()*i+j;
-            
+
             tauVTijModels_.set
             (
                 k,
@@ -115,14 +114,14 @@ Foam::VTModel::VTModel
                 )
             );
         }
-    } 
+    }
 }
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 void Foam::VTModel::update()
-{    
+{
     for(label i=0; i < solvedVibEqSpecies_.size(); i++)
     {
         for(label j=0; j < species_.size(); j++)

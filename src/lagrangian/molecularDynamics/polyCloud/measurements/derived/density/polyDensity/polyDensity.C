@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Description
 
@@ -50,12 +49,12 @@ void polyDensity::setBoundBox
 )
 {
     const dictionary& dict(propsDict.subDict(name));
-    
+
     vector startPoint = dict.lookup("startPoint");
     vector endPoint = dict.lookup("endPoint");
 
     bb.resetBoundedBox(startPoint, endPoint);
-    
+
 }
 
 
@@ -77,7 +76,7 @@ polyDensity::polyDensity
     molIds_()
 {
 
-    
+
    // choose molecule ids to sample
 
     molIds_.clear();
@@ -89,18 +88,18 @@ polyDensity::polyDensity
     );
 
     molIds_ = ids.molIds();
-    
-    setBoundBox(propsDict_, bb_, "samplingRegion");  
-    
-    volume_ = bb_.span().x() * bb_.span().y() * bb_.span().z();    
-    
+
+    setBoundBox(propsDict_, bb_, "samplingRegion");
+
+    volume_ = bb_.span().x() * bb_.span().y() * bb_.span().z();
+
     Info << "Volume = " << volume_ << endl;
-    
-    
+
+
     if (propsDict_.found("volume"))
     {
         scalar volume  = readScalar(propsDict_.lookup("volume"));
-        
+
         volume_ = volume;
     }
 }
@@ -124,9 +123,9 @@ void polyDensity::createField()
 void polyDensity::calculateField()
 {
     IDLList<polyMolecule>::iterator mol(molCloud_.begin());
-    
+
     scalar mass = 0.0;
-    
+
     for (mol = molCloud_.begin(); mol != molCloud_.end(); ++mol)
     {
         if(bb_.contains(mol().position()))
@@ -134,7 +133,7 @@ void polyDensity::calculateField()
             if(findIndex(molIds_, mol().id()) != -1)
             {
                 const scalar& massI = molCloud_.cP().mass(mol().id());
-                mass += massI;            
+                mass += massI;
             }
         }
     }
@@ -143,9 +142,9 @@ void polyDensity::calculateField()
     {
         reduce(mass, sumOp<scalar>());
     }
-    
+
     scalar density = mass/volume_;
-    
+
     densities_.append(density);
 
 }
@@ -162,17 +161,17 @@ void polyDensity::writeField()
 
             scalarField timeField (densities_.size(), 0.0);
             scalarField densities (densities_.size(), 0.0);
-            
+
             densities.transfer(densities_);
             densities_.clear();
 
             const scalar& deltaT = time_.deltaT().value();
-            
+
             forAll(timeField, i)
             {
                 timeField[timeField.size()-i-1]=runTime.timeOutputValue()-(deltaT*i);
             }
-            
+
             writeTimeData
             (
                 casePath_,
@@ -183,7 +182,7 @@ void polyDensity::writeField()
             );
 
             const reducedUnits& rU = molCloud_.redUnits();
-    
+
             if(rU.outputSIUnits())
             {
                 writeTimeData
@@ -206,7 +205,7 @@ void polyDensity::measureDuringForceComputation
 ){}
 
 void polyDensity::measureDuringForceComputationSite
-(   
+(
     polyMolecule* molI,
     polyMolecule* molJ,
     label sI,

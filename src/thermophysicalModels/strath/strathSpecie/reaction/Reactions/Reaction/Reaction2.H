@@ -2,11 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -61,8 +61,8 @@ inline Ostream& operator<<(Ostream&, const Reaction2<Reaction2Thermo>&);
 
 
 // NEW VINCENT
-enum ControllingTemperatureType {chargeExchange, dissociation, exchange, 
-    impactDissociation, impactIonisation, associativeIonisation, 
+enum ControllingTemperatureType {chargeExchange, dissociation, exchange,
+    impactDissociation, impactIonisation, associativeIonisation,
     transrotational, vibrational};
 
 /*---------------------------------------------------------------------------*\
@@ -147,7 +147,7 @@ private:
 
         //- Specie info for the right-hand-side of the reaction
         List<specieCoeffs> rhs_;
-        
+
         //- Controlling temperature
         ControllingTemperatureType controlT_; // NEW VINCENT
 
@@ -318,7 +318,7 @@ public:
             // - Access to basic components of the reaction
             inline const List<specieCoeffs>& lhs() const;
             inline const List<specieCoeffs>& rhs() const;
-            
+
             //- Controlling temperature of the reaction
             inline const ControllingTemperatureType& controlT() const;
 

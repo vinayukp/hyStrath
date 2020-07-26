@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2007 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     dsmcReflectiveParticleMembranePatch
@@ -28,9 +27,9 @@ Class
 Description
 
     RPM method.
-    
-    Li J, Liao DY, Yip S (1998) Coupling continuum to molecular-dynamics 
-    simulation: reflecting particle method and the field estimator. 
+
+    Li J, Liao DY, Yip S (1998) Coupling continuum to molecular-dynamics
+    simulation: reflecting particle method and the field estimator.
     Phys Rev E 57(6):7259
 
 
@@ -67,23 +66,23 @@ class dsmcReflectiveParticleMembranePatch
 private:
 
     // Private data
-    
+
         dictionary propsDict_;
 
         //- typeIds to be adsorbed
         labelList typeIds_;
-        
-        //- Probability a particle has of being specularly reflected when 
+
+        //- Probability a particle has of being specularly reflected when
         //  stricking the membrane
         scalar specularReflectionProb_;
-        
+
         //- Probability a particle of a given species has of being specularly
         //  reflected when stricking the membrane
         scalarList specularReflectionProbs_;
 
         //- Cumulative number of specular reflections
         label nReflections_;
-        
+
         //- Cumulative number of particle passing through the interface
         label nRejections_;
 
@@ -91,9 +90,9 @@ private:
     // Private Member Functions
 
         void setProperties();
-        
+
         void readProperties();
-        
+
         //- Find the position on which the particle initially striked
         vector findOriginalPosition(const dsmcParcel& p, const label fI);
 

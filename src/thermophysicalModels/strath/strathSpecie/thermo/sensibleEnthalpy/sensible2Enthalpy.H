@@ -1,13 +1,12 @@
-
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -82,7 +81,7 @@ public:
             {
                 return thermo.es(p, Tt, Tv); //TODO hs
             }
-            
+
             // NEW VINCENT ****************************************************
             // Sensible enthalpy, trans-rotational mode [J/kmol]
             scalar het
@@ -94,7 +93,7 @@ public:
             {
                 return thermo.ets(p, Tt); //TODO hts
             }
-            
+
             // Sensible enthalpy, vibrational mode [J/kg], mode vibMode
             scalar hev_mode
             (
@@ -106,7 +105,7 @@ public:
             {
                 return thermo.hvs_mode(vibMode, p, Tv);
             }
-            
+
             // Sensible enthalpy, vibrational mode [J/kg]
             scalar hev
             (
@@ -117,7 +116,7 @@ public:
             {
                 return thermo.hvs(p, Tv);
             }
-            
+
             // Sensible enthalpy, electronic mode [J/kg]
             scalar heel
             (
@@ -128,7 +127,7 @@ public:
             {
                 return thermo.hels(p, Tv);
             }
-            
+
             // Sensible enthalpy, vib-electronic mode [J/kg], mode vibMode
             scalar hevel_mode
             (
@@ -140,7 +139,7 @@ public:
             {
                 return thermo.hvels_mode(vibMode, p, Tv);
             }
-            
+
             // Sensible enthalpy, vib-electronic mode [J/kg]
             scalar hevel
             (
@@ -188,7 +187,7 @@ public:
             {
                 return thermo.Es(p, Tt, Tv); //TODO Hs
             }
-            
+
             // NEW VINCENT ****************************************************
             // Sensible enthalpy, trans-rotational mode [J/kg]
             scalar HEt
@@ -200,7 +199,7 @@ public:
             {
                 return thermo.Ets(p, Tt); //TODO Hts
             }
-            
+
             // Sensible enthalpy, vibrational mode [J/kg], mode vibMode
             scalar HEv_mode
             (
@@ -212,7 +211,7 @@ public:
             {
                 return thermo.Hvs_mode(vibMode, p, Tv);
             }
-            
+
             // Sensible enthalpy, vibrational mode [J/kg]
             scalar HEv
             (
@@ -223,7 +222,7 @@ public:
             {
                 return thermo.Hvs(p, Tv);
             }
-            
+
             // Sensible enthalpy, electronic mode [J/kg]
             scalar HEel
             (
@@ -234,7 +233,7 @@ public:
             {
                 return thermo.Hels(p, Tv);
             }
-            
+
             // Sensible enthalpy, vib-electronic mode [J/kg], mode vibMode
             scalar HEvel_mode
             (
@@ -246,7 +245,7 @@ public:
             {
                 return thermo.Hvels_mode(vibMode, p, Tv);
             }
-            
+
             // Sensible enthalpy, vib-electronic mode [J/kg]
             scalar HEvel
             (
@@ -273,7 +272,7 @@ public:
                 return thermo.TEs(h, p, T0); // TODO if ever used: thermo.THs(h, p, T0);
             }
             // END DELETION VINCENT *******************************************
-            
+
             // NEW VINCENT ****************************************************
             //- Translational-rotational temperature from sensible enthalpy
             //  given an initial temperature T0
@@ -287,7 +286,7 @@ public:
             {
                 return thermo.TtEts(h, p, T0); //TODO TtHts
             }
-            
+
             //- Vibrational temperature from sensible enthalpy
             //  given an initial temperature T0, mode vibMode
             scalar TvHEv_mode
@@ -301,7 +300,7 @@ public:
             {
                 return thermo.TvEvs_mode(vibMode, h, p, T0); //TODO
             }
-            
+
             //- Vibrational temperature from sensible enthalpy
             //  given an initial temperature T0
             scalar TvHEv
@@ -314,7 +313,7 @@ public:
             {
                 return thermo.TvHvs(h, p, T0);
             }
-            
+
             //- Vib-electronic temperature from sensible enthalpy
             //  given an initial temperature T0, mode vibMode
             scalar TvelHEvel_mode
@@ -328,7 +327,7 @@ public:
             {
                 return thermo.TvelEvels_mode(vibMode, h, p, T0); //TODO
             }
-            
+
             //- Vib-electronic temperature from sensible enthalpy
             //  given an initial temperature T0
             scalar TvelHEvel

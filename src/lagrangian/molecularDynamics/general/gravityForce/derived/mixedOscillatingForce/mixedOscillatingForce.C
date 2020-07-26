@@ -2,16 +2,16 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 1991-2005 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2016-2020 hyStrath
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is part of hyStrath, a derivative work of OpenFOAM.
 
-    OpenFOAM is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 2 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -19,8 +19,7 @@ License
     for more details.
 
     You should have received a copy of the GNU General Public License
-    along with OpenFOAM; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
     mixedOscillatingForce
@@ -70,24 +69,24 @@ mixedOscillatingForce::mixedOscillatingForce
     deltaT_(readScalar(propsDict_.lookup("deltaT")))
 {
     unitVector_ /= mag(unitVector_);
-        
-    periodCoeffs_ = List<scalar>(propsDict_.lookup("coeffs"));   
-    
+
+    periodCoeffs_ = List<scalar>(propsDict_.lookup("coeffs"));
+
 //     scalar initialForce = (readScalar(propsDict_.lookup("force")));
 
 //     force_ = unitVector_*initialForce;
 
     //offsetTime_ = Foam::asin(initialForce/amplitude_)/(360.0*omega_);
-    
-    
+
+
     bool outputForces = false;
-    
+
     if (propsDict_.found("output"))
     {
-        outputForces = Switch(propsDict_.lookup("output"));    
-        
+        outputForces = Switch(propsDict_.lookup("output"));
+
         if(outputForces)
-        {    
+        {
             output(time);
         }
     }
@@ -118,13 +117,13 @@ void mixedOscillatingForce::updateForce()
 //     const scalar initialTime = time_.startTime().value();
 
     currentTime_ += deltaT_;
-    
+
 //     scalar t = currentTime_-initialTime+offsetTime_;
-    
+
     scalar t = currentTime_;
-    
+
     scalar period = getPeriod(t);
-    
+
     force_ = amplitude_*Foam::sin(2.0*constant::mathematical::pi*t/period)*unitVector_;
 }
 
@@ -138,37 +137,37 @@ vector mixedOscillatingForce::force(const scalar& time)
 scalar mixedOscillatingForce::getPeriod(const scalar& t)
 {
     scalar period = 0.0;
-    
+
     label M = periodCoeffs_.size() - 1;
-    
+
     forAll(periodCoeffs_, j)
     {
         period += periodCoeffs_[j]*pow(t, (M-j));
     }
-    
+
     return period;
 }
 
 void mixedOscillatingForce::output(Time& time)
 {
     label N = 4e6;
-    
-    scalarField t(N, 0.0);     
-    scalarField period(N, 0.0);   
+
+    scalarField t(N, 0.0);
+    scalarField period(N, 0.0);
     scalarField forces(N, 0.0);
-    
+
     for (label i=0; i< N; i++)
     {
         updateForce();
-        
+
         t[i] = currentTime_;
         forces[i]=force_.x();
-        
+
         scalar p = getPeriod(currentTime_);
-        period[i]=p;        
+        period[i]=p;
     }
-    
-    fileName casePath(time.path());   
+
+    fileName casePath(time.path());
 
     writeTimeData
     (
@@ -184,9 +183,9 @@ void mixedOscillatingForce::output(Time& time)
         "mixedOscillatingForce_period.xy",
         t,
         period
-    );    
-    
-    
+    );
+
+
 }
 
 void mixedOscillatingForce::write
